@@ -1,0 +1,33 @@
+http://www.strangeplanet.fr/work/gradient-generator/index.php
+
+gradient3=("#FF7B00" "#F37C00" "#E87D00" "#DD7F00" "#D28000" "#C78200" "#BC8300" "#B18501" "#A58601" "#9A8701" "#8F8901" "#848A01" "#798C01" "#6E8D01" "#638F02" "#579002" "#4C9102" "#419302" "#369402" "#2B9602" "#209702" "#159903")
+x=0; for i in `seq 1 7`; do for j in A B D; do x=${x}+1; convert -size 130x80 xc:transparent -font Palatino-BoldItalic -pointsize 88 -fill "${gradient3[${x}]}" -draw "text 10,70 '${i}${j}'" ${i}${j}.png; done; done 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#gradient=("FF0000" "F20000" "E50000" "D80000" "CC0000" "BF0000" "B20000" "A50000" "990000" "8C0000" "7F0000" "720000" "660000" "590000" "4C0000" "3F0000" "320000" "260000" "190000" "0C0000" "000000");
+#x=0; for i in `seq 1 7`; do for j in A B D; do x=${x}+1; convert -size 120x80 xc:transparent -font Palatino-BoldItalic -pointsize 72 -fill "#${gradient[${x}]}" -draw "text 20,55 '${i}${j}'" ${i}${j}.png; done; done 
+
+
+
+
+
+#gradient3=("#FF7B00" "#F37C00" "#E87D00" "#DD7F00" "#D28000" "#C78200" "#BC8300" "#B18501" "#A58601" "#9A8701" "#8F8901" "#848A01" "#798C01" "#6E8D01" "#638F02" "#579002" "#4C9102" "#419302" "#369402" "#2B9602" "#209702" "#159903")
+#x=0; for i in `seq 1 7`; do for j in A B D; do x=${x}+1; convert -size 120x80 xc:transparent -font Palatino-BoldItalic -pointsize 72 -fill "${gradient[${x}]}" -draw "text 20,55 '${i}${j}'" ${i}${j}.png; done; done
+
+
+
+
+
+#for i in `seq 1 7`; do for j in A B D; do convert -size 120x80 xc:transparent -font Palatino-Bold -pointsize 72 -fill black -draw "text 20,55 '${i}${j}'" ${i}${j}.png; done; done 
+

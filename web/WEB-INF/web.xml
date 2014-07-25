@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <context-param>
+        <param-name>javax.faces.DEVELOPMENT</param-name>
+        <param-value>Development</param-value>
+    </context-param> 
+    <context-param>
+        <param-name>primefaces.THEME</param-name> 
+        <!--<param-value>glass-x</param-value>--> 
+        <!--<param-value>pepper-grinder</param-value>--> 
+        <!--<param-value>casablanca</param-value>--> 
+        <!--<param-value>bootstrap</param-value>  would have to reduce the size of dialog header font          -->
+        <!--<param-value>afterwork</param-value>--> 
+        <param-value>smoothness</param-value> 
+        <!--<param-value>overcast</param-value>--> 
+        <!--<param-value>aristo</param-value>-->   
+    </context-param>
+    <context-param>
+        <param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>/faces/*</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            481
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>faces/popsview.xhtml</welcome-file>
+    </welcome-file-list>
+    <error-page>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <location>/expired.xhtml</location>
+    </error-page>
+</web-app>

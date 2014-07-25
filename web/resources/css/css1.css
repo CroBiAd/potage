@@ -1,0 +1,79 @@
+html, body {
+    height: 100%;
+}
+
+body{
+    font-family: Arial, Verdana, Helvetica;
+    font-size: 70%;
+    background-color: #FCFCFC;
+    color: #000000;
+    /*    padding-top: 80px;*/
+    height: 100%;
+    background-position: right;
+    background-image: url('../images/Picture14.gif');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /*  background-image: url('../images/headerbg-orig.gif');
+        background-repeat: repeat-x;
+        background-position: top right;*/
+}
+
+html {overflow-y: scroll;}
+
+
+.wrapClass1 {
+    white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    word-break: break-all;
+    width:200px;
+}
+
+.wrapClass {
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;    
+    display:inline-block;
+}
+
+.highlighted {
+    background-color: #eff7b4 !important;
+    background: #eff7b4;
+}
+
+
+.myTable td:nth-child(1) {
+    width: 20px;
+}
+
+.ui-datatable .ui-row-toggler {
+    cursor: pointer;
+    content: "Process";
+    /*background: url('../images/close.png') ;*/ 
+}
+
+.hiddenGrid tr, .hiddenGrid td {
+    border: none;
+    border-style: hidden !important;
+}
+
+
+.chord path {
+    fill-opacity: .67;
+    stroke: #000;
+    stroke-width: .5px;
+}
+
+.ui-spinner-input::-ms-clear {
+    display: none;
+}   
+
+.ui-dialog {
+    position:absolute;
+}
+

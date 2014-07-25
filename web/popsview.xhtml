@@ -1,0 +1,511 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html">        
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+        <h:head>
+            <h:outputStylesheet  library="css" name="css1.css"/>
+            <link rel="shortcut icon" type="image/x-icon" href="images/favicon1.ico"/>
+
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>PopsView</title>
+            </f:facet>
+
+
+            <p:idleMonitor timeout="28800000" >
+                <p:ajax event="idle" listener="#{loginController.timeout()}"/>
+            </p:idleMonitor>
+        </h:head>
+        <h:outputStylesheet  library="css" name="css1.css"/>
+        <body  onresize="updatechartpanel">
+
+
+
+        <h:outputLabel  value="#{counterBean.recordStats}"/>
+
+
+
+
+
+        <h:form id="formMenu"  >                
+            <!--<img class="logos" alt="ACPFG banner" src="Styles/acpfg-diddle.gif" />-->
+            <!--<img class="logos" src="Styles/bar.png" alt="" style="height: 30px; width: 100%"/>-->
+            <p:dock  id="dock" model="#{mainBean.menuModelSimple}" position="top" itemWidth="40" maxWidth="70" proximity="90"     />                          
+        </h:form>
+
+        <p:spacer id="dummyForOverlay" width="100%" height="90"  />
+
+
+
+
+        <p:dialog modal="true" widgetVar="blockUI" draggable="false" closable="false" resizable="false" showHeader="false" 
+                  showEffect="#{effectsBean.effectType}" hideEffect="#{effectsBean.effectType}">
+            <p:ajax update="@this" process="@this" />
+            <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />  
+        </p:dialog> 
+
+        <p:growl id="growl" showDetail="true" life="3000"  /> 
+
+
+
+
+
+
+
+        <p:dialog  id="helpDialog" header="You are on your own!" widgetVar="helpPanel" modal="false"  styleClass="logos" fitViewport="true" 
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="600">
+        </p:dialog>
+
+        <p:dialog  id="searchDialog" header="Search for sequence on all chromosomes (by ID)" widgetVar="searchPanel" modal="false" position="left+25%,top+25%" 
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="600" height="160">
+            <h:form id="formSearch">
+                <p:toolbar >                        
+                    <f:facet name="left">
+                        <p:inputText id="idInput" widgetVar="idInput" style="width:270px" placeholder="Enter IWGSC SS identifier or a MIPS gene ID" value="#{mainBean.userQuery}"  />
+                    </f:facet>
+                    <f:facet name="right">
+                        <p:commandButton  value="Search" id="searchButton" actionListener="#{mainBean.searchAll}" icon="ui-icon-search" update="idInput,searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList" 
+                                          onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()}"/>                        
+                        <p:commandButton value="Clear" id="clearSearch" icon="ui-icon-cancel" update="idInput,searchMessages,:formCentre:dataTable,:formCentre:chartsGrid" process="@this" actionListener="#{mainBean.setUserQuery('')}" oncomplete="PF('dataTable').filter()"/>
+                    </f:facet>
+                </p:toolbar>
+                <p:messages id="searchMessages" showDetail="true"  closable="true"  redisplay="false"  />
+            </h:form>
+        </p:dialog> 
+
+        <h:form id="formUpload">
+            <p:overlayPanel widgetVar="uploadPanel" for=":formSearch2:tabView:uploadButton" hideEffect="fade"  hideEvent="mousedown" showEffect="scale" at="top"                            
+                            showCloseIcon="true" dismissable="true"   >
+                <p:fileUpload widgetVar="fileUpload" fileUploadListener="#{mainBean.handleFileUpload}"  mode="advanced" auto="true" allowTypes="/(\.|\/)(fa|fasta|fas|txt|fst)$/" 
+                              label="Choose a FASTA file to upload" sizeLimit="10485760" invalidSizeMessage="The maximum file size allowed is 10MB!" oncomplete="PF('uploadPanel').hide()"  
+                              invalidFileMessage="Only upload FASTA files!" multiple="false"  update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput"/>
+            </p:overlayPanel>
+        </h:form>          
+
+
+        <p:dialog  id="searchSeqDialog" header="Search all chromosomes by aligning a sequence" widgetVar="searchSeqPanel" modal="false" position="80,140" minimizable="true" 
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="450">
+
+            <h:form id="formSearch2">
+                <p:tabView id="tabView" activeIndex="#{mainBean.seqSearchTabActive}"    >
+                    <p:tab title="Input"  >
+                        <p:toolbar >
+                            <f:facet name="left">
+                                <p:commandButton  id="uploadButton" value="Upload FASTA file..." icon="ui-icon-arrowreturnthick-1-s" onclick="PF('uploadPanel').show();" /> 
+                            </f:facet>                                    
+                            <f:facet name="right">
+                                <p:commandButton  value="Search" id="searchSeqButton" actionListener="#{mainBean.submitActionEventHandler}" icon="ui-icon-search" 
+                                                  onstart="PF('blockUI').show();"  
+                                                  oncomplete="if(args.showResults){}if(args.showXML){PF('dlgxml').show();}PF('blockUI').hide();"
+                                                  update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" />                        
+                                <p:commandButton value="Clear" id="clearSeqSearch" icon="ui-icon-cancel" update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" process="@this" actionListener="#{mainBean.clearFileContentString()}" oncomplete="PF('dataTable').filter();" />
+                            </f:facet>
+                        </p:toolbar>
+                        <p:inputTextarea id="seqInput" widgetVar="seqInput" style="min-height: 250px;width: 98.5%;alignment-adjust: central; resize: none" autoResize="false" 
+                                         placeholder="Enter a FASTA nucleotide sequence"  
+                                         value="#{mainBean.fileContentString}" ondblclick="PF('uploadPanel').show()" />                            
+                    </p:tab>
+                    <p:tab title="Results - summary" disabled="#{!mainBean.hasHitsForQueryDataModel()}" >
+                        <p:dataTable id="allresults" var="query" value="#{mainBean.hitsForQueryDataModel}" paginator="true" rows="5" rowsPerPageTemplate="5,10,15"   
+                                     selection="#{mainBean.selectedQuery}"  selectionMode="single" paginatorAlwaysVisible="false" >  
+                            <p:ajax event="rowSelect" update=":formSearch2:tabView"  />  
+                            <f:facet name="header">  
+                                Select a row to display hits retrieved for the corresponding query  
+                            </f:facet>  
+
+                            <p:column headerText="View" width="10%" >  
+                                <p:commandButton id="selectButton" update=":formSearch2:tabView" icon="ui-icon-search" title="View">
+                                    <f:setPropertyActionListener value="#{query}" target="#{mainBean.selectedQuery}" />
+                                </p:commandButton>
+                            </p:column>
+
+                            <p:column headerText="Query ID" width="75%" >  
+                                <!--<h:outputLabel value="#{query.getColoredQueryId()} " escape="false"/>-->
+                                #{query.getFormatedQueryId()}
+                            </p:column>  
+                            <p:column headerText="Number of hits" width="15%" >  
+                                <h:outputText value="#{query.getNumbPromotersA()}" escape="false"/>
+                            </p:column>  
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Results - per query" disabled="#{!mainBean.hasHitsDataModel()}">
+                        <h:panelGrid columns="2" cellpadding="4">  
+                        </h:panelGrid>  
+
+                        <p:dataTable var="hit" value="#{mainBean.hitsDataModel}" paginator="true" rows="10"  selectionMode="single"
+                                     selection="#{mainBean.selectedHit}" paginatorAlwaysVisible="false" >  
+                            <f:facet name="header">  
+                                <h:outputText value="#{mainBean.selectedQuery.getNumbPromotersB()} hits retrieved for the selected query : #{mainBean.selectedQuery.queryId}" escape="false"/>
+                            </f:facet>  
+                            <p:ajax event="rowSelect" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();"  
+                                    update=":formCentre:dataTable,:formSearch:idInput,:formSearch2:searchMessages2,:formCentre:chartsGrid" />
+                            <p:column style="width:7%" >
+                                <p:commandButton id="selectButton3" icon="ui-icon-search" update=":formCentre:dataTable,:formSearch:idInput,:formSearch2:searchMessages2,:formCentre:chartsGrid" 
+                                                 onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();">
+                                    <f:setPropertyActionListener value="#{hit}" target="#{mainBean.selectedHit}" />
+                                </p:commandButton>                            
+                            </p:column>
+
+                            <p:column headerText="Hit contig ID" style="width:14%; text-align: center">  
+                                #{hit.hitId}  
+                            </p:column>  
+                            <p:column headerText="Coordinates" style="width:18%; text-align: center">  
+                                <h:outputText value=" #{hit.getContigCoordinatesHTML()}" escape="false"/>
+                            </p:column>  
+                            <p:column headerText="orientation" style="width:10%; text-align: center">  
+                                #{hit.getFrames()}  
+                            </p:column>  
+                            <p:column headerText="full query identity" style="width:15%; text-align: center">  
+                                <h:outputText value="#{hit.getPercIdOverQlen()}" escape="false" />
+                            </p:column>  
+                            <p:column headerText="aligned query identity" style="width:15%; text-align: center">  
+                                <h:outputText value="#{hit.getPercIdOverAlignedQlen()}" escape="false" />
+                            </p:column>  
+                            <p:column headerText="query aligned" style="width:15%; text-align: center">  
+                                <h:outputText value="#{hit.getPercQueryAligned()}" escape="false"/>
+                            </p:column>  
+
+                        </p:dataTable>  
+                    </p:tab>
+                </p:tabView>
+                <p:messages id="searchMessages2" showDetail="true"  closable="true" redisplay="false"   />
+            </h:form>
+        </p:dialog> 
+
+
+
+        <p:dialog  id="allContigsDialog" header="All contigs within a cM range..." widgetVar="allContigsDialog" modal="false" minimizable="true"  position="800,140"
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="700">
+
+            <h:form id="formSearch3">
+                <p:spacer height="10" width="0" />
+                <p:blockUI block="contigList" widgetVar="blockContigList" />
+                <p:dataTable id="contigList" widgetVar="contigList" value="#{mainBean.perLocationContigs.contigs}" var="contig" styleClass="paginated"
+                             filteredValue="#{mainBean.perLocationContigs.filteredContigs}" 
+                             selection="#{mainBean.perLocationContigs.selectedContigs}" rowKey="#{contig.id}"  rowSelectMode="add"
+                             paginator="true" rows="15" paginatorAlwaysVisible="true"  style="text-align: center" 
+                             rowStyleClass="#{mainBean.contains(mainBean.userQuery, contig.contigId) ? 'highlighted' : null}"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+                    <f:facet name="header">
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <h:outputText value="List contigs on chromosome " />
+                                <p:autoComplete dropdown="true" value="#{mainBean.chromosomeForNonGeneContigs}" completeMethod="#{trivialBean.getChromosomes()}"  
+                                                forceSelection="true" size="2" >
+                                    <p:ajax event="itemSelect" listener="#{mainBean.loadAllContigs()}" update=":formSearch3:contigList" process="@this" onstart="PF('blockContigList').show();" oncomplete="PF('blockContigList').hide();" />
+                                </p:autoComplete> 
+                            </f:facet>
+                            <f:facet name="right">
+                                <p:commandButton title="Reset cM filtering" value="Reset cM filtering" id="resetbutton" icon="ui-icon-cancel" update=":formSearch3:contigList" process="@this" action="#{mainBean.perLocationContigs.resetFilter()}" 
+                                                 onstart="PF('blockContigList').show();" oncomplete="PF('blockContigList').hide();" disabled="#{!mainBean.perLocationContigs.isFiltered()}" />
+                            </f:facet>
+                        </p:toolbar>
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <h:outputText value="cM (corrected) between " />
+                                <p:autoComplete dropdown="true" value="#{mainBean.perLocationContigs.cM_filterForNonGeneContigs.cM_corrected_min_user}" completeMethod="#{mainBean.perLocationContigs.correctedRangePrefix}" 
+                                                forceSelection="true" size="7" scrollHeight="400" >
+                                    <p:ajax event="itemSelect" update=":formSearch3:contigList" process="@this" listener="#{mainBean.perLocationContigs.filterByCm()}" onstart="PF('blockContigList').show();" oncomplete="PF('blockContigList').hide();" />
+                                </p:autoComplete>
+                                <p:spacer height="0" width="35" />
+                                <h:outputText value=" and  " />
+                                <p:autoComplete dropdown="true" value="#{mainBean.perLocationContigs.cM_filterForNonGeneContigs.cM_corrected_max_user}" completeMethod="#{mainBean.perLocationContigs.correctedRangePrefix}" 
+                                                forceSelection="true" size="7"  label="label" title="Type in the desired cM position" scrollHeight="400"  >
+                                    <p:ajax event="itemSelect" update=":formSearch3:contigList" process="@this" listener="#{mainBean.perLocationContigs.filterByCm()}" onstart="PF('blockContigList').show();" oncomplete="PF('blockContigList').hide();" />
+                                </p:autoComplete>
+                            </f:facet>
+                            <f:facet name="right">
+                                <h:outputText value=" cM (original) between " />
+                                <p:autoComplete dropdown="true" value="#{mainBean.perLocationContigs.cM_filterForNonGeneContigs.cM_original_min_user}" completeMethod="#{mainBean.perLocationContigs.originalRangePrefix}" 
+                                                forceSelection="true" size="7" scrollHeight="400" >
+                                    <p:ajax event="itemSelect" update=":formSearch3:contigList" process="@this" listener="#{mainBean.perLocationContigs.filterByCm()}" onstart="PF('blockContigList').show();" oncomplete="PF('blockContigList').hide();" />
+                                </p:autoComplete>
+                                <p:spacer height="0" width="35" />
+                                <h:outputText value=" and " />
+                                <p:autoComplete dropdown="true" value="#{mainBean.perLocationContigs.cM_filterForNonGeneContigs.cM_original_max_user}" completeMethod="#{mainBean.perLocationContigs.originalRangePrefix}" 
+                                                forceSelection="true" size="7"  label="label" title="Type in the desired cM position" scrollHeight="400"  >
+                                    <p:ajax event="itemSelect" update=":formSearch3:contigList" process="@this" listener="#{mainBean.perLocationContigs.filterByCm()}" onstart="PF('blockContigList').show();" oncomplete="PF('blockContigList').hide();" />
+                                </p:autoComplete>
+                                <p:spacer height="0" width="35" />
+                            </f:facet>
+                        </p:toolbar>
+
+
+
+
+                    </f:facet>
+                    <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                    <p:column headerText="Contig ID"  >
+                        <h:outputText value="#{contig.contigId}" />                        
+                    </p:column>                     
+                    <p:column headerText="cM (corrected)">
+                        <h:outputText value="#{contig.getcM_corrected()}" />                        
+                    </p:column>                     
+                    <p:column headerText="cM (original)">
+                        <h:outputText value="#{contig.getcM_original()}" />                        
+                    </p:column>                     
+                    <p:ajax event="rowSelect" update="contigExportToolbar" process="@this"/>  
+                    <p:ajax event="rowUnselect" update="contigExportToolbar" process="@this"/>
+                    <p:ajax event="toggleSelect" update="contigExportToolbar" process="@this"/>
+                    <p:ajax event="rowSelectCheckbox" update="contigExportToolbar" process="@this"/>
+                    <p:ajax event="rowUnselectCheckbox" update="contigExportToolbar" process="@this"/>
+                    <f:facet name="footer">
+                        <p:toolbar id="contigExportToolbar"  >
+                            <f:facet name="left">
+                                <p:commandButton value="Clear selection"  icon="ui-icon-cancel" action="#{mainBean.perLocationContigs.clearSelectedContigs()}" onstart="PF('blockContigList').show();"   
+                                                 oncomplete="PF('blockContigList').hide();" title="Clear record selection" disabled="#{!mainBean.perLocationContigs.somethingSelected()}" 
+                                                 update=":formSearch3:contigList" >                            
+                                </p:commandButton> 
+                                <p:spacer width="15" height="1" />
+                                <p:commandButton value="Save selected contig(s)"  icon="ui-icon-disk" onclick="PF('statusDialog').show();"   
+                                                 title="Save the selected IWGSC contig(s) to a FASTA file" disabled="#{!mainBean.perLocationContigs.somethingSelected()}" ajax="false" >                            
+                                    <p:fileDownload value="#{mainBean.perLocationContigs.exportFileWholeIWGSC}"     />                                
+                                </p:commandButton>
+                               
+                            </f:facet>
+                        </p:toolbar>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+
+        </p:dialog>
+
+
+
+<!--<p:slideMenu model="#{mainBean.menuModel}" style="width: 110pt" />-->
+        <!--<p:commandButton type="button" onclick="jQuery('.ui-row-toggler').click()" value="Expand/collapse gene annotation"  />-->
+
+
+        <h:form id="formCentre">
+
+
+
+            <p:dataTable var="gene" value="#{mainBean.selectedDataModel}" styleClass="myTable" selection="#{mainBean.selectedGenes}" rowSelectMode="add"
+                         id="dataTable" widgetVar="dataTable" filteredValue="#{mainBean.filteredGenes}" rowKey="#{gene.id}"  
+                         paginator="true" rows="5" paginatorAlwaysVisible="true" rowsPerPageTemplate="5,10,20,40,80,160,320" style="text-align: center"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowStyleClass="#{mainBean.contains(mainBean.userQuery, gene.geneId, gene.contig.contigId) ? 'highlighted' : null}" >
+                <p:ajax event="page" onstart="PF('block2Table').show();" oncomplete="PF('block2Table').hide();" />    
+                <f:facet name="header" >
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <h:outputText value="#{mainBean.currentChromosome}"  />
+                        </f:facet>
+                        <f:facet name="right">
+                            <h:outputText value="Global filter (all text fields on current chromosome):" />
+                            <p:inputText id="globalFilter" widgetVar="globalFilter" onkeyup="PF('dataTable').filter()" style="width:150px; color: #fd3506" 
+                                         placeholder="Enter keyword" value="#{mainBean.globalFilter}" onfocus="PF('dataTable').filter()"   />
+                            <p:commandButton id="filterbutton" icon="ui-icon-check" update="dataTable,:formCentre:chartsGrid"  onclick="PF('dataTable').filter()" />
+                            <p:commandButton id="clearbutton" icon="ui-icon-cancel" update="dataTable,:formCentre:chartsGrid" process="@this" action="#{mainBean.setGlobalFilter('')}" 
+                                             onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();PF('dataTable').filter()"/>                                  
+                        </f:facet>
+                    </p:toolbar>
+
+                </f:facet>
+                <p:columnGroup type="header" id="headerGroup" >   
+                    <p:row > 
+                        <p:column rowspan="2" width="30" selectionMode="multiple"  />
+                        <p:column rowspan="2" headerText="FPKMs"/>  
+                        <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}" filterFunction="#{mainBean.filterIgnoreCaseContains}" width="145"/>
+                        <p:column rowspan="2" headerText="Contig ID" filterBy="#{gene.contig.contigId}" filterFunction="#{mainBean.filterIgnoreCaseContains}" />
+                        <p:column rowspan="2" headerText="cM (corrected)" style="text-align: center"  >
+                            <f:facet name="header" >
+                                <h:outputText value="cM (corrected)" />
+                                <p:slider for="txt6,txt7" display="displayRange"  range="true" displayTemplate="Between {min} and {max}"  
+                                          minValue="#{mainBean.cM_filter.cM_corrected_min}" maxValue="#{mainBean.cM_filter.cM_corrected_max}" disabled="#{!mainBean.dataLoaded}" rendered="#{mainBean.dataLoaded}">   
+                                    <p:ajax event="slideEnd" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();PF('dataTable').filter()" update="dataTable" process="txt6,txt7,@this"/>
+                                </p:slider>
+                                <h:outputText id="displayRange" value="Between #{mainBean.cM_filter.cM_corrected_min_user} and #{mainBean.cM_filter.cM_corrected_max_user}" rendered="#{mainBean.dataLoaded}"  />
+                                <h:inputHidden id="txt6" value="#{mainBean.cM_filter.cM_corrected_min_user}" >
+                                    <f:converter converterId="javax.faces.Double" />
+                                </h:inputHidden>
+                                <h:inputHidden id="txt7" value="#{mainBean.cM_filter.cM_corrected_max_user}" >
+                                    <f:converter converterId="javax.faces.Double" />
+                                </h:inputHidden>
+                            </f:facet> 
+                        </p:column>  
+                        <p:column rowspan="2" headerText="cM (original)" style="text-align: center">
+                            <f:facet name="header">
+                                <h:outputText value="cM (original)" />
+                                <p:slider for="cMoriginalMin,cMoriginalMax" display="displayRangeOriginal"  range="true" displayTemplate="Between {min} and {max}"  rendered="#{mainBean.dataLoaded}"
+                                          minValue="#{mainBean.cM_filter.cM_original_min}" maxValue="#{mainBean.cM_filter.cM_original_max}" disabled="#{!mainBean.dataLoaded}">   
+                                    <p:ajax event="slideEnd" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" 
+                                            oncomplete="PF('blockUI').hide();PF('dataTable').filter()" update="dataTable" process="cMoriginalMin,cMoriginalMax,@this"/>
+                                </p:slider>
+                                <h:outputText id="displayRangeOriginal" value="Between #{mainBean.cM_filter.cM_original_min_user} and #{mainBean.cM_filter.cM_original_max_user}"  rendered="#{mainBean.dataLoaded}"/>
+                                <h:inputHidden id="cMoriginalMin" value="#{mainBean.cM_filter.cM_original_min_user}" >
+                                    <f:converter converterId="javax.faces.Double" />
+                                </h:inputHidden>
+                                <h:inputHidden id="cMoriginalMax" value="#{mainBean.cM_filter.cM_original_max_user}" >
+                                    <f:converter converterId="javax.faces.Double" />
+                                </h:inputHidden>
+                            </f:facet>
+                        </p:column> 
+                        <p:column colspan="3"  headerText="MIPS Annotation" style="color: peru" />
+                        <p:column colspan="2" headerText="Rice-derived Annotation"  style="color: mediumseagreen"/>
+                    </p:row>
+                    <p:row>
+                        <p:column headerText="Hit ID" style="color: peru" filterBy="#{gene.annotationMips.hitId}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>
+                        <p:column headerText="Description" style="color: peru" filterBy="#{gene.annotationMips.annotationString}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>                                        
+                        <p:column headerText="InterproID" style="color: peru; wrapClass1" filterBy="#{gene.annotationMips.interpro}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>
+                        <p:column headerText="Hit ID" style="color: mediumseagreen" filterBy="#{gene.annotationRice.hitId}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>
+                        <p:column headerText="Description" style="color: mediumseagreen" filterBy="#{gene.annotationRice.annotationString}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>
+                    </p:row>
+                </p:columnGroup>
+
+                <p:column selectionMode="multiple" width="30" exportable="false" />
+
+                <p:column exportable="false">  
+                    <p:blockUI block="dataTable" widgetVar="blockTable"   />
+                    <p:commandButton icon="ui-icon-newwin" id="view" value="View" onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide()" >
+                        <f:setPropertyActionListener value="#{gene}" target="#{mainBean.geneSelectedForDialogDisplay}"  />
+                    </p:commandButton>
+                    <p:commandButton icon="ui-icon-arrowthickstop-1-s" title="Add gene to FPKM charts display" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide()" 
+                                     action="#{mainBean.addGeneToDisplay(gene)}" update=":formCentre:chartsGrid"  />
+                </p:column>
+                <p:column> <h:outputText value="#{gene.geneId}"/></p:column>
+                <p:column> <h:outputText value="#{gene.contig.contigId}"  />  </p:column>
+                <p:column> 
+                    <h:outputText value="#{gene.contig.cM_corrected}  " />  
+
+                </p:column>
+                <p:column> <h:outputText value="#{gene.contig.cM_original}" /> </p:column>
+                <p:column> <h:outputText value="#{gene.annotationMips.getMipsHTML('peru')}" escape="false"/> </p:column> 
+                <p:column> <h:outputText value="#{gene.annotationMips.annotationString}" style="color: peru" /> </p:column>  
+                <p:column> 
+                    <h:outputText value="#{gene.annotationMips.getInterproHTML('peru')}"  escape="false"/>  
+                </p:column>  
+                <p:column> <h:outputText value="#{gene.annotationRice.getRiceHTML('mediumseagreen')}" escape="fasle" /> </p:column> 
+                <p:column> <h:outputText value="#{gene.annotationRice.annotationString}" style="color: mediumseagreen"/> </p:column>  
+
+                <p:ajax event="rowSelect" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid"/>  
+                <p:ajax event="rowUnselect" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid"/>
+                <p:ajax event="toggleSelect" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid"/>
+                <p:ajax event="rowSelectCheckbox" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid"/>
+                <p:ajax event="rowUnselectCheckbox" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid"/>
+
+                <f:facet name="footer"  > 
+                    <p:toolbar id="exportToolbar"  >
+                        <f:facet name="left">
+                            <p:blockUI block="dataTable" widgetVar="block2Table"    />
+                            <p:commandButton value="Add selected to charts display"  icon="ui-icon-arrowthickstop-1-s" action="#{mainBean.addSelectedGenesToDisplay()}" 
+                                             onstart="PF('blockUI').show();"   
+                                             oncomplete="PF('blockUI').hide();" title="Add selection to charts display" disabled="#{!mainBean.somethingSelected()}" 
+                                             update=":formCentre:chartsGrid" >                            
+                            </p:commandButton> 
+
+
+                            <p:spacer width="15" height="1" />
+                            <p:commandButton value="Clear selection"  icon="ui-icon-cancel" action="#{mainBean.clearSelectedGenes()}" onstart="PF('block2Table').show();"   
+                                             oncomplete="PF('block2Table').hide();" title="Clear record selection" disabled="#{!mainBean.somethingSelected()}" 
+                                             update="dataTable,:formCentre:chartsGrid" >                            
+                            </p:commandButton> 
+                            <p:spacer width="15" height="1" />
+                            <p:commandButton value="Save selected contig(s)"  icon="ui-icon-disk" onclick="PF('statusDialog').show();"   
+                                             title="Save the selected IWGSC contig(s) to a FASTA file" disabled="#{!mainBean.somethingSelected()}" ajax="false" >                            
+                                <p:fileDownload value="#{mainBean.exportFileWholeIWGSC}"     />                                
+                            </p:commandButton> 
+                        </f:facet>
+                        <f:facet name="right"> 
+                            <h:outputLabel value="Export " escape="false" style="vertical-align: middle;" />
+                            <p:selectOneMenu value="#{mainBean.toExport}" style="vertical-align: middle; text-align: left; width: 120px" disabled="#{!mainBean.dataLoaded}"   >
+                                <f:selectItem itemLabel="current page" itemValue="page" />
+                                <f:selectItem itemLabel="selected rows" itemValue="selected" />
+                                <f:selectItem itemLabel="whole table" itemValue="all"/>
+                                <p:ajax update="exportXLS"/>  
+                            </p:selectOneMenu>
+    <!--                        <h:commandLink id="exportCSV" disabled="#{mainBean.exportDsiabled()}" onclick="PF('statusDialog').show();">
+                                <p:graphicImage value="/images/csv_text.png" style="vertical-align: middle;" title="Export table to a CSV file (no headers or annotations)." rendered="#{!mainBean.exportDsiabled()}"/>
+                                <p:graphicImage value="/images/csv_text_grey.png" style="vertical-align: middle;" title="Export table to a CSV file (no headers or annotations)." rendered="#{mainBean.exportDsiabled()}"/>
+                                <p:dataExporter type="csv" target="dataTable" fileName="PopView_table_#{randomBean.getRandomFilename()}" pageOnly="#{mainBean.exportPageOnly()}" 
+                                                selectionOnly="#{mainBean.exportSelectedOnly()}"/>
+                            </h:commandLink>-->
+                            <h:commandLink id="exportXLS" disabled="#{mainBean.exportDsiabled()}" onclick="PF('statusDialog').show();">
+                                <p:graphicImage value="/images/excel3.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{!mainBean.exportDsiabled()}"/>
+                                <p:graphicImage value="/images/excel3grey2.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{mainBean.exportDsiabled()}"/>
+                                <p:dataExporter type="xls" target="dataTable" fileName="PopView_table_#{randomBean.getRandomFilename()}" pageOnly="#{mainBean.exportPageOnly()}"  
+                                                selectionOnly="#{mainBean.exportSelectedOnly()}" postProcessor="#{mainBean.postProcessXLS}"/> 
+                            </h:commandLink>
+                        </f:facet>
+                    </p:toolbar>
+                </f:facet>
+            </p:dataTable>
+
+
+            <p:confirmDialog  widgetVar="statusDialog" closable="true" severity="info" message="Download initiated, a file will become available shortly."  style="alignment-adjust: middle"  >                    
+                <p:commandButton value="OK" style="width: 100%" type="button" icon="ui-icon-check" onclick="PF('statusDialog').hide()"/> 
+            </p:confirmDialog>  
+
+
+            <p:spacer height="50" />
+
+            <p:dataGrid var="gene" value="#{mainBean.selectedGenesForChartDisplay}" columns="3" rows="6" paginator="true" id="chartsGrid" widgetVar="chartsGrid"
+                        emptyMessage="No genes selected for display." 
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                        rowsPerPageTemplate="3,6,9" lazy="true" >
+                <p:ajax event="page" onstart="PF('blockCharts').show();" oncomplete="PF('blockCharts').hide();" />   
+                <f:facet name="header" >
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <h:outputText value="FPKM charts for selected genes"  />
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:blockUI block="chartsGrid" widgetVar="blockCharts"    />
+                            <p:commandButton id="clearCharts" widgetVar="clearCharts" value="Clear charts display"  icon="ui-icon-cancel" action="#{mainBean.clearSelectedGenesForChartDisplay()}" onstart="PF('blockCharts').show();"   
+                                             oncomplete="PF('blockCharts').hide();" title="Clear charts display" disabled="#{mainBean.hasNoGenesSelectedForDisplay()}" 
+                                             update=":formCentre:chartsGrid"                             
+                                             /> 
+                        </f:facet>
+                    </p:toolbar>
+                </f:facet>
+                <p:panel header="#{gene.id}" style="text-align:center;"   >
+                    <p:chart type="bar" model="#{gene.barChartModel}"    >
+                        <p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>
+                    </p:chart>
+                    <f:facet name="actions" >
+                        <p:commandButton icon="ui-icon-trash" action="#{mainBean.removeFromChartDisplay(gene)}" onstart="PF('blockCharts').show();"   
+                                         oncomplete="PF('blockCharts').hide();" title="Remove chart" process=":formCentre:chartsGrid" 
+                                         update=":formCentre:chartsGrid" styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default"/>   
+                    </f:facet>
+                </p:panel>
+
+            </p:dataGrid>
+
+
+            <p:spacer height="150" />
+
+
+
+
+
+            <p:chart  type="bar"  rendered="false"/> 
+            <h:outputLabel  value="#{mainBean.generateDialogContainers()}"/>
+
+
+
+
+
+     <!--<h:outputText value="#{locationBean.cM_original}" />-->
+            <!--TODO: list of all contigs at this--> 
+
+            <p:remoteCommand name="updatechartsgrid"  update=":formCentre:chartsGrid" action="#{randomBean.getRandom(1)}" process=":formCentre:chartsGrid" />
+        </h:form>
+
+        <p:spacer />
+        <div class="footer">©&nbsp;Copyright&nbsp;2014&nbsp;
+            <a href="http://www.acpfg.com.au/">Australian&nbsp;Centre&nbsp;for&nbsp;Plant&nbsp;Functional&nbsp;Genomics</a></div>
+
+    </body>
+    <script type="text/javascript">
+        window.onresize = function(event) {
+            updatechartsgrid();
+        }
+    </script>
+</f:view>
+</html>
+
