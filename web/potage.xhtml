@@ -316,9 +316,12 @@
                 <p:columnGroup type="header" id="headerGroup" >   
                     <p:row > 
                         <p:column rowspan="2" width="30" selectionMode="multiple"  />
-                        <p:column rowspan="2" headerText="FPKMs"/>  
+                        <p:column rowspan="2" headerText="FPKMs" width="110"/>  
                         <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}"  filterFunction="#{mainBean.filterIgnoreCaseContains}" width="145"/>
-                        <p:column rowspan="2" headerText="Contig ID" filterBy="#{gene.contig.contigId}" filterFunction="#{mainBean.filterIgnoreCaseContains}" />
+                        <p:column rowspan="2" headerText="From"   width="30"/>
+                        <p:column rowspan="2" headerText="To"   width="30"/>
+                        <p:column rowspan="2" headerText="Strand"  width="30" />
+                        <p:column rowspan="2" headerText="Contig ID" filterBy="#{gene.contig.contigId}" filterFunction="#{mainBean.filterIgnoreCaseContains}" width="110"/>
                         <p:column rowspan="2" headerText="cM (corrected)" style="text-align: center"  >
                             <f:facet name="header" >
                                 <h:outputText value="cM (corrected)" />
@@ -375,6 +378,9 @@
                                      action="#{mainBean.addGeneToDisplay(gene)}" update=":formCentre:chartsGrid"  />
                 </p:column>
                 <p:column> <h:outputText value="#{gene.geneId}"/></p:column>
+                <p:column> <h:outputText value="#{gene.from}"/></p:column>
+                <p:column> <h:outputText value="#{gene.to}"/></p:column>
+                <p:column> <h:outputText value="#{gene.strand}"/></p:column>
                 <p:column> <h:outputText value="#{gene.contig.contigId}"  />  </p:column>
                 <p:column> 
                     <h:outputText value="#{gene.contig.cM_corrected}  " />  

@@ -72,7 +72,7 @@ public class MainPopsBean implements Serializable {
     private final String TRAES_CSS_MAP = "/home/rad/pops_data/Traes_to_CSS.map";
     private final String FPKMS = "/home/rad/pops_data/FPKMs/reordered/popseqed_genes_on_with_header.fpkms";
     private final String FPKMS_UNORDERED_GENES = "/home/rad/pops_data/FPKMs/reordered/unordered_genes_with_header.fpkms";
-    public final String TABLE_HEADERS = "Gene ID,Contig ID,cM (corrected),cM(original),MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
+    public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM (corrected),cM(original),MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
 
     private boolean autoDisplayCharts = true;
 

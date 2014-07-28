@@ -34,7 +34,7 @@ public class InputProcessor implements Serializable {
     private String chromosome;
 
     HashMap<String, ArrayList<String>> cssToTraesIdMap;
-    HashMap<String, String> traesToCssIdMap;
+    HashMap<String, String> traesOnCssMap;
 //    private ChartBean donutBean;
 
     public InputProcessor(String inputFileName, String queryId, int offset, String annotationFileName, String annotationRiceFileName,
@@ -43,7 +43,7 @@ public class InputProcessor implements Serializable {
         HashMap<String, String[]> mipsIdToAnnotationStringToksMap = buildAnnotationMap(annotationFileName, isRiceAnnotation);
         isRiceAnnotation = true;
         HashMap<String, String[]> mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(annotationRiceFileName, isRiceAnnotation);
-        cssToTraesIdMap = getCssToTraesIdMap(traesToCssMapFileName);
+        buildCssToTraesAndReverseMaps(traesToCssMapFileName);
         HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap = getGenesTissuesFPKMs(FPKMsFileName);
 
         chromosome = inputFileName.split("_")[2];
@@ -57,7 +57,7 @@ public class InputProcessor implements Serializable {
     }
 
     public InputProcessor(String traesToCssMapFileName) {
-        cssToTraesIdMap = getCssToTraesIdMap(traesToCssMapFileName);
+        cssToTraesIdMap = buildCssToTraesAndReverseMaps(traesToCssMapFileName);
     }
 
     public InputProcessor() {
@@ -181,11 +181,13 @@ public class InputProcessor implements Serializable {
                     //For each geneId on current contig, create Gene object with a ref to the contig it is derived from
 
                     if (wheatGeneIdsList == null) {
-                        Gene placeholderGene = new Gene(c.getContigId(), c, null, null, null, null);
+                        Gene placeholderGene = new Gene(c.getContigId(), c, null, null, null, null, null);
                         genes.add(placeholderGene);
                     } else {
                         for (String geneId : c.getWheatGeneIdsList()) {
-                            Gene g = new Gene(geneId, c, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false), getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true), genesTissuesFPKMsMap.get(geneId), fpkmTableHeaders);
+                            String entry = traesOnCssMap.get(geneId);
+                            Gene g = new Gene(geneId, c, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false), getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true), 
+                                    genesTissuesFPKMsMap.get(geneId), fpkmTableHeaders, entry);
                             genes.add(g);
                         }
                     }
@@ -214,8 +216,10 @@ public class InputProcessor implements Serializable {
         while (iterator.hasNext()) {
             String id = iterator.next();
             if (id.startsWith("Traes_" + chromosome)) {
-                Gene g = new Gene(id, new Contig(traesToCssIdMap.get(id)), getAnnotation(id, mipsIdToAnnotationStringToksMap, false), getAnnotation(id, mipsIdToRiceAnnotationStringToksMap, true),
-                        genesTissuesFPKMsMap.get(id), fpkmTableHeaders);
+                String entry = traesOnCssMap.get(id);
+                String contigId = entry.split(",")[1];
+                Gene g = new Gene(id, new Contig(contigId), getAnnotation(id, mipsIdToAnnotationStringToksMap, false), getAnnotation(id, mipsIdToRiceAnnotationStringToksMap, true),
+                        genesTissuesFPKMsMap.get(id), fpkmTableHeaders, entry);
                 genes.add(g);
             }
         }
@@ -273,11 +277,12 @@ public class InputProcessor implements Serializable {
         }
         if (foundIn == null) {
             if (traesCssMapFile != null) {
-                getCssToTraesIdMap(traesCssMapFile);
-                String id = traesToCssIdMap.get(queryId); 
-                if(id != null) {
+                buildCssToTraesAndReverseMaps(traesCssMapFile);
+                String entry = traesOnCssMap.get(queryId);
+                String id = entry.split(",")[1];
+                if (id != null) {
                     foundIn = id.split("_")[0].substring(0, 2);
-                } else if(cssToTraesIdMap.containsKey(queryId)){
+                } else if (cssToTraesIdMap.containsKey(queryId)) {
                     foundIn = queryId.split("_")[0].substring(0, 2);
                 }
             }
@@ -410,9 +415,9 @@ public class InputProcessor implements Serializable {
         return new Annotation(wheatGeneId, mipsIdToAnnotationStringToksMap, isRice);
     }
 
-    private HashMap<String, ArrayList<String>> getCssToTraesIdMap(String inputFileName) {
-        traesToCssIdMap = new HashMap<>();
-        HashMap<String, ArrayList<String>> cssToTraes = new HashMap<>(125000, 1);
+    private HashMap<String, ArrayList<String>> buildCssToTraesAndReverseMaps(String inputFileName) {
+        traesOnCssMap = new HashMap<>();
+        cssToTraesIdMap = new HashMap<>(125000, 1);
 //        System.out.println("Reading annotations file: " + inputFileName);
 
         File file = new File(inputFileName);
@@ -423,12 +428,12 @@ public class InputProcessor implements Serializable {
             while ((inputLine = myData.readLine()) != null) {
                 String toks[] = inputLine.split(",");
                 if (toks != null && toks.length > 1) {
-                    traesToCssIdMap.put(toks[0], toks[1]);
-                    ArrayList<String> storedGeneIds = cssToTraes.get(toks[1]);
+                    traesOnCssMap.put(toks[0], inputLine);
+                    ArrayList<String> storedGeneIds = cssToTraesIdMap.get(toks[1]);
                     if (storedGeneIds == null) {
                         ArrayList<String> geneIds = new ArrayList<>();
                         geneIds.add(toks[0]);
-                        cssToTraes.put(toks[1], geneIds);
+                        cssToTraesIdMap.put(toks[1], geneIds);
                     } else {
                         storedGeneIds.add(toks[0]);
                     }
@@ -448,7 +453,7 @@ public class InputProcessor implements Serializable {
                 ex.printStackTrace();
             }
         }
-        return cssToTraes;
+        return cssToTraesIdMap;
     }
 
 //    private HashMap<String, HashMap<String,Double>> getGenesTissuesFPKMsMap(String FPKMsFileName) {

@@ -25,17 +25,33 @@ public class Gene implements Serializable { //, Comparable<Contig> {
     private final Annotation annotationMips;
     private final Annotation annotationRice;
     private final ArrayList<Double> tissuesFPKMs;
-    
+
+    //location on contig
+    private final Integer from;
+    private final Integer to;
+    private final String strand;
+
     //for FPKM charts:
     private BarChartModel barChartModel;
     private final String[] fpkmTableHeaders;
 
-    public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<Double> tissuesFPKMs, String[] fpkmTableHeaders) {
+    public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<Double> tissuesFPKMs,
+            String[] fpkmTableHeaders, String traes_to_CSS_entry) {
         this.geneId = geneId;
         this.contig = contig;
         this.annotationMips = annotationMips;
         this.annotationRice = annotationRice;
         this.tissuesFPKMs = tissuesFPKMs;
+        if (traes_to_CSS_entry == null) {
+            this.from = null;
+            this.to = null;
+            this.strand = null;
+        } else {
+            String toks[] = traes_to_CSS_entry.split(",");
+            this.from = Integer.parseInt(toks[2]);
+            this.to = Integer.parseInt(toks[3]);
+            this.strand = toks[4].substring(0, 1);            
+        }
         this.fpkmTableHeaders = fpkmTableHeaders;
     }
 
@@ -103,6 +119,18 @@ public class Gene implements Serializable { //, Comparable<Contig> {
 
     public String[] getFpkmTableHeaders() {
         return fpkmTableHeaders;
+    }
+
+    public Integer getFrom() {
+        return from;
+    }
+
+    public Integer getTo() {
+        return to;
+    }
+
+    public String getStrand() {
+        return strand;
     }
     
     
