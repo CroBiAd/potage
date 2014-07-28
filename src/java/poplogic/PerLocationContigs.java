@@ -58,10 +58,10 @@ public class PerLocationContigs implements Serializable {
             cM_originalRange.add(c.getcM_original());
         } else { //risky way of collecting all cM positions (assumes input is sorted)
             Contig previous = contigs.get(contigs.size() - 1);
-            if (previous.getcM_corrected() != c.getcM_corrected()) {
+            if (previous.getcM_corrected() != c.getcM_corrected().doubleValue()) {
                 cM_correctedRange.add(c.getcM_corrected());
             }
-            if (previous.getcM_original() != c.getcM_original()) {
+            if (previous.getcM_original() != c.getcM_original().doubleValue()) {
                 cM_originalRange.add(c.getcM_original());
             }
         }
@@ -86,6 +86,9 @@ public class PerLocationContigs implements Serializable {
     }
 
     public ArrayList<Double> correctedRangePrefix(String prefix) {
+        if(prefix.equalsIgnoreCase("")) {
+            return cM_correctedRange;
+        }
         ArrayList<Double> corrected = new ArrayList<>();
         for (Double value : cM_correctedRange) {
             if (value.toString().startsWith(prefix)) {
@@ -96,7 +99,10 @@ public class PerLocationContigs implements Serializable {
     }
 
     public ArrayList<Double> originalRangePrefix(String prefix) {
-        ArrayList<Double> corrected = new ArrayList<>();
+         if(prefix.equalsIgnoreCase("")) {
+            return cM_originalRange;
+        }
+         ArrayList<Double> corrected = new ArrayList<>();
         for (Double value : cM_originalRange) {
             if (value.toString().startsWith(prefix)) {
                 corrected.add(reusable.CommonMaths.round(value, 3));
