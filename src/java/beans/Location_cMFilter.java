@@ -85,6 +85,9 @@ public class Location_cMFilter implements Serializable {
     }
 
     public boolean isWithinUserCoordinates(Double cM_corrected, Double cM_original) {
+        if(cM_corrected == null || cM_original == null) {
+            return false;
+        }
         return cM_corrected >= getcM_corrected_min_user() && cM_corrected <= getcM_corrected_max_user() && cM_original >= getcM_original_min_user() && cM_original <= getcM_original_max_user();
     }
 

@@ -71,6 +71,7 @@ public class MainPopsBean implements Serializable {
     private final String ANNOTATION = "/home/rad/pops_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
     private final String TRAES_CSS_MAP = "/home/rad/pops_data/Traes_to_CSS.map";
     private final String FPKMS = "/home/rad/pops_data/FPKMs/reordered/popseqed_genes_on_with_header.fpkms";
+    private final String FPKMS_UNORDERED_GENES = "/home/rad/pops_data/FPKMs/reordered/unordered_genes_with_header.fpkms";
     public final String TABLE_HEADERS = "Gene ID,Contig ID,cM (corrected),cM(original),MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
 
     private boolean autoDisplayCharts = true;
@@ -114,6 +115,9 @@ public class MainPopsBean implements Serializable {
     //display of non-gene contigs
     private PerLocationContigs perLocationContigs;
     private String chromosomeForNonGeneContigs;
+
+    //display unordered genes
+    private boolean appendUnordered;
 
     public MainPopsBean() {
         perLocationContigs = new PerLocationContigs(null, new Location_cMFilter());
@@ -254,6 +258,7 @@ public class MainPopsBean implements Serializable {
     }
 
     private void searchAll(String userQuery, String messageComponent) {
+        appendUnordered = true;
         RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", false);
         if (userQuery == null || userQuery.isEmpty()) {
             growl(FacesMessage.SEVERITY_FATAL, "Searching for nothing?!", "Consider inputting an identifier before clicking 'Search'", messageComponent);
@@ -261,19 +266,20 @@ public class MainPopsBean implements Serializable {
             boolean onlyDisplayContigsWithGenes = true;
             HashMap<String, String> fileNames = generateFileNames(onlyDisplayContigsWithGenes);
             InputProcessor ip = new InputProcessor(TRAES_CSS_MAP);
-            String foundIn = ip.quickFindQuery(fileNames, userQuery);
+            String foundIn = ip.quickFindQuery(fileNames, userQuery, TRAES_CSS_MAP);
+
             if (foundIn == null) {
                 growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered and gene containing contigs", messageComponent);
 //                growl(FacesMessage.SEVERITY_INFO, "Searching further", "on the remaingng POPSeq ordered contigs...", messageComponent);
                 onlyDisplayContigsWithGenes = false; //no search remaing popseqed contigs...
                 fileNames = generateFileNames(onlyDisplayContigsWithGenes);
-                foundIn = ip.quickFindQuery(fileNames, userQuery);
+                foundIn = ip.quickFindQuery(fileNames, userQuery, TRAES_CSS_MAP);
                 if (foundIn == null) {
                     growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered contigs", messageComponent);
                 } else {
                     chromosomeForNonGeneContigs = foundIn;
                     loadAllContigs();
-                    growl(FacesMessage.SEVERITY_INFO, "Further search...", "Query found among contigs ordered on "+foundIn+", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
+                    growl(FacesMessage.SEVERITY_INFO, "Further search...", "Query found among contigs ordered on " + foundIn + ", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
                     RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
 //                    perLocationContigs = ip.getContigsWithinRange(foundIn.split("\t")[0], Double.MIN_NORMAL, Double.MIN_NORMAL, Double.MAX_VALUE, Double.MAX_VALUE);
 //                    RequestContext.getCurrentInstance().update(":formSearch3:contigList");
@@ -287,7 +293,7 @@ public class MainPopsBean implements Serializable {
 
                 }
             } else {
-                String fileName = getInputFilename(foundIn, true); 
+                String fileName = getInputFilename(foundIn, true);
                 loadData(fileName);
 
                 final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
@@ -303,33 +309,6 @@ public class MainPopsBean implements Serializable {
                 growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
             }
         }
-    }
-
-    public void searchSeqAll(ActionEvent actionEvent) {
-        growl(FacesMessage.SEVERITY_FATAL, "Sorry!", "Search by sequence alignment not yet implemented", "searchMessages");
-//        if (userQuery == null || userQuery.isEmpty()) {
-//        } else {            
-//            ArrayList<String> filenames = new ArrayList<>();
-//            String genomes[] = {"A", "B", "D"};
-//            for (int i = 1; i < 8; i++) {
-//                String chromosome = "" + i;
-//                for (String g : genomes) {
-//                    String chromosomeString = chromosome + g;
-//                    filenames.add(getInputFilename(chromosomeString));
-//                }
-//            }
-//            InputProcessor ip = new InputProcessor(TRAES_CSS_MAP);
-//            String foundIn = ip.quickFindQuery(filenames, userQuery);
-//            if (foundIn == null) {
-//                growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered and gene containing contigs", "searchMessages");
-//            } else {
-//                loadData(foundIn);
-//                setGlobalFilter(userQuery);
-//                currentChromosome = foundIn.split("_")[2];
-//                growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, "searchMessages");
-////                growl(FacesMessage.SEVERITY_INFO, "Displaying...", userQuery + " POPSEQ anchoring of genes/contigs on chromosome " + foundIn., "tableMessages");
-//            }
-//        }
     }
 
     public String getUserQuery() {
@@ -493,9 +472,20 @@ public class MainPopsBean implements Serializable {
         }
     }
 
+    public void reload() {
+        if (currentChromosome != null) {
+            String fileName = getInputFilename(currentChromosome, true);
+            loadData(fileName);
+        }
+    }
+
     private void loadData(String fileName) {
 //            InputProcessor ip = new InputProcessor(fileName, null, Integer.MAX_VALUE, extContext.getRealPath(ANNOTATION));
-        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS);
+        String unordered = null;
+        if (appendUnordered) {
+            unordered = FPKMS_UNORDERED_GENES;
+        }
+        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered);
         fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
         ArrayList<Gene> inputList = inputProcessor.getGenes();
         if (inputList != null && !inputList.isEmpty()) {
@@ -628,8 +618,8 @@ public class MainPopsBean implements Serializable {
         ArrayList<Gene> genesWithinCoordinates = new ArrayList<>();
         if (loadedDataModel != null) {
             for (Gene gene : loadedDataModel) {
-                double cM_corrected = gene.getContig().getcM_corrected();
-                double cM_original = gene.getContig().getcM_original();
+                Double cM_corrected = gene.getContig().getcM_corrected();
+                Double cM_original = gene.getContig().getcM_original();
                 if (cM_filter.isWithinUserCoordinates(cM_corrected, cM_original)) {
                     genesWithinCoordinates.add(gene);
                 }
@@ -932,7 +922,6 @@ public class MainPopsBean implements Serializable {
 
             } else {
                 growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successfull", ":formSearch2:searchMessages2");
-                RequestContext.getCurrentInstance().getCallbackParams().put("showResults", true);
             }
         } else {
             growl(FacesMessage.SEVERITY_FATAL, "Error!", "No input sequeces!", "searchMessages");
@@ -978,6 +967,14 @@ public class MainPopsBean implements Serializable {
 
     public void updateComponent(String id) {
         RequestContext.getCurrentInstance().update(id);
+    }
+
+    public boolean isAppendUnordered() {
+        return appendUnordered;
+    }
+
+    public void setAppendUnordered(boolean appendUnordered) {
+        this.appendUnordered = appendUnordered;
     }
 
 }

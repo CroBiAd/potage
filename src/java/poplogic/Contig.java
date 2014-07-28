@@ -16,8 +16,8 @@ public class Contig implements Serializable { //, Comparable<Contig> {
     //wheat contig info
     private final String contigId;
     private final String popedAtChromosome;
-    private final double cM_corrected;
-    private final double cM_original;
+    private final Double cM_corrected;
+    private final Double cM_original;
 
 //    private long len;
    
@@ -33,6 +33,14 @@ public class Contig implements Serializable { //, Comparable<Contig> {
         this.cM_original = cM_original;
         this.wheatGeneIdsList = wheatGeneIdsList;
         this.genesTissuesFPKMsMap = genesTissuesFPKMsMap;
+    }
+    
+    public Contig(String contigId) {
+        this.contigId = contigId;
+        this.popedAtChromosome = null;
+        this.cM_corrected = null;
+        this.cM_original = null;
+        this.wheatGeneIdsList = null;
     }
 
 //    public Contig(String contigId, String popedAtChromosome, double cM_corrected, double cM_original, ArrayList<String> wheatGeneIdsList, 
@@ -55,11 +63,11 @@ public class Contig implements Serializable { //, Comparable<Contig> {
         return popedAtChromosome;
     }
 
-    public double getcM_corrected() {
+    public Double getcM_corrected() {
         return cM_corrected;
     }
 
-    public double getcM_original() {
+    public Double getcM_original() {
         return cM_original;
     }
 

@@ -89,7 +89,7 @@
 
 
         <p:dialog  id="searchSeqDialog" header="Search all chromosomes by aligning a sequence" widgetVar="searchSeqPanel" modal="false" position="80,140" minimizable="true" 
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="450">
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="550">
 
             <h:form id="formSearch2">
                 <p:tabView id="tabView" activeIndex="#{mainBean.seqSearchTabActive}"    >
@@ -101,7 +101,7 @@
                             <f:facet name="right">
                                 <p:commandButton  value="Search" id="searchSeqButton" actionListener="#{mainBean.sequenceSearchEventHandler}" icon="ui-icon-search" 
                                                   onstart="PF('blockUI').show();"  
-                                                  oncomplete="if(args.showResults){}if(args.showXML){PF('dlgxml').show();}PF('blockUI').hide();"
+                                                  oncomplete="PF('blockUI').hide();"
                                                   update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" />                        
                                 <p:commandButton value="Clear" id="clearSeqSearch" icon="ui-icon-cancel" update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" process="@this" actionListener="#{mainBean.clearFileContentString()}" oncomplete="PF('dataTable').filter();" />
                             </f:facet>
@@ -137,16 +137,16 @@
                         <h:panelGrid columns="2" cellpadding="4">  
                         </h:panelGrid>  
 
-                        <p:dataTable var="hit" value="#{mainBean.hitsDataModel}" paginator="true" rows="10"  selectionMode="single"
+                        <p:dataTable var="hit" value="#{mainBean.hitsDataModel}" paginator="true" rows="5"  selectionMode="single"
                                      selection="#{mainBean.selectedHit}" paginatorAlwaysVisible="false" >  
                             <f:facet name="header">  
                                 <h:outputText value="#{mainBean.selectedQuery.getNumbPromotersB()} hits retrieved for the selected query : #{mainBean.selectedQuery.queryId}" escape="false"/>
                             </f:facet>  
-                            <p:ajax event="rowSelect" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();"  
-                                    update=":formCentre:dataTable,:formSearch:idInput,:formSearch2:searchMessages2,:formCentre:chartsGrid" />
+                            <p:ajax event="rowSelect" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()}"  
+                                    update=":formCentre:dataTable,:formSearch:idInput,:formSearch2:searchMessages2,:formCentre:chartsGrid,:formSearch3:contigList" />
                             <p:column style="width:7%" >
-                                <p:commandButton id="selectButton3" icon="ui-icon-search" update=":formCentre:dataTable,:formSearch:idInput,:formSearch2:searchMessages2,:formCentre:chartsGrid" 
-                                                 onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();">
+                                <p:commandButton id="selectButton3" icon="ui-icon-search" update=":formCentre:dataTable,:formSearch:idInput,:formSearch2:searchMessages2,:formCentre:chartsGrid,:formSearch3:contigList" 
+                                                 onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()}">
                                     <f:setPropertyActionListener value="#{hit}" target="#{mainBean.selectedHit}" />
                                 </p:commandButton>                            
                             </p:column>
@@ -173,13 +173,13 @@
                         </p:dataTable>  
                     </p:tab>
                 </p:tabView>
-                <p:messages id="searchMessages2" showDetail="true"  closable="true" redisplay="false"   />
+                <p:messages id="searchMessages2" showDetail="true"  closable="true" redisplay="false"     />
             </h:form>
         </p:dialog> 
 
 
 
-        <p:dialog  id="allContigsDialog" header="All contigs within a cM range..." widgetVar="allContigsDialog" modal="false" minimizable="true"  position="800,140"
+        <p:dialog  id="allContigsDialog" header="All contigs within a cM range..." widgetVar="allContigsDialog" modal="false" minimizable="true"  position="800,120"
                    showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="700">
 
             <h:form id="formSearch3">
@@ -266,7 +266,7 @@
                                                  title="Save the selected IWGSC contig(s) to a FASTA file" disabled="#{!mainBean.perLocationContigs.somethingSelected()}" ajax="false" >                            
                                     <p:fileDownload value="#{mainBean.perLocationContigs.exportFileWholeIWGSC}"     />                                
                                 </p:commandButton>
-                               
+
                             </f:facet>
                         </p:toolbar>
                     </f:facet>
@@ -294,6 +294,12 @@
                 <f:facet name="header" >
                     <p:toolbar>
                         <f:facet name="left">
+                            <h:outputText value="Append unordered genes to the end of the table "/>
+                            <p:selectBooleanButton value="#{mainBean.appendUnordered}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
+                                <p:ajax update="dataTable" listener="#{mainBean.reload()}"  onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();"/>
+                            </p:selectBooleanButton>
+                            <p:spacer height="0" width="30"/>
+                            <p:separator />
                             <h:outputText value="#{mainBean.currentChromosome}"  />
                         </f:facet>
                         <f:facet name="right">

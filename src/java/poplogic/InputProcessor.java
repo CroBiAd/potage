@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -29,22 +30,30 @@ public class InputProcessor implements Serializable {
     private Integer queryFoundAtMax;
     private String[] fpkmTableHeaders;
 
-    
     private Location_cMFilter cM_filter;
+    private String chromosome;
 
     HashMap<String, ArrayList<String>> cssToTraesIdMap;
+    HashMap<String, String> traesToCssIdMap;
 //    private ChartBean donutBean;
 
     public InputProcessor(String inputFileName, String queryId, int offset, String annotationFileName, String annotationRiceFileName,
-            String traesToCssMapFileName, String FPKMsFileName) {
+            String traesToCssMapFileName, String FPKMsFileName, String FPKMsFileNameUnordered) {
         boolean isRiceAnnotation = false;
         HashMap<String, String[]> mipsIdToAnnotationStringToksMap = buildAnnotationMap(annotationFileName, isRiceAnnotation);
         isRiceAnnotation = true;
         HashMap<String, String[]> mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(annotationRiceFileName, isRiceAnnotation);
-        HashMap<String, ArrayList<String>> cssToTraesIdMap = getCssToTraesIdMap(traesToCssMapFileName);
+        cssToTraesIdMap = getCssToTraesIdMap(traesToCssMapFileName);
         HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap = getGenesTissuesFPKMs(FPKMsFileName);
 
+        chromosome = inputFileName.split("_")[2];
         processInput(inputFileName, queryId, mipsIdToAnnotationStringToksMap, mipsIdToRiceAnnotationStringToksMap, cssToTraesIdMap, genesTissuesFPKMsMap);
+
+        //IF we want the unordered genes to be included as well
+        if (FPKMsFileNameUnordered != null) {
+            HashMap<String, ArrayList<Double>> unorderedGenesTissuesFPKMsMap = getGenesTissuesFPKMs(FPKMsFileNameUnordered);
+            addUnorderedGenes(mipsIdToAnnotationStringToksMap, mipsIdToRiceAnnotationStringToksMap, unorderedGenesTissuesFPKMsMap);
+        }
     }
 
     public InputProcessor(String traesToCssMapFileName) {
@@ -58,7 +67,6 @@ public class InputProcessor implements Serializable {
         return cM_filter;
     }
 
-    
 //
 //    public ChartBean getDonutBean() {
 //        if (donutBean == null) {
@@ -200,7 +208,20 @@ public class InputProcessor implements Serializable {
         }
     }
 
-    public String quickFindQuery(HashMap<String, String> filenames, String queryId) {
+    private void addUnorderedGenes(HashMap<String, String[]> mipsIdToAnnotationStringToksMap,
+            HashMap<String, String[]> mipsIdToRiceAnnotationStringToksMap, HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap) {
+        Iterator<String> iterator = genesTissuesFPKMsMap.keySet().iterator();
+        while (iterator.hasNext()) {
+            String id = iterator.next();
+            if (id.startsWith("Traes_" + chromosome)) {
+                Gene g = new Gene(id, new Contig(traesToCssIdMap.get(id)), getAnnotation(id, mipsIdToAnnotationStringToksMap, false), getAnnotation(id, mipsIdToRiceAnnotationStringToksMap, true),
+                        genesTissuesFPKMsMap.get(id), fpkmTableHeaders);
+                genes.add(g);
+            }
+        }
+    }
+
+    public String quickFindQuery(HashMap<String, String> filenames, String queryId, String traesCssMapFile) {
         String foundIn = null;
         for (Map.Entry<String, String> entry : filenames.entrySet()) {
             String chr = entry.getKey();
@@ -221,7 +242,7 @@ public class InputProcessor implements Serializable {
                     if (toks != null && toks.length > 1) {
                         if (toks[0].equals(queryId)) {
                             foundIn = chr;// inputFileName + "\t" + inputLine;
-                            break readFile;
+                            break;
                         } else {
                             ArrayList<String> wheatGeneIdsList = cssToTraesIdMap.get(toks[0]);
                             if (wheatGeneIdsList != null) {
@@ -250,6 +271,18 @@ public class InputProcessor implements Serializable {
                 }
             }
         }
+        if (foundIn == null) {
+            if (traesCssMapFile != null) {
+                getCssToTraesIdMap(traesCssMapFile);
+                String id = traesToCssIdMap.get(queryId); 
+                if(id != null) {
+                    foundIn = id.split("_")[0].substring(0, 2);
+                } else if(cssToTraesIdMap.containsKey(queryId)){
+                    foundIn = queryId.split("_")[0].substring(0, 2);
+                }
+            }
+        }
+
         return foundIn;
     }
 
@@ -275,7 +308,7 @@ public class InputProcessor implements Serializable {
                     cM_filter.add_cM_valuesToMinMax(locationCorrected, locationOriginal);
                     contigs.addContig(new Contig(toks[0], chromosome, locationCorrected, locationOriginal, null, null));
                 }
-            }            
+            }
         } catch (FileNotFoundException ex) {
             System.err.println("File not found exception!\t" + file.getName());
         } catch (IOException ex) {
@@ -326,7 +359,6 @@ public class InputProcessor implements Serializable {
 //        }
 //        return contigs;
 //    }
-
     private HashMap<String, String[]> buildAnnotationMap(String inputFileName, boolean isRiceAnnotation) {
         HashMap<String, String[]> annotationMap = new HashMap<>(125000, 1);
 //        System.out.println("Reading annotations file: " + inputFileName);
@@ -379,6 +411,7 @@ public class InputProcessor implements Serializable {
     }
 
     private HashMap<String, ArrayList<String>> getCssToTraesIdMap(String inputFileName) {
+        traesToCssIdMap = new HashMap<>();
         HashMap<String, ArrayList<String>> cssToTraes = new HashMap<>(125000, 1);
 //        System.out.println("Reading annotations file: " + inputFileName);
 
@@ -390,6 +423,7 @@ public class InputProcessor implements Serializable {
             while ((inputLine = myData.readLine()) != null) {
                 String toks[] = inputLine.split(",");
                 if (toks != null && toks.length > 1) {
+                    traesToCssIdMap.put(toks[0], toks[1]);
                     ArrayList<String> storedGeneIds = cssToTraes.get(toks[1]);
                     if (storedGeneIds == null) {
                         ArrayList<String> geneIds = new ArrayList<>();
@@ -512,8 +546,5 @@ public class InputProcessor implements Serializable {
         }
         return genesTissuesFPKMsMap;
     }
-
-    
-
 
 }
