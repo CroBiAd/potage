@@ -264,7 +264,7 @@ public class MainPopsBean implements Serializable {
             String foundIn = ip.quickFindQuery(fileNames, userQuery);
             if (foundIn == null) {
                 growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered and gene containing contigs", messageComponent);
-                growl(FacesMessage.SEVERITY_INFO, "Searching further", "on the remaingng POPSeq ordered contigs...", messageComponent);
+//                growl(FacesMessage.SEVERITY_INFO, "Searching further", "on the remaingng POPSeq ordered contigs...", messageComponent);
                 onlyDisplayContigsWithGenes = false; //no search remaing popseqed contigs...
                 fileNames = generateFileNames(onlyDisplayContigsWithGenes);
                 foundIn = ip.quickFindQuery(fileNames, userQuery);
@@ -273,7 +273,7 @@ public class MainPopsBean implements Serializable {
                 } else {
                     chromosomeForNonGeneContigs = foundIn;
                     loadAllContigs();
-                    growl(FacesMessage.SEVERITY_INFO, "Success!", foundIn, messageComponent);
+                    growl(FacesMessage.SEVERITY_INFO, "Further search...", "Query found among contigs ordered on "+foundIn+", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
                     RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
 //                    perLocationContigs = ip.getContigsWithinRange(foundIn.split("\t")[0], Double.MIN_NORMAL, Double.MIN_NORMAL, Double.MAX_VALUE, Double.MAX_VALUE);
 //                    RequestContext.getCurrentInstance().update(":formSearch3:contigList");
@@ -287,7 +287,7 @@ public class MainPopsBean implements Serializable {
 
                 }
             } else {
-                String fileName = foundIn;//.split("\t")[0];
+                String fileName = getInputFilename(foundIn, true); 
                 loadData(fileName);
 
                 final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
@@ -875,7 +875,7 @@ public class MainPopsBean implements Serializable {
         }
     }
 
-    public void submitActionEventHandler(ActionEvent actionEvent) {
+    public void sequenceSearchEventHandler(ActionEvent actionEvent) {
         Date submitTime = new Date();
         if (sequences != null && !sequences.isEmpty()) {
 
@@ -913,7 +913,7 @@ public class MainPopsBean implements Serializable {
                 for (StackTraceElement ste : e.getStackTrace()) {
                     s.append("\n").append(ste.toString());
                 }
-                reusable.ExecProcessor.email(s.toString(), "PopsView FATAL exception!", "radoslaw.suchecki@acpfg.com.au", "no-reply@hathor.acpfg.local");
+                reusable.ExecProcessor.email(s.toString(), "POTAGE FATAL exception!", "radoslaw.suchecki@acpfg.com.au", "no-reply@hathor.acpfg.local");
                 growl(FacesMessage.SEVERITY_FATAL, "Fatal error!", "Alignment failed!", ":formSearch2:searchMessages2");
                 setSeqSearchTabActive("0");
             }
@@ -948,7 +948,7 @@ public class MainPopsBean implements Serializable {
         }
         sb.append("\nJob submitted: ").append(submitTime).append("\n");;
         sb.append("\nJob completed: ").append(new Date()).append("\n");
-        sb.append("\nContact radoslaw.suchecki@acpfg.com.au with questions or comments about the PopsView application. \n\n"
+        sb.append("\nContact radoslaw.suchecki@acpfg.com.au with questions or comments about the POTAGE application. \n\n"
                 + "ACPFG Bioinformatics Group "
                 //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
                 //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "

@@ -13,7 +13,7 @@
 
             <f:facet name="first">
                 <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
-                <title>PopsView</title>
+                <title>POTAGE - Popseq Ordered Triticum Aestivum Gene Expression</title>
             </f:facet>
 
 
@@ -99,7 +99,7 @@
                                 <p:commandButton  id="uploadButton" value="Upload FASTA file..." icon="ui-icon-arrowreturnthick-1-s" onclick="PF('uploadPanel').show();" /> 
                             </f:facet>                                    
                             <f:facet name="right">
-                                <p:commandButton  value="Search" id="searchSeqButton" actionListener="#{mainBean.submitActionEventHandler}" icon="ui-icon-search" 
+                                <p:commandButton  value="Search" id="searchSeqButton" actionListener="#{mainBean.sequenceSearchEventHandler}" icon="ui-icon-search" 
                                                   onstart="PF('blockUI').show();"  
                                                   oncomplete="if(args.showResults){}if(args.showXML){PF('dlgxml').show();}PF('blockUI').hide();"
                                                   update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" />                        
@@ -311,7 +311,7 @@
                     <p:row > 
                         <p:column rowspan="2" width="30" selectionMode="multiple"  />
                         <p:column rowspan="2" headerText="FPKMs"/>  
-                        <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}" filterFunction="#{mainBean.filterIgnoreCaseContains}" width="145"/>
+                        <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}"  filterFunction="#{mainBean.filterIgnoreCaseContains}" width="145"/>
                         <p:column rowspan="2" headerText="Contig ID" filterBy="#{gene.contig.contigId}" filterFunction="#{mainBean.filterIgnoreCaseContains}" />
                         <p:column rowspan="2" headerText="cM (corrected)" style="text-align: center"  >
                             <f:facet name="header" >

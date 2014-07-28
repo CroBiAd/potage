@@ -33,7 +33,7 @@ public class LoginController  implements Serializable{
 
          FacesContext fc = FacesContext.getCurrentInstance();
          ConfigurableNavigationHandler nav = (ConfigurableNavigationHandler)fc.getApplication().getNavigationHandler();
-         nav.performNavigation("popsview.xhtml");
+         nav.performNavigation("potage.xhtml");
     
     }
 
