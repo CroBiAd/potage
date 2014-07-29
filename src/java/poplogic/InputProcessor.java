@@ -186,7 +186,7 @@ public class InputProcessor implements Serializable {
                     } else {
                         for (String geneId : c.getWheatGeneIdsList()) {
                             String entry = traesOnCssMap.get(geneId);
-                            Gene g = new Gene(geneId, c, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false), getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true), 
+                            Gene g = new Gene(geneId, c, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false), getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true),
                                     genesTissuesFPKMsMap.get(geneId), fpkmTableHeaders, entry);
                             genes.add(g);
                         }
@@ -279,8 +279,8 @@ public class InputProcessor implements Serializable {
             if (traesCssMapFile != null) {
                 buildCssToTraesAndReverseMaps(traesCssMapFile);
                 String entry = traesOnCssMap.get(queryId);
-                String id = entry.split(",")[1];
-                if (id != null) {
+                if (entry != null) {
+                    String id = entry.split(",")[1];
                     foundIn = id.split("_")[0].substring(0, 2);
                 } else if (cssToTraesIdMap.containsKey(queryId)) {
                     foundIn = queryId.split("_")[0].substring(0, 2);
