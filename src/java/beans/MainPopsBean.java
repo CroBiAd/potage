@@ -77,11 +77,12 @@ public class MainPopsBean implements Serializable {
     private boolean autoDisplayCharts = true;
 
     private String currentChromosome;
-    private GeneDataModel selectedDataModel;
-    private GeneDataModel loadedDataModel;
+//    private GeneDataModel selectedDataModel;
+//    private GeneDataModel loadedDataModel;
+    private ArrayList<Gene> loadedGenes;
     private List<Gene> selectedGenes;
     private ArrayList<Gene> selectedGenesForChartDisplay;
-    private List<Gene> filteredGenes;
+    private ArrayList<Gene> filteredGenes;
 
     private Location_cMFilter cM_filter;
 
@@ -297,7 +298,8 @@ public class MainPopsBean implements Serializable {
                 loadData(fileName);
 
                 final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
-                Integer rowIndex = loadedDataModel.getRowIndex(userQuery);
+//                Integer rowIndex = loadedDataModel.getRowIndex(userQuery);
+                Integer rowIndex = getIndexOfQuery(userQuery);
 
                 //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
                 int rows = d.getRows();
@@ -468,7 +470,8 @@ public class MainPopsBean implements Serializable {
             String fileName = getInputFilename(chrmArm, true);
             loadData(fileName);
         } else {
-            loadedDataModel = null; //putting in a dummy
+//            loadedDataModel = null; //putting in a dummy
+            loadedGenes = null;
         }
     }
 
@@ -490,20 +493,12 @@ public class MainPopsBean implements Serializable {
         ArrayList<Gene> inputList = inputProcessor.getGenes();
         if (inputList != null && !inputList.isEmpty()) {
 //                selectedDataModel = new GeneDataModel(inputList);
-            loadedDataModel = new GeneDataModel(inputProcessor);
+//            loadedDataModel = new GeneDataModel(inputProcessor);
+            loadedGenes = inputList;
             cM_filter = inputProcessor.getcM_filter();
-//            cM_filter = new Location_cMFilter();
-//            cM_filter.setcM_corrected_min_user(inputProcessor.getcM_corrected_min());
-//            cM_filter.setcM_corrected_max_user(inputProcessor.getcM_corrected_max());
-//            cM_filter.setcM_corrected_min(inputProcessor.getcM_corrected_min());
-//            cM_filter.setcM_corrected_max(inputProcessor.getcM_corrected_max());
-//            cM_filter.setcM_original_min_user(inputProcessor.getcM_original_min());
-//            cM_filter.setcM_original_max_user(inputProcessor.getcM_original_max());
-//            cM_filter.setcM_original_min(inputProcessor.getcM_original_min());
-//            cM_filter.setcM_original_max(inputProcessor.getcM_original_max());
             filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
             selectedGenes = null;
-            selectedDataModel = loadedDataModel;
+//            selectedDataModel = loadedDataModel;
 //                updateDisplayedContigs(); //by default only dispaly contigs with genes not all
         }
 
@@ -520,10 +515,9 @@ public class MainPopsBean implements Serializable {
 
     }
 
-    public GeneDataModel getSelectedDataModel() {
-        return selectedDataModel;
-    }
-
+//    public GeneDataModel getSelectedDataModel() {
+//        return selectedDataModel;
+//    }
     public List<Gene> getSelectedGenes() {
         return selectedGenes;
     }
@@ -600,7 +594,18 @@ public class MainPopsBean implements Serializable {
     }
 
     public void setFilteredGenes(List<Gene> filteredGenes) {
-        this.filteredGenes = filteredGenes;
+        this.filteredGenes = (ArrayList<Gene>) filteredGenes;
+    }
+
+    public void resetFilter() {
+//        selectedDataModel = loadedDataModel;
+        cM_filter.resetFilter();
+        setFilteredGenes(null);
+        setSelectedGenes(null);
+    }
+
+    public boolean isFiltered() {
+        return filteredGenes != null;
     }
 
     public boolean filterIgnoreCaseContains(Object value, Object filter, Locale locale) {
@@ -615,16 +620,25 @@ public class MainPopsBean implements Serializable {
     }
 
     public void filterByCm() {
-        ArrayList<Gene> genesWithinCoordinates = new ArrayList<>();
-        if (loadedDataModel != null) {
-            for (Gene gene : loadedDataModel) {
+        if (loadedGenes != null) {
+            ArrayList<Gene> preFilterGenes = loadedGenes;
+            ArrayList<Gene> postFilterGenes = new ArrayList<>();
+            if (filteredGenes == null || filteredGenes.isEmpty()) {
+                filteredGenes = new ArrayList<>();
+            } else {
+                preFilterGenes = filteredGenes;
+            }
+
+            for (Gene gene : preFilterGenes) {
                 Double cM_corrected = gene.getContig().getcM_corrected();
                 Double cM_original = gene.getContig().getcM_original();
                 if (cM_filter.isWithinUserCoordinates(cM_corrected, cM_original)) {
-                    genesWithinCoordinates.add(gene);
+//                    genesWithinCoordinates.add(gene);
+                    postFilterGenes.add(gene);
                 }
             }
-            selectedDataModel = new GeneDataModel(loadedDataModel, genesWithinCoordinates);
+            filteredGenes = postFilterGenes;
+//            selectedDataModel = new GeneDataModel(loadedDataModel, genesWithinCoordinates);
 
             //reset selection to prevent erratic behaviour (e.g. first elem in the table remains selected even though it is a different elem due to cM restriction
             selectedGenes = null;
@@ -641,7 +655,8 @@ public class MainPopsBean implements Serializable {
 //        }
 //    }
     public boolean isDataLoaded() {
-        if (selectedDataModel != null) {
+//        if (selectedDataModel != null) {
+        if (loadedGenes != null) {
             return true;
         }
         return false;
@@ -975,6 +990,22 @@ public class MainPopsBean implements Serializable {
 
     public void setAppendUnordered(boolean appendUnordered) {
         this.appendUnordered = appendUnordered;
+    }
+
+    public Integer getIndexOfQuery(String key) {
+        Integer idx = null;
+        for (int i = 0; i < loadedGenes.size(); i++) {
+            Gene current = loadedGenes.get(i);
+            if (current.getId().equalsIgnoreCase(key) || current.getContig().getId().equals(key)) {
+                idx = i;
+                break;
+            }
+        }
+        return idx;
+    }
+
+    public ArrayList<Gene> getLoadedGenes() {
+        return loadedGenes;
     }
 
 }

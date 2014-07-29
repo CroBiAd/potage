@@ -26,17 +26,12 @@ public class PerLocationContigs implements Serializable {
     private final String chromosome;
     private final Location_cMFilter cM_filterForNonGeneContigs;
     private StreamedContent exportFileWholeIWGSC;
-    
-    //for contigs without genes - good to have the range of available cM locations for autocomplete
-    private final ArrayList<Double> cM_correctedRange;
-    private final ArrayList<Double> cM_originalRange;
 
     public PerLocationContigs(String chromosome, Location_cMFilter cM_filterForNonGeneContigs) {
         this.chromosome = chromosome;
         this.contigs = new ArrayList<>();
         this.filteredContigs = null;
-        this.cM_correctedRange = new ArrayList<>();
-        this.cM_originalRange = new ArrayList<>();
+
         this.cM_filterForNonGeneContigs = cM_filterForNonGeneContigs;
     }
 
@@ -53,18 +48,18 @@ public class PerLocationContigs implements Serializable {
 //        cM_filterForNonGeneContigs = new Location_cMFilter();
 //    }
     public void addContig(Contig c) {
-        if (contigs.isEmpty()) {
-            cM_correctedRange.add(c.getcM_corrected());
-            cM_originalRange.add(c.getcM_original());
-        } else { //risky way of collecting all cM positions (assumes input is sorted)
-            Contig previous = contigs.get(contigs.size() - 1);
-            if (previous.getcM_corrected() != c.getcM_corrected().doubleValue()) {
-                cM_correctedRange.add(c.getcM_corrected());
-            }
-            if (previous.getcM_original() != c.getcM_original().doubleValue()) {
-                cM_originalRange.add(c.getcM_original());
-            }
-        }
+//        if (contigs.isEmpty()) {
+//            getcM_correctedRange().add(c.getcM_corrected());
+//            getcM_originalRange().add(c.getcM_original());
+//        } else { //risky way of collecting all cM positions (assumes input is sorted)
+//            Contig previous = contigs.get(contigs.size() - 1);
+//            if (previous.getcM_corrected() != c.getcM_corrected().doubleValue()) {
+//                getcM_correctedRange().add(c.getcM_corrected());
+//            }
+//            if (previous.getcM_original() != c.getcM_original().doubleValue()) {
+//                getcM_originalRange().add(c.getcM_original());
+//            }
+//        }
         contigs.add(c);
     }
 
@@ -86,37 +81,19 @@ public class PerLocationContigs implements Serializable {
     }
 
     public ArrayList<Double> correctedRangePrefix(String prefix) {
-        if(prefix.equalsIgnoreCase("")) {
-            return cM_correctedRange;
-        }
-        ArrayList<Double> corrected = new ArrayList<>();
-        for (Double value : cM_correctedRange) {
-            if (value.toString().startsWith(prefix)) {
-                corrected.add(reusable.CommonMaths.round(value, 3));
-            }
-        }
-        return corrected;
+        return cM_filterForNonGeneContigs.correctedRangePrefix(prefix);
     }
 
     public ArrayList<Double> originalRangePrefix(String prefix) {
-         if(prefix.equalsIgnoreCase("")) {
-            return cM_originalRange;
-        }
-         ArrayList<Double> corrected = new ArrayList<>();
-        for (Double value : cM_originalRange) {
-            if (value.toString().startsWith(prefix)) {
-                corrected.add(reusable.CommonMaths.round(value, 3));
-            }
-        }
-        return corrected;
+        return cM_filterForNonGeneContigs.originalRangePrefix(prefix);
     }
 
     public ArrayList<Double> getcM_correctedRange() {
-        return cM_correctedRange;
+        return cM_filterForNonGeneContigs.getcM_correctedRange();
     }
 
     public ArrayList<Double> getcM_originalRange() {
-        return cM_originalRange;
+        return cM_filterForNonGeneContigs.getcM_originalRange();
     }
 
     public String getChromosome() {
@@ -124,6 +101,7 @@ public class PerLocationContigs implements Serializable {
     }
 
     public void resetFilter() {
+        cM_filterForNonGeneContigs.resetFilter();
         setFilteredContigs(null);
     }
 
@@ -199,17 +177,17 @@ public class PerLocationContigs implements Serializable {
         exportWholeIWGSCFile();
         return exportFileWholeIWGSC;
     }
-    
+
     public Integer getIndexOfContig(String contigId) {
         Integer idx = null;
         for (int i = 0; i < contigs.size(); i++) {
             String id = contigs.get(i).getId();
-            if(id.equalsIgnoreCase(contigId)){
+            if (id.equalsIgnoreCase(contigId)) {
                 idx = i;
                 break;
             }
         }
         return idx;
     }
-    
+
 }

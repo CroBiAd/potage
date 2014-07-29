@@ -180,7 +180,7 @@
 
 
         <p:dialog  id="allContigsDialog" header="All contigs within a cM range..." widgetVar="allContigsDialog" modal="false" minimizable="true"  position="800,120"
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="700">
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="550">
 
             <h:form id="formSearch3">
                 <p:spacer height="10" width="0" />
@@ -188,7 +188,7 @@
                 <p:dataTable id="contigList" widgetVar="contigList" value="#{mainBean.perLocationContigs.contigs}" var="contig" styleClass="paginated"
                              filteredValue="#{mainBean.perLocationContigs.filteredContigs}" 
                              selection="#{mainBean.perLocationContigs.selectedContigs}" rowKey="#{contig.id}"  rowSelectMode="add"
-                             paginator="true" rows="15" paginatorAlwaysVisible="true"  style="text-align: center" 
+                             paginator="true" rows="10" paginatorAlwaysVisible="true"  style="text-align: center" 
                              rowStyleClass="#{mainBean.contains(mainBean.userQuery, contig.contigId) ? 'highlighted' : null}"
                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
                     <f:facet name="header">
@@ -201,7 +201,7 @@
                                 </p:autoComplete> 
                             </f:facet>
                             <f:facet name="right">
-                                <p:commandButton title="Reset cM filtering" value="Reset cM filtering" id="resetbutton" icon="ui-icon-cancel" update=":formSearch3:contigList" process="@this" action="#{mainBean.perLocationContigs.resetFilter()}" 
+                                <p:commandButton title="Reset cM filtering" value="Reset cM filtering" icon="ui-icon-cancel" update=":formSearch3:contigList" process="@this" action="#{mainBean.perLocationContigs.resetFilter()}" 
                                                  onstart="PF('blockContigList').show();" oncomplete="PF('blockContigList').hide();" disabled="#{!mainBean.perLocationContigs.isFiltered()}" />
                             </f:facet>
                         </p:toolbar>
@@ -285,21 +285,15 @@
 
 
 
-            <p:dataTable var="gene" value="#{mainBean.selectedDataModel}" styleClass="myTable" selection="#{mainBean.selectedGenes}" rowSelectMode="add"
+            <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" selection="#{mainBean.selectedGenes}" rowSelectMode="add"
                          id="dataTable" widgetVar="dataTable" filteredValue="#{mainBean.filteredGenes}" rowKey="#{gene.id}"  
-                         paginator="true" rows="5" paginatorAlwaysVisible="true" rowsPerPageTemplate="5,10,20,40,80,160,320" style="text-align: center"
+                         paginator="true" rows="5" paginatorAlwaysVisible="true" rowsPerPageTemplate="5,10,20,40,80,160" style="text-align: center"
                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowStyleClass="#{mainBean.contains(mainBean.userQuery, gene.geneId, gene.contig.contigId) ? 'highlighted' : null}" >
                 <p:ajax event="page" onstart="PF('block2Table').show();" oncomplete="PF('block2Table').hide();" />    
                 <f:facet name="header" >
                     <p:toolbar>
                         <f:facet name="left">
-                            <h:outputText value="Append unordered genes to the end of the table "/>
-                            <p:selectBooleanButton value="#{mainBean.appendUnordered}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
-                                <p:ajax update="dataTable" listener="#{mainBean.reload()}"  onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();"/>
-                            </p:selectBooleanButton>
-                            <p:spacer height="0" width="30"/>
-                            <p:separator />
                             <h:outputText value="#{mainBean.currentChromosome}"  />
                         </f:facet>
                         <f:facet name="right">
@@ -311,55 +305,65 @@
                                              onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();PF('dataTable').filter()"/>                                  
                         </f:facet>
                     </p:toolbar>
+                    <p:toolbar>
+                        <f:facet name="left" >
+                            <h:outputText value="cM (corrected) between " />
+                            <p:autoComplete dropdown="true" value="#{mainBean.cM_filter.cM_corrected_min_user}"   disabled="#{!mainBean.dataLoaded}" 
+                                            forceSelection="true" size="7" scrollHeight="400" title="Type in the desired cM (correctred) position (from)"   
+                                            completeMethod="#{mainBean.cM_filter.correctedRangePrefix}" >
+                                <p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />
+                            </p:autoComplete>
+                            <p:spacer height="0" width="35" />
+                            <h:outputText value=" and   " />
+                            <p:autoComplete dropdown="true" value="#{mainBean.cM_filter.cM_corrected_max_user}"   disabled="#{!mainBean.dataLoaded}"
+                                            forceSelection="true" size="7"   scrollHeight="400" title="Type in the desired cM (correctred) position (to)"  
+                                            completeMethod="#{mainBean.cM_filter.correctedRangePrefix}" >
+                                <p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />
+                            </p:autoComplete>
+                            <p:spacer height="0" width="75" />
+                            <h:outputText value="cM (original) between " />
+                            <p:autoComplete dropdown="true" value="#{mainBean.cM_filter.cM_original_min_user}"   disabled="#{!mainBean.dataLoaded}" 
+                                            forceSelection="true" size="7" scrollHeight="400" title="Type in the desired cM (original) position (from)"   
+                                            completeMethod="#{mainBean.cM_filter.originalRangePrefix}" >
+                                <p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />
+                            </p:autoComplete>
+                            <p:spacer height="0" width="35" />
+                            <h:outputText value=" and   " />
+                            <p:autoComplete dropdown="true" value="#{mainBean.cM_filter.cM_original_max_user}"   disabled="#{!mainBean.dataLoaded}"
+                                            forceSelection="true" size="7"   scrollHeight="400" title="Type in the desired cM (original) position (to)"  
+                                            completeMethod="#{mainBean.cM_filter.originalRangePrefix}" >
+                                <p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />
+                            </p:autoComplete>
+                            <p:spacer height="0" width="35" />
+                             <p:commandButton title="Reset cM filtering" value="Reset cM filtering"  icon="ui-icon-cancel" update=":formCentre:dataTable" process="@this" action="#{mainBean.resetFilter()}" 
+                                                 onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide();" disabled="#{!mainBean.isFiltered()}" />
+                            
+                        </f:facet>
+                        <f:facet name="right">
+                            <h:outputText value="Append unordered genes to the end of the table "/>
+                            <p:selectBooleanButton value="#{mainBean.appendUnordered}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
+                                <p:ajax update="dataTable" listener="#{mainBean.reload()}"  onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();"/>
+                            </p:selectBooleanButton>
+                        </f:facet>
+                    </p:toolbar>
 
                 </f:facet>
                 <p:columnGroup type="header" id="headerGroup" >   
                     <p:row > 
-                        <p:column rowspan="2" width="30" selectionMode="multiple"  />
+                        <p:column rowspan="2" width="25" selectionMode="multiple"  />
                         <p:column rowspan="2" headerText="FPKMs" width="110"/>  
-                        <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}"  filterFunction="#{mainBean.filterIgnoreCaseContains}" width="145"/>
+                        <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}"  filterFunction="#{mainBean.filterIgnoreCaseContains}" width="135"/>
                         <p:column rowspan="2" headerText="From"   width="30"/>
                         <p:column rowspan="2" headerText="To"   width="30"/>
-                        <p:column rowspan="2" headerText="Strand"  width="30" />
-                        <p:column rowspan="2" headerText="Contig ID" filterBy="#{gene.contig.contigId}" filterFunction="#{mainBean.filterIgnoreCaseContains}" width="110"/>
-                        <p:column rowspan="2" headerText="cM (corrected)" style="text-align: center"  >
-                            <f:facet name="header" >
-                                <h:outputText value="cM (corrected)" />
-                                <p:slider for="txt6,txt7" display="displayRange"  range="true" displayTemplate="Between {min} and {max}"  
-                                          minValue="#{mainBean.cM_filter.cM_corrected_min}" maxValue="#{mainBean.cM_filter.cM_corrected_max}" disabled="#{!mainBean.dataLoaded}" rendered="#{mainBean.dataLoaded}">   
-                                    <p:ajax event="slideEnd" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();PF('dataTable').filter()" update="dataTable" process="txt6,txt7,@this"/>
-                                </p:slider>
-                                <h:outputText id="displayRange" value="Between #{mainBean.cM_filter.cM_corrected_min_user} and #{mainBean.cM_filter.cM_corrected_max_user}" rendered="#{mainBean.dataLoaded}"  />
-                                <h:inputHidden id="txt6" value="#{mainBean.cM_filter.cM_corrected_min_user}" >
-                                    <f:converter converterId="javax.faces.Double" />
-                                </h:inputHidden>
-                                <h:inputHidden id="txt7" value="#{mainBean.cM_filter.cM_corrected_max_user}" >
-                                    <f:converter converterId="javax.faces.Double" />
-                                </h:inputHidden>
-                            </f:facet> 
-                        </p:column>  
-                        <p:column rowspan="2" headerText="cM (original)" style="text-align: center">
-                            <f:facet name="header">
-                                <h:outputText value="cM (original)" />
-                                <p:slider for="cMoriginalMin,cMoriginalMax" display="displayRangeOriginal"  range="true" displayTemplate="Between {min} and {max}"  rendered="#{mainBean.dataLoaded}"
-                                          minValue="#{mainBean.cM_filter.cM_original_min}" maxValue="#{mainBean.cM_filter.cM_original_max}" disabled="#{!mainBean.dataLoaded}">   
-                                    <p:ajax event="slideEnd" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" 
-                                            oncomplete="PF('blockUI').hide();PF('dataTable').filter()" update="dataTable" process="cMoriginalMin,cMoriginalMax,@this"/>
-                                </p:slider>
-                                <h:outputText id="displayRangeOriginal" value="Between #{mainBean.cM_filter.cM_original_min_user} and #{mainBean.cM_filter.cM_original_max_user}"  rendered="#{mainBean.dataLoaded}"/>
-                                <h:inputHidden id="cMoriginalMin" value="#{mainBean.cM_filter.cM_original_min_user}" >
-                                    <f:converter converterId="javax.faces.Double" />
-                                </h:inputHidden>
-                                <h:inputHidden id="cMoriginalMax" value="#{mainBean.cM_filter.cM_original_max_user}" >
-                                    <f:converter converterId="javax.faces.Double" />
-                                </h:inputHidden>
-                            </f:facet>
-                        </p:column> 
+                        <p:column rowspan="2" headerText="+/-"  width="10" id="strand" /> 
+                        <p:column rowspan="2" headerText="Contig ID" filterBy="#{gene.contig.contigId}" filterFunction="#{mainBean.filterIgnoreCaseContains}" width="105"/>
+                        <p:column rowspan="2" headerText="cM corrected" style="text-align: center"   width="45" />
+                        <p:column rowspan="2" headerText="cM original" style="text-align: center" width="45" />
                         <p:column colspan="3"  headerText="MIPS Annotation" style="color: peru" />
                         <p:column colspan="2" headerText="Rice-derived Annotation"  style="color: mediumseagreen"/>
                     </p:row>
                     <p:row>
-                        <p:column headerText="Hit ID" style="color: peru" filterBy="#{gene.annotationMips.hitId}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>
+                        <p:column headerText="Hit ID" style="color: peru"  width="120" filterBy="#{gene.annotationMips.hitId}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>
                         <p:column headerText="Description" style="color: peru" filterBy="#{gene.annotationMips.annotationString}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>                                        
                         <p:column headerText="InterproID" style="color: peru; wrapClass1" filterBy="#{gene.annotationMips.interpro}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>
                         <p:column headerText="Hit ID" style="color: mediumseagreen" filterBy="#{gene.annotationRice.hitId}" filterFunction="#{mainBean.filterIgnoreCaseContains}"/>
@@ -382,10 +386,7 @@
                 <p:column> <h:outputText value="#{gene.to}"/></p:column>
                 <p:column> <h:outputText value="#{gene.strand}"/></p:column>
                 <p:column> <h:outputText value="#{gene.contig.contigId}"  />  </p:column>
-                <p:column> 
-                    <h:outputText value="#{gene.contig.cM_corrected}  " />  
-
-                </p:column>
+                <p:column> <h:outputText value="#{gene.contig.cM_corrected}  " /> </p:column>
                 <p:column> <h:outputText value="#{gene.contig.cM_original}" /> </p:column>
                 <p:column> <h:outputText value="#{gene.annotationMips.getMipsHTML('peru')}" escape="false"/> </p:column> 
                 <p:column> <h:outputText value="#{gene.annotationMips.annotationString}" style="color: peru" /> </p:column>  

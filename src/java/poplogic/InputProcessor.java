@@ -170,7 +170,7 @@ public class InputProcessor implements Serializable {
 
                     Double cM_corrected = Double.parseDouble(toks[2]);
                     Double cM_original = Double.parseDouble(toks[3]);
-                    cM_filter.add_cM_valuesToMinMax(cM_corrected, cM_original);
+                    cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(cM_corrected, cM_original);
                     Contig c = new Contig(toks[0], toks[1], cM_corrected, cM_original, wheatGeneIdsList, genesTissuesFPKMsMap);
                     boolean isRice = false;
 //                    if (wheatGeneIdsList != null) { //if no mips gene predictions then no annotations to retrieve 
@@ -310,7 +310,7 @@ public class InputProcessor implements Serializable {
                 if (toks != null && toks.length > 1) {
                     Double locationCorrected = Double.parseDouble(toks[2]);
                     Double locationOriginal = Double.parseDouble(toks[3]);
-                    cM_filter.add_cM_valuesToMinMax(locationCorrected, locationOriginal);
+                    cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(locationCorrected, locationOriginal);
                     contigs.addContig(new Contig(toks[0], chromosome, locationCorrected, locationOriginal, null, null));
                 }
             }
