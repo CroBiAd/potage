@@ -4,6 +4,7 @@
  */
 package reusable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,7 +19,7 @@ import reusable.OutWriter;
  *
  * @author rad
  */
-public class QesHits {
+public class QesHits implements Serializable{
 
     private static final boolean DEBUG_MODE = false;
 //    private String databaseIWGSC;//= "/mnt/storage/storage1/BLAST_DBs/seqDataBase/IWGSC/iwgsc_all_rad";

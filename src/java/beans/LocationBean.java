@@ -6,6 +6,7 @@
 
 package beans;
 
+import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 
@@ -15,7 +16,7 @@ import javax.faces.view.ViewScoped;
  */
 @ManagedBean(name = "locationBean")
 @ViewScoped
-public class LocationBean {
+public class LocationBean implements Serializable{
     private double cM_original;
 
     public double getcM_original() {

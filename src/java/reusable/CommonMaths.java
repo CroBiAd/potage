@@ -4,13 +4,14 @@
  */
 package reusable;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
  *
  * @author rad
  */
-public class CommonMaths {
+public class CommonMaths  implements Serializable{
     public static double round(double value, int decimalPoints) {
         double scaleFactor = Math.pow(10, decimalPoints);
         double scaledUp = value*scaleFactor;

@@ -168,8 +168,8 @@ public class InputProcessor implements Serializable {
                 if (toks != null && toks.length > 1) {
                     ArrayList<String> wheatGeneIdsList = cssToTraesIdsMap.get(toks[0]);
 
-                    Double cM_corrected = Double.parseDouble(toks[2]);
-                    Double cM_original = Double.parseDouble(toks[3]);
+                    Double cM_corrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]),3);
+                    Double cM_original = reusable.CommonMaths.round(Double.parseDouble(toks[3]),3);
                     cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(cM_corrected, cM_original);
                     Contig c = new Contig(toks[0], toks[1], cM_corrected, cM_original, wheatGeneIdsList, genesTissuesFPKMsMap);
                     boolean isRice = false;
@@ -181,6 +181,7 @@ public class InputProcessor implements Serializable {
                     //For each geneId on current contig, create Gene object with a ref to the contig it is derived from
 
                     if (wheatGeneIdsList == null) {
+                        System.err.println("InputProcessor - should not be reading contigs without genes!");
                         Gene placeholderGene = new Gene(c.getContigId(), c, null, null, null, null, null);
                         genes.add(placeholderGene);
                     } else {
@@ -291,9 +292,6 @@ public class InputProcessor implements Serializable {
         return foundIn;
     }
 
-    private boolean isWithinCoordinates(Double cM_corrected, Double cM_original, Double cM_correctedMin, Double cM_correctedMax, Double cM_originalMin, Double cM_originalMax) {
-        return cM_corrected >= cM_correctedMin && cM_corrected <= cM_correctedMax && cM_original >= cM_originalMin && cM_original <= cM_originalMax;
-    }
 
     public PerLocationContigs getContigs(String inputFileName) {
         cM_filter = new Location_cMFilter();
@@ -532,8 +530,7 @@ public class InputProcessor implements Serializable {
                     ///storedGeneIds.add(toks[0]);
                 }
             }
-            System.err.println("not allowing multiple FPKMs values per Traes gene!! - but ignoring for now... "
-                    + "with countCasesOfMultipleFpkmValuesPerGenePrediction = " + countCasesOfMultipleFpkmValuesPerGenePrediction + "  in " + this.toString());
+//            System.err.println("not allowing musleFpkmValuesPerGenePrediction = " + countCasesOfMultipleFpkmValuesPerGenePrediction + "  in " + this.toString());
 
         } catch (FileNotFoundException ex) {
             System.err.println("File not found exception!\t" + file.getName());

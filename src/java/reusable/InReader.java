@@ -12,7 +12,7 @@ import java.util.ArrayList;
  *
  * @author x3002128
  */
-public class InReader {
+public class InReader  implements Serializable{
 
     private ArrayList<String> inputContents;
 

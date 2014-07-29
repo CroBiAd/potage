@@ -4,6 +4,7 @@
  */
 package reusable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,7 +15,7 @@ import reusable.InReader;
  *
  * @author rad
  */
-public class FastaToHashMap {
+public class FastaToHashMap  implements Serializable{
 
     
     /**

@@ -5,6 +5,7 @@
  */
 package beans;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,7 @@ import poplogic.Gene;
  *
  * @author rad
  */
-public class ComponentGenerator {
+public class ComponentGenerator implements Serializable {
 
      public DefaultMenuModel generateDynamicMenuForOtherContigs() {
          
@@ -189,12 +190,12 @@ public class ComponentGenerator {
 //        dialog.setMinimizable(false);
 
 //        String dialogId = "chartDialog_" + suffix;
-        String dialogId = geneSelectedForDialogDisplay.getId();
+        String dialogId = geneSelectedForDialogDisplay.getGeneId();
         dialog.setId(dialogId);
         dialog.setWidgetVar(dialogId);
 //        dialogIdToDialogMap.put(dialogId, dialog);
         dialog.setHeader(dialogId + " on " + geneSelectedForDialogDisplay.getContig().getId());
-        geneIdToDialogMap.put(geneSelectedForDialogDisplay.getId(), dialog);
+        geneIdToDialogMap.put(geneSelectedForDialogDisplay.getGeneId(), dialog);
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
 

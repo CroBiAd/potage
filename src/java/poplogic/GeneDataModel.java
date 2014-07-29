@@ -102,7 +102,7 @@ public class GeneDataModel extends ListDataModel<Gene> implements SelectableData
         List<Gene> contigs = (List<Gene>) getWrappedData();  
         for(int i=0; i<contigs.size(); i++) { 
             Gene gene = contigs.get(i);
-            if(gene.getId().equals(key) || gene.getContig().getId().equals(key))  
+            if(gene.getGeneId().equals(key) || gene.getContig().getId().equals(key))  
 //            if(promoter.getUniqueIdString().equals(rowKey))  
                 return i;  
         }  

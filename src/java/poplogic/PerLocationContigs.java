@@ -26,6 +26,7 @@ public class PerLocationContigs implements Serializable {
     private final String chromosome;
     private final Location_cMFilter cM_filterForNonGeneContigs;
     private StreamedContent exportFileWholeIWGSC;
+    private String toExport = "page";
 
     public PerLocationContigs(String chromosome, Location_cMFilter cM_filterForNonGeneContigs) {
         this.chromosome = chromosome;
@@ -147,7 +148,7 @@ public class PerLocationContigs implements Serializable {
             String newline = System.getProperty("line.separator");
             StringBuilder sb = new StringBuilder();
             for (Contig c : selectedContigs) {
-                System.err.println("Selected: " + c.getId() + " " + c.getId());
+//                System.err.println("Selected: " + c.getId() + " " + c.getId());
                 sb.append(">");
                 sb.append(c.getContigId());
 //                sb.append(" ").append(p.getHit().getHitDef());
@@ -190,4 +191,36 @@ public class PerLocationContigs implements Serializable {
         return idx;
     }
 
+    public String getToExport() {
+        return toExport;
+    }
+
+    public void setToExport(String toExport) {
+        this.toExport = toExport;
+    }
+
+    public boolean exportPageOnly() {
+        if (toExport.equals("page")) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean exportSelectedOnly() {
+        if (toExport.equals("selected")) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean exportDsiabled() {
+        if (isDataLoaded() && (!exportSelectedOnly() || (exportSelectedOnly() && somethingSelected()))) {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean isDataLoaded() {
+        return contigs != null && !contigs.isEmpty();
+    }
 }

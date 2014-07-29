@@ -179,17 +179,17 @@
 
 
 
-        <p:dialog  id="allContigsDialog" header="All contigs within a cM range..." widgetVar="allContigsDialog" modal="false" minimizable="true"  position="800,120"
+        <p:dialog  id="allContigsDialog" header="All contigs within a cM range..." widgetVar="allContigsDialog" modal="false" minimizable="true"  
                    showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="550">
 
             <h:form id="formSearch3">
                 <p:spacer height="10" width="0" />
                 <p:blockUI block="contigList" widgetVar="blockContigList" />
-                <p:dataTable id="contigList" widgetVar="contigList" value="#{mainBean.perLocationContigs.contigs}" var="contig" styleClass="paginated"
+                <p:dataTable id="contigList" widgetVar="contigList" value="#{mainBean.perLocationContigs.contigs}" var="contig" style="text-align: center" 
                              filteredValue="#{mainBean.perLocationContigs.filteredContigs}" 
-                             selection="#{mainBean.perLocationContigs.selectedContigs}" rowKey="#{contig.id}"  rowSelectMode="add"
-                             paginator="true" rows="10" paginatorAlwaysVisible="true"  style="text-align: center" 
-                             rowStyleClass="#{mainBean.contains(mainBean.userQuery, contig.contigId) ? 'highlighted' : null}"
+                             selection="#{mainBean.perLocationContigs.selectedContigs}" rowKey="#{contig.id}"  
+                             rowStyleClass="#{mainBean.contains(mainBean.userQuery, contig.contigId) ? 'highlighted' : null}" 
+                             paginator="true" rows="10" paginatorAlwaysVisible="true"  styleClass="paginated"
                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
                     <f:facet name="header">
                         <p:toolbar>
@@ -266,7 +266,23 @@
                                                  title="Save the selected IWGSC contig(s) to a FASTA file" disabled="#{!mainBean.perLocationContigs.somethingSelected()}" ajax="false" >                            
                                     <p:fileDownload value="#{mainBean.perLocationContigs.exportFileWholeIWGSC}"     />                                
                                 </p:commandButton>
+                                </f:facet>
 
+                                <f:facet name="right">
+
+                                <h:outputLabel value="Export " escape="false" style="vertical-align: middle;" />
+                                <p:selectOneMenu value="#{mainBean.perLocationContigs.toExport}" style="vertical-align: middle; text-align: left; width: 120px" disabled="#{!mainBean.perLocationContigs.dataLoaded}"   >
+                                    <f:selectItem itemLabel="current page" itemValue="page" />
+                                    <f:selectItem itemLabel="whole table" itemValue="all"/>
+                                    <p:ajax update="exportCSV"/>  
+                                </p:selectOneMenu>
+<!--                                    <f:selectItem itemLabel="selected rows" itemValue="selected" />-->
+                                <h:commandLink id="exportCSV" disabled="#{mainBean.perLocationContigs.exportDsiabled()}" onclick="PF('statusDialog').show();">
+                                    <p:graphicImage value="/images/csv_text.png" style="vertical-align: middle;" title="Export table to a CSV file." rendered="#{!mainBean.perLocationContigs.exportDsiabled()}"/>
+                                    <p:graphicImage value="/images/csv_text_grey.png" style="vertical-align: middle;" title="Export table to a CSV file." rendered="#{mainBean.perLocationContigs.exportDsiabled()}"/>
+                                    <p:dataExporter type="csv" target="contigList" fileName="Contigs_table_#{randomBean.getRandomFilename()}" pageOnly="#{mainBean.perLocationContigs.exportPageOnly()}" 
+                                                    selectionOnly="#{mainBean.perLocationContigs.exportSelectedOnly()}"/>
+                                </h:commandLink>
                             </f:facet>
                         </p:toolbar>
                     </f:facet>
@@ -285,8 +301,8 @@
 
 
 
-            <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" selection="#{mainBean.selectedGenes}" rowSelectMode="add"
-                         id="dataTable" widgetVar="dataTable" filteredValue="#{mainBean.filteredGenes}" rowKey="#{gene.id}"  
+            <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" selection="#{mainBean.selectedGenes}"  
+                         id="dataTable" widgetVar="dataTable" filteredValue="#{mainBean.filteredGenes}" rowKey="#{gene.geneId}"  
                          paginator="true" rows="5" paginatorAlwaysVisible="true" rowsPerPageTemplate="5,10,20,40,80,160" style="text-align: center"
                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowStyleClass="#{mainBean.contains(mainBean.userQuery, gene.geneId, gene.contig.contigId) ? 'highlighted' : null}" >
@@ -335,9 +351,9 @@
                                 <p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />
                             </p:autoComplete>
                             <p:spacer height="0" width="35" />
-                             <p:commandButton title="Reset cM filtering" value="Reset cM filtering"  icon="ui-icon-cancel" update=":formCentre:dataTable" process="@this" action="#{mainBean.resetFilter()}" 
-                                                 onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide();" disabled="#{!mainBean.isFiltered()}" />
-                            
+                            <p:commandButton title="Reset cM filtering" value="Reset cM filtering"  icon="ui-icon-cancel" update=":formCentre:dataTable" process="@this" action="#{mainBean.resetFilter()}" 
+                                             onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide();" disabled="#{!mainBean.isFiltered()}" />
+
                         </f:facet>
                         <f:facet name="right">
                             <h:outputText value="Append unordered genes to the end of the table "/>
@@ -351,7 +367,7 @@
                 <p:columnGroup type="header" id="headerGroup" >   
                     <p:row > 
                         <p:column rowspan="2" width="25" selectionMode="multiple"  />
-                        <p:column rowspan="2" headerText="FPKMs" width="110"/>  
+                        <p:column rowspan="2" headerText="FPKMs" width="105"/>  
                         <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}"  filterFunction="#{mainBean.filterIgnoreCaseContains}" width="135"/>
                         <p:column rowspan="2" headerText="From"   width="30"/>
                         <p:column rowspan="2" headerText="To"   width="30"/>
@@ -371,7 +387,7 @@
                     </p:row>
                 </p:columnGroup>
 
-                <p:column selectionMode="multiple" width="30" exportable="false" />
+                <p:column selectionMode="multiple" width="25" exportable="false" />
 
                 <p:column exportable="false">  
                     <p:blockUI block="dataTable" widgetVar="blockTable"   />
@@ -428,20 +444,14 @@
                             <h:outputLabel value="Export " escape="false" style="vertical-align: middle;" />
                             <p:selectOneMenu value="#{mainBean.toExport}" style="vertical-align: middle; text-align: left; width: 120px" disabled="#{!mainBean.dataLoaded}"   >
                                 <f:selectItem itemLabel="current page" itemValue="page" />
-                                <f:selectItem itemLabel="selected rows" itemValue="selected" />
                                 <f:selectItem itemLabel="whole table" itemValue="all"/>
                                 <p:ajax update="exportXLS"/>  
+                                <!--<f:selectItem itemLabel="selected rows" itemValue="selected" />-->
                             </p:selectOneMenu>
-    <!--                        <h:commandLink id="exportCSV" disabled="#{mainBean.exportDsiabled()}" onclick="PF('statusDialog').show();">
-                                <p:graphicImage value="/images/csv_text.png" style="vertical-align: middle;" title="Export table to a CSV file (no headers or annotations)." rendered="#{!mainBean.exportDsiabled()}"/>
-                                <p:graphicImage value="/images/csv_text_grey.png" style="vertical-align: middle;" title="Export table to a CSV file (no headers or annotations)." rendered="#{mainBean.exportDsiabled()}"/>
-                                <p:dataExporter type="csv" target="dataTable" fileName="PopView_table_#{randomBean.getRandomFilename()}" pageOnly="#{mainBean.exportPageOnly()}" 
-                                                selectionOnly="#{mainBean.exportSelectedOnly()}"/>
-                            </h:commandLink>-->
                             <h:commandLink id="exportXLS" disabled="#{mainBean.exportDsiabled()}" onclick="PF('statusDialog').show();">
                                 <p:graphicImage value="/images/excel3.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{!mainBean.exportDsiabled()}"/>
                                 <p:graphicImage value="/images/excel3grey2.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{mainBean.exportDsiabled()}"/>
-                                <p:dataExporter type="xls" target="dataTable" fileName="PopView_table_#{randomBean.getRandomFilename()}" pageOnly="#{mainBean.exportPageOnly()}"  
+                                <p:dataExporter type="xls" target="dataTable" fileName="POTAGE_table_#{randomBean.getRandomFilename()}" pageOnly="#{mainBean.exportPageOnly()}"  
                                                 selectionOnly="#{mainBean.exportSelectedOnly()}" postProcessor="#{mainBean.postProcessXLS}"/> 
                             </h:commandLink>
                         </f:facet>
@@ -476,9 +486,9 @@
                         </f:facet>
                     </p:toolbar>
                 </f:facet>
-                <p:panel header="#{gene.id}" style="text-align:center;"   >
+                <p:panel header="#{gene.geneId}" style="text-align:center;"   >
                     <p:chart type="bar" model="#{gene.barChartModel}"    >
-                        <p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>
+                        <!--<p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>-->
                     </p:chart>
                     <f:facet name="actions" >
                         <p:commandButton icon="ui-icon-trash" action="#{mainBean.removeFromChartDisplay(gene)}" onstart="PF('blockCharts').show();"   

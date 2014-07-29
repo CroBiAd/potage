@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,7 +20,7 @@ import reusable.InReader;
  *
  * @author rad
  */
-public class BlastAlignmentXmlExtractor {
+public class BlastAlignmentXmlExtractor  implements Serializable{
 
     private TreeSet<BlastHit> allHits; //NOTE: this treeSet will not allow more than one hit for any (queryID, subjectId) pair! This was implemented as the set of randomly perturbed data ended up with multiple occurances of a given query e.g. 2x ogihara_1115-2.12422.6D_beheaded_13_pct
     private HashMap<String, Sequence> sequencesMap;

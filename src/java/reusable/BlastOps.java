@@ -4,13 +4,14 @@
  */
 package reusable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author rad
  */
-public class BlastOps {
+public class BlastOps  implements Serializable{
  
      /**
      * Given the xml results of blastn search against IWGS, retrieve complete

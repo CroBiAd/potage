@@ -55,12 +55,6 @@ public class Gene implements Serializable { //, Comparable<Contig> {
         this.fpkmTableHeaders = fpkmTableHeaders;
     }
 
-    public String getGeneId() {
-        if (isPlaceHolder()) {
-            return "no gene prediction on " + geneId;
-        }
-        return geneId;
-    }
 
     public boolean isPlaceHolder() {
         if (geneId.equals(contig.getContigId())) {
@@ -69,7 +63,7 @@ public class Gene implements Serializable { //, Comparable<Contig> {
         return false;
     }
 
-    public String getId() {
+    public String getGeneId() {
         return geneId;
     }
 

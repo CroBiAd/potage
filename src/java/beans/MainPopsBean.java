@@ -80,7 +80,7 @@ public class MainPopsBean implements Serializable {
 //    private GeneDataModel selectedDataModel;
 //    private GeneDataModel loadedDataModel;
     private ArrayList<Gene> loadedGenes;
-    private List<Gene> selectedGenes;
+    private ArrayList<Gene> selectedGenes;
     private ArrayList<Gene> selectedGenesForChartDisplay;
     private ArrayList<Gene> filteredGenes;
 
@@ -364,9 +364,9 @@ public class MainPopsBean implements Serializable {
 
     private void generateChartDialog() {
 
-        Dialog dlg = geneIdToDialogMap.get(geneSelectedForDialogDisplay.getId());
+        Dialog dlg = geneIdToDialogMap.get(geneSelectedForDialogDisplay.getGeneId());
         if (dlg != null) {
-            growl(FacesMessage.SEVERITY_WARN, "Note!", "FPKM chart already opened for " + geneSelectedForDialogDisplay.getId(), "growl");
+            growl(FacesMessage.SEVERITY_WARN, "Note!", "FPKM chart already opened for " + geneSelectedForDialogDisplay.getGeneId(), "growl");
             //for now re-draw
             RequestContext.getCurrentInstance().update(dlg.getParent().getId());
         } else if (availableDialogContainers.isEmpty()) {
@@ -518,11 +518,11 @@ public class MainPopsBean implements Serializable {
 //    public GeneDataModel getSelectedDataModel() {
 //        return selectedDataModel;
 //    }
-    public List<Gene> getSelectedGenes() {
+    public ArrayList<Gene> getSelectedGenes() {
         return selectedGenes;
     }
 
-    public void setSelectedGenes(List<Gene> selectedGenes) {
+    public void setSelectedGenes(ArrayList<Gene> selectedGenes) {
         this.selectedGenes = selectedGenes;
     }
 
@@ -559,7 +559,7 @@ public class MainPopsBean implements Serializable {
             if (!selectedGenesForChartDisplay.contains(gene)) {
                 selectedGenesForChartDisplay.add(gene);
             } else {
-                growl(FacesMessage.SEVERITY_WARN, "Chart already displayed for ", gene.getId(), "growl");
+                growl(FacesMessage.SEVERITY_WARN, "Chart already displayed for ", gene.getGeneId(), "growl");
             }
         }
     }
@@ -685,9 +685,9 @@ public class MainPopsBean implements Serializable {
             String newline = System.getProperty("line.separator");
             StringBuilder sb = new StringBuilder();
             for (Gene c : selectedGenes) {
-//                System.err.println("Selected: " + c.getId() + " " + c.getContig().getId());
+                System.err.println("Selected: " + c.getGeneId() + " " + c.getContig().getId());
                 sb.append(">");
-                sb.append(c.getContig().getContigId());
+                sb.append(c.getContig().getId());
 //                sb.append(" ").append(p.getHit().getHitDef());
 //                sb.append(" predicted POPSEQ location ");
 //                sb.append(barleyChromosome);
@@ -697,7 +697,7 @@ public class MainPopsBean implements Serializable {
 //                sb.append(" ").append(c.getFrame());
                 sb.append(newline);
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), "/home/rad/coching_data/IWGSC_SS").get(0).getSequenceString());
-                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
+                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
                 sb.append(newline);
             }
             InputStream stream = new ByteArrayInputStream(sb.toString().getBytes());
@@ -737,7 +737,7 @@ public class MainPopsBean implements Serializable {
     }
 
     public boolean exportSelectedOnly() {
-        if (toExport.equals("selected")) {
+        if(toExport.equals("selected")) {
             return true;
         }
         return false;
@@ -969,7 +969,7 @@ public class MainPopsBean implements Serializable {
     }
 
     public void chartItemSelect(ItemSelectEvent event) {
-        int i = event.getItemIndex() + 3;
+        int i = event.getItemIndex() + 3;        
         if (fpkmTableHeaders != null && i >= 0 && i <= fpkmTableHeaders.length + 1) {
             growl(FacesMessage.SEVERITY_INFO, "Sample selected", fpkmTableHeaders[i], "growl");
         }
@@ -996,7 +996,7 @@ public class MainPopsBean implements Serializable {
         Integer idx = null;
         for (int i = 0; i < loadedGenes.size(); i++) {
             Gene current = loadedGenes.get(i);
-            if (current.getId().equalsIgnoreCase(key) || current.getContig().getId().equals(key)) {
+            if (current.getGeneId().equalsIgnoreCase(key) || current.getContig().getId().equals(key)) {
                 idx = i;
                 break;
             }

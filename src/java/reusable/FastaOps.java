@@ -4,13 +4,14 @@
  */
 package reusable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author rad
  */
-public class FastaOps {
+public class FastaOps  implements Serializable{
 
     
     public static void writeToFastaFile(ArrayList<Sequence> sequences, String fileName) {

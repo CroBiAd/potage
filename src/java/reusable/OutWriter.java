@@ -16,7 +16,7 @@ import java.util.TreeSet;
  *
  * @author x3002128
  */
-public class OutWriter {
+public class OutWriter implements Serializable {
     public OutWriter(String fName, ArrayList<String> contents) {
         writeFile(fName, contents);
     }
