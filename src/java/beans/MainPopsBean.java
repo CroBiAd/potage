@@ -25,6 +25,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -83,7 +85,7 @@ public class MainPopsBean implements Serializable {
     private ArrayList<Gene> selectedGenes;
     private ArrayList<Gene> selectedGenesForChartDisplay;
     private ArrayList<Gene> filteredGenes;
-
+    HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
     private Location_cMFilter cM_filter;
 
     private String userQuery;
@@ -495,9 +497,11 @@ public class MainPopsBean implements Serializable {
 //                selectedDataModel = new GeneDataModel(inputList);
 //            loadedDataModel = new GeneDataModel(inputProcessor);
             loadedGenes = inputList;
+            genesTissuesFPKMsMap = inputProcessor.getGenesTissuesFPKMsMap();
             cM_filter = inputProcessor.getcM_filter();
             filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
             selectedGenes = null;
+            
 //            selectedDataModel = loadedDataModel;
 //                updateDisplayedContigs(); //by default only dispaly contigs with genes not all
         }
@@ -737,7 +741,7 @@ public class MainPopsBean implements Serializable {
     }
 
     public boolean exportSelectedOnly() {
-        if(toExport.equals("selected")) {
+        if (toExport.equals("selected")) {
             return true;
         }
         return false;
@@ -758,11 +762,22 @@ public class MainPopsBean implements Serializable {
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             Iterator<Cell> cellIterator = row.cellIterator();
+            Cell firstCell = cellIterator.next();
+            String geneId = firstCell.getStringCellValue();
+            cellIterator = row.cellIterator();
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
                 String stringCellValue = cell.getStringCellValue();
                 if (stringCellValue != null && !stringCellValue.isEmpty()) {
                     cell.setCellValue(stringCellValue.replaceAll("\\<[^>]*>", "")); //strip off HTML
+                }
+            }
+            ArrayList<Double> fpkms = genesTissuesFPKMsMap.get(geneId);
+            if(fpkms != null && !fpkms.isEmpty()) {
+                for (int i=2; i<fpkms.size(); i++) {
+                    Double fpkmDouble = fpkms.get(i);
+                    Cell createdCell = row.createCell(row.getLastCellNum());            
+                    createdCell.setCellValue(fpkmDouble);                    
                 }
             }
 //            cellIterator = row.cellIterator();
@@ -779,6 +794,12 @@ public class MainPopsBean implements Serializable {
         String headers[] = TABLE_HEADERS.split(",");
         for (String h : headers) {
             cellIterator.next().setCellValue(h);
+        }
+
+        //Add headers for FPKM values
+        for (int i = 3; i < fpkmTableHeaders.length; i++) {
+            Cell createdCell = row.createCell(row.getLastCellNum());
+            createdCell.setCellValue(fpkmTableHeaders[i]);
         }
     }
 
@@ -969,7 +990,7 @@ public class MainPopsBean implements Serializable {
     }
 
     public void chartItemSelect(ItemSelectEvent event) {
-        int i = event.getItemIndex() + 3;        
+        int i = event.getItemIndex() + 3;
         if (fpkmTableHeaders != null && i >= 0 && i <= fpkmTableHeaders.length + 1) {
             growl(FacesMessage.SEVERITY_INFO, "Sample selected", fpkmTableHeaders[i], "growl");
         }

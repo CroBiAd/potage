@@ -35,6 +35,7 @@ public class InputProcessor implements Serializable {
 
     HashMap<String, ArrayList<String>> cssToTraesIdMap;
     HashMap<String, String> traesOnCssMap;
+    HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
 //    private ChartBean donutBean;
 
     public InputProcessor(String inputFileName, String queryId, int offset, String annotationFileName, String annotationRiceFileName,
@@ -44,7 +45,7 @@ public class InputProcessor implements Serializable {
         isRiceAnnotation = true;
         HashMap<String, String[]> mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(annotationRiceFileName, isRiceAnnotation);
         buildCssToTraesAndReverseMaps(traesToCssMapFileName);
-        HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap = getGenesTissuesFPKMs(FPKMsFileName);
+        genesTissuesFPKMsMap = getGenesTissuesFPKMs(FPKMsFileName);
 
         chromosome = inputFileName.split("_")[2];
         processInput(inputFileName, queryId, mipsIdToAnnotationStringToksMap, mipsIdToRiceAnnotationStringToksMap, cssToTraesIdMap, genesTissuesFPKMsMap);
@@ -62,6 +63,12 @@ public class InputProcessor implements Serializable {
 
     public InputProcessor() {
     }
+
+    public HashMap<String, ArrayList<Double>> getGenesTissuesFPKMsMap() {
+        return genesTissuesFPKMsMap;
+    }
+    
+    
 
     public Location_cMFilter getcM_filter() {
         return cM_filter;
