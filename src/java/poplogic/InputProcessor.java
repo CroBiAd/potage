@@ -67,8 +67,6 @@ public class InputProcessor implements Serializable {
     public HashMap<String, ArrayList<Double>> getGenesTissuesFPKMsMap() {
         return genesTissuesFPKMsMap;
     }
-    
-    
 
     public Location_cMFilter getcM_filter() {
         return cM_filter;
@@ -175,8 +173,8 @@ public class InputProcessor implements Serializable {
                 if (toks != null && toks.length > 1) {
                     ArrayList<String> wheatGeneIdsList = cssToTraesIdsMap.get(toks[0]);
 
-                    Double cM_corrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]),3);
-                    Double cM_original = reusable.CommonMaths.round(Double.parseDouble(toks[3]),3);
+                    Double cM_corrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
+                    Double cM_original = reusable.CommonMaths.round(Double.parseDouble(toks[3]), 3);
                     cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(cM_corrected, cM_original);
                     Contig c = new Contig(toks[0], toks[1], cM_corrected, cM_original, wheatGeneIdsList, genesTissuesFPKMsMap);
                     boolean isRice = false;
@@ -219,16 +217,19 @@ public class InputProcessor implements Serializable {
     }
 
     private void addUnorderedGenes(HashMap<String, String[]> mipsIdToAnnotationStringToksMap,
-            HashMap<String, String[]> mipsIdToRiceAnnotationStringToksMap, HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap) {
-        Iterator<String> iterator = genesTissuesFPKMsMap.keySet().iterator();
+            HashMap<String, String[]> mipsIdToRiceAnnotationStringToksMap, HashMap<String, ArrayList<Double>> fPKMsMap) {
+        Iterator<String> iterator = fPKMsMap.keySet().iterator();
         while (iterator.hasNext()) {
             String id = iterator.next();
             if (id.startsWith("Traes_" + chromosome)) {
                 String entry = traesOnCssMap.get(id);
                 String contigId = entry.split(",")[1];
+                ArrayList<Double> fpkms = fPKMsMap.get(id);
                 Gene g = new Gene(id, new Contig(contigId), getAnnotation(id, mipsIdToAnnotationStringToksMap, false), getAnnotation(id, mipsIdToRiceAnnotationStringToksMap, true),
-                        genesTissuesFPKMsMap.get(id), fpkmTableHeaders, entry);
+                        fpkms, fpkmTableHeaders, entry);
                 genes.add(g);
+                //no safety check here, but should not be overwriting anything as gene ids unique
+                genesTissuesFPKMsMap.put(id, fpkms);
             }
         }
     }
@@ -298,7 +299,6 @@ public class InputProcessor implements Serializable {
 
         return foundIn;
     }
-
 
     public PerLocationContigs getContigs(String inputFileName) {
         cM_filter = new Location_cMFilter();
