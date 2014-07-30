@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -105,15 +106,27 @@ public class Annotation implements Serializable {
     public String getMipsHTML(String fontColour) {
         if (hitId != null) {
             StringBuilder html = new StringBuilder();
+            boolean isLink = true;
             if (hitId.startsWith("AT")) {
                 html.append("<a href=\"http://www.arabidopsis.org/servlets/TairObject?type=locus&name=");
                 html.append(hitId.replaceAll("\\.\\d", ""));
+            } else if (hitId.startsWith("sp|")) {
+                html.append("<a href=\"http://www.uniprot.org/uniprot/");
+                html.append(hitId.split("\\|")[1]);
+            } else if (hitId.startsWith("UniRef")) {
+                html.append("<a href=\"http://www.uniprot.org/uniref/");
+                html.append(hitId);
+            } else {
+                isLink = false;
+                html.append("<font color=\"").append(fontColour).append("\">").append(hitId).append("</font> ");
+            }
+
+            //if AT/sp/uniprot
+            if (isLink) {
                 html.append("\" value=\"");
                 html.append(hitId);
                 html.append("\" target=\"_blank\" style=\"color: ").append(fontColour).append("\">");
                 html.append(hitId).append("</a> ");
-            } else {
-                html.append("<font color=\"").append(fontColour).append("\">").append(hitId).append("</font> ");
             }
             return html.toString();
         }
