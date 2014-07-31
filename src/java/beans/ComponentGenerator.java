@@ -93,7 +93,7 @@ public class ComponentGenerator implements Serializable {
         DefaultMenuItem helpMenuItem = new DefaultMenuItem();
         helpMenuItem.setId("helpIcon");
         helpMenuItem.setIcon("/images/help1.png");
-        helpMenuItem.setValue("Help...");
+        helpMenuItem.setValue("Help and info...");
         helpMenuItem.setOnclick("PF('helpPanel').show()");
         menuModelSimple.addElement(helpMenuItem);
 
@@ -115,7 +115,13 @@ public class ComponentGenerator implements Serializable {
 //        elem.setId("_searchButton");
         menuModelSimple.addElement(searchSeqMenuItem);
         
-
+        DefaultMenuItem searchOtherContigs = new DefaultMenuItem();
+        searchOtherContigs.setId("searchOtherContigsIcon");
+        searchOtherContigs.setIcon("/images/list.png");
+        searchOtherContigs.setValue("All contigs within a cM range...");
+        searchOtherContigs.setOnclick("PF('allContigsDialog').show()");
+        menuModelSimple.addElement(searchOtherContigs);
+        
         String genomes[] = {"A", "B", "D"};
         for (int i = 1; i < 8; i++) {
             String chrArm = "" + i;
@@ -132,13 +138,7 @@ public class ComponentGenerator implements Serializable {
                 menuModelSimple.addElement(item);
             }
         }
-        
-        DefaultMenuItem searchOtherContigs = new DefaultMenuItem();
-        searchOtherContigs.setId("searchOtherContigsIcon");
-        searchOtherContigs.setIcon("/images/list.png");
-        searchOtherContigs.setValue("All contigs within a cM range...");
-        searchOtherContigs.setOnclick("PF('allContigsDialog').show()");
-        menuModelSimple.addElement(searchOtherContigs);
+
         return menuModelSimple;
     }
     

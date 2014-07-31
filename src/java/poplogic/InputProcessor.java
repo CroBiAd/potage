@@ -313,8 +313,8 @@ public class InputProcessor implements Serializable {
             while ((inputLine = myData.readLine()) != null) {
                 String toks[] = inputLine.split("\t");
                 if (toks != null && toks.length > 1) {
-                    Double locationCorrected = Double.parseDouble(toks[2]);
-                    Double locationOriginal = Double.parseDouble(toks[3]);
+                    Double locationCorrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
+                    Double locationOriginal = reusable.CommonMaths.round(Double.parseDouble(toks[3]), 3);
                     cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(locationCorrected, locationOriginal);
                     contigs.addContig(new Contig(toks[0], chromosome, locationCorrected, locationOriginal, null, null));
                 }

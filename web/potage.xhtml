@@ -35,7 +35,7 @@
         <h:form id="formMenu"  >                
             <!--<img class="logos" alt="ACPFG banner" src="Styles/acpfg-diddle.gif" />-->
             <!--<img class="logos" src="Styles/bar.png" alt="" style="height: 30px; width: 100%"/>-->
-            <p:dock  id="dock" model="#{mainBean.menuModelSimple}" position="top" itemWidth="38" maxWidth="60" proximity="70"     />                          
+            <p:dock  id="dock" model="#{mainBean.menuModelSimple}" position="top" itemWidth="38" maxWidth="65" proximity="80"     />                          
         </h:form>
 
         <p:spacer id="dummyForOverlay" width="100%" height="90"  />
@@ -59,14 +59,51 @@
 
         <p:dialog  id="helpDialog" header="You are on your own!" widgetVar="helpPanel" modal="false"  styleClass="logos" fitViewport="true" 
                    showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="600">
+
+
+            <h2> <u>POTAGE</u> - PopSeq Ordered Triticum Aestivum Gene Expression  </h2>
+
+            <h4> This is a <i>beta</i> version of POTAGE, more information and some extra features should become available soon.</h4>
+            <ul> 
+                <li> Please report bugs to  <a href="mailto:radoslaw.suchecki@acpfg.com.au?Subject=POTAGE" target="_top">Rad</a> </li>
+            </ul>
+
+            <h3> POTAGE functionality depends on:</h3>
+
+            <h4> PopSeq </h4>
+            <ul> 
+                <li> Utilizes whole genome sequencing for genotyping to establish maker order from sequencing data </li>
+                <li> Provides the genetic anchoring of the IWGSC survey sequences by population sequencing 
+                    <a href="http://onlinelibrary.wiley.com/doi/10.1111/tpj.12319/abstract" target="_blank">Anchoring and ordering NGS contig assemblies by population sequencing (POPSEQ), Plant J. 76(4) 718-727</a>  
+                </li>
+                <ul>
+                    <li>Number of contigs per cM interval is dependent on recombination frequency </li>
+                    <li>The resolution of a genetic map is dependent on the population size</li>
+                    <!--<li>.....</li>-->
+                </ul>
+            </ul>
+            <h4>RNASeq data - Chinese Spring</h4> 
+            <ul> 
+                <li></li>
+            </ul>
+            <h4>MIPS gene predictions</h4> 
+            <ul> 
+                <li></li>
+            </ul>
+            <h4>Functional annotation</h4> 
+            <ul> 
+                <li></li>
+            </ul>
+
+
         </p:dialog>
 
         <p:dialog  id="searchDialog" header="Search for sequence on all chromosomes (by ID)" widgetVar="searchPanel" modal="false" position="left+25%,top+25%" 
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="600" height="160">
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="650" height="160">
             <h:form id="formSearch">
                 <p:toolbar >                        
                     <f:facet name="left">
-                        <p:inputText id="idInput" widgetVar="idInput" style="width:270px" placeholder="Enter IWGSC SS identifier or a MIPS gene ID" value="#{mainBean.userQuery}"  />
+                        <p:inputText id="idInput" widgetVar="idInput" style="width:300px" placeholder="Enter IWGSC SS identifier or a MIPS gene ID" value="#{mainBean.userQuery}"  />
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton  value="Search" id="searchButton" actionListener="#{mainBean.searchAll}" icon="ui-icon-search" update="idInput,searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList" 
@@ -180,7 +217,7 @@
 
 
         <p:dialog  id="allContigsDialog" header="All contigs within a cM range..." widgetVar="allContigsDialog" modal="false" minimizable="true"  
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="550">
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="550">
 
             <h:form id="formSearch3">
                 <p:spacer height="10" width="0" />
@@ -266,9 +303,9 @@
                                                  title="Save the selected IWGSC contig(s) to a FASTA file" disabled="#{!mainBean.perLocationContigs.somethingSelected()}" ajax="false" >                            
                                     <p:fileDownload value="#{mainBean.perLocationContigs.exportFileWholeIWGSC}"     />                                
                                 </p:commandButton>
-                                </f:facet>
+                            </f:facet>
 
-                                <f:facet name="right">
+                            <f:facet name="right">
 
                                 <h:outputLabel value="Export " escape="false" style="vertical-align: middle;" />
                                 <p:selectOneMenu value="#{mainBean.perLocationContigs.toExport}" style="vertical-align: middle; text-align: left; width: 120px" disabled="#{!mainBean.perLocationContigs.dataLoaded}"   >
@@ -276,7 +313,7 @@
                                     <f:selectItem itemLabel="whole table" itemValue="all"/>
                                     <p:ajax update="exportCSV"/>  
                                 </p:selectOneMenu>
-<!--                                    <f:selectItem itemLabel="selected rows" itemValue="selected" />-->
+                                <!--                                    <f:selectItem itemLabel="selected rows" itemValue="selected" />-->
                                 <h:commandLink id="exportCSV" disabled="#{mainBean.perLocationContigs.exportDsiabled()}" onclick="PF('statusDialog').show();">
                                     <p:graphicImage value="/images/csv_text.png" style="vertical-align: middle;" title="Export table to a CSV file." rendered="#{!mainBean.perLocationContigs.exportDsiabled()}"/>
                                     <p:graphicImage value="/images/csv_text_grey.png" style="vertical-align: middle;" title="Export table to a CSV file." rendered="#{mainBean.perLocationContigs.exportDsiabled()}"/>
@@ -298,7 +335,6 @@
 
 
         <h:form id="formCentre">
-
 
 
             <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" selection="#{mainBean.selectedGenes}"  
@@ -368,7 +404,7 @@
                     <p:row > 
                         <p:column rowspan="2" width="25" selectionMode="multiple"  />
                         <p:column rowspan="2" headerText="FPKMs" width="105"/>  
-                        <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}"  filterFunction="#{mainBean.filterIgnoreCaseContains}" width="135"/>
+                        <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}"  filterFunction="#{mainBean.filterIgnoreCaseContains}" width="140"/>
                         <p:column rowspan="2" headerText="From"   width="30"/>
                         <p:column rowspan="2" headerText="To"   width="30"/>
                         <p:column rowspan="2" headerText="+/-"  width="10" id="strand" /> 
@@ -498,9 +534,6 @@
                 </p:panel>
 
             </p:dataGrid>
-
-
-            <p:spacer height="150" />
 
 
 
