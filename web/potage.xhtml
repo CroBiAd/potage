@@ -337,7 +337,7 @@
         <h:form id="formCentre">
 
 
-            <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" selection="#{mainBean.selectedGenes}"  
+            <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" selection="#{mainBean.selectedGenes}" transient="true"  
                          id="dataTable" widgetVar="dataTable" filteredValue="#{mainBean.filteredGenes}" rowKey="#{gene.geneId}"  
                          paginator="true" rows="5" paginatorAlwaysVisible="true" rowsPerPageTemplate="5,10,20,40,80,160" style="text-align: center"
                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -522,7 +522,7 @@
                         </f:facet>
                     </p:toolbar>
                 </f:facet>
-                <p:panel header="#{gene.geneId}" style="text-align:center;"   >
+                <p:panel header="#{gene.geneId}  on  #{gene.contig.contigId}" style="text-align:center;"   >
                     <p:chart type="bar" model="#{gene.barChartModel}"    >
                         <!--<p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>-->
                     </p:chart>
