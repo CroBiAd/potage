@@ -17,7 +17,7 @@
             </f:facet>
 
 
-            <p:idleMonitor timeout="28800000" >
+            <p:idleMonitor timeout="3600000" >
                 <p:ajax event="idle" listener="#{loginController.timeout()}"/>
             </p:idleMonitor>
         </h:head>
@@ -402,7 +402,7 @@
                 </f:facet>
                 <p:columnGroup type="header" id="headerGroup" >   
                     <p:row > 
-                        <p:column rowspan="2" width="25" selectionMode="multiple"  />
+                        <p:column rowspan="2" selectionMode="multiple" width="25"  />
                         <p:column rowspan="2" headerText="FPKMs" width="105"/>  
                         <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}"  filterFunction="#{mainBean.filterIgnoreCaseContains}" width="140"/>
                         <p:column rowspan="2" headerText="From"   width="30"/>
