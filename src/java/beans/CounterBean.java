@@ -67,7 +67,7 @@ public class CounterBean implements Serializable{
 //        System.err.println(sb.toString());
 
         try {
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("/home/rad/pops_data/visits.txt", true)));
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("/var/tomcat/persist/pops_data/visits.txt", true)));
             out.println(sb.toString());
             out.close();
         } catch (IOException e) {

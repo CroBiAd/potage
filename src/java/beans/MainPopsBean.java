@@ -66,14 +66,14 @@ import reusable.Sequence;
 @ViewScoped
 public class MainPopsBean implements Serializable {
 
-    public final static String BLAST_DB_FOR_FETCHING = "/home/rad/coching_data/IWGSC_SS";
+    public final static String BLAST_DB_FOR_FETCHING = "/var/tomcat/persist/coching_data/IWGSC_SS";
     private final String BLAST_DB = "//resources//pops_all_rad.nal";
-    private final String PATH = "/home/rad/pops_data";
-    private final String ANNOTATION_RICE = "/home/rad/coching_data/anchoring/HCS_2013_annotations_rice.txt";
-    private final String ANNOTATION = "/home/rad/pops_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
-    private final String TRAES_CSS_MAP = "/home/rad/pops_data/Traes_to_CSS.map";
-    private final String FPKMS = "/home/rad/pops_data/FPKMs/reordered/popseqed_genes_on_with_header.fpkms";
-    private final String FPKMS_UNORDERED_GENES = "/home/rad/pops_data/FPKMs/reordered/unordered_genes_with_header.fpkms";
+    private final String PATH = "/var/tomcat/persist/pops_data";
+    private final String ANNOTATION_RICE = "/var/tomcat/persist/coching_data/anchoring/HCS_2013_annotations_rice.txt";
+    private final String ANNOTATION = "/var/tomcat/persist/pops_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
+    private final String TRAES_CSS_MAP = "/var/tomcat/persist/pops_data/Traes_to_CSS.map";
+    private final String FPKMS = "/var/tomcat/persist/pops_data/FPKMs/reordered/popseqed_genes_on_with_header.fpkms";
+    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/pops_data/FPKMs/reordered/unordered_genes_with_header.fpkms";
     public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM (corrected),cM(original),MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
 
     private boolean autoDisplayCharts = true;
@@ -96,7 +96,7 @@ public class MainPopsBean implements Serializable {
     private Gene geneSelectedForDialogDisplay;
     private String[] fpkmTableHeaders;
     private final static String DIALOG_CONTAINERS_PARENT = "formCentre";
-    private final static int DIALOGS_MAX_NUMBER = 10;
+    private final static int DIALOGS_MAX_NUMBER = 15;
     private final static int DIALOG_WIDTH = 450;
     private final static int DIALOG_HEIGHT = 250;
 //    protected HashMap<String, Dialog> dialogIdToDialogMap = new HashMap<>();
@@ -700,7 +700,7 @@ public class MainPopsBean implements Serializable {
 //                sb.append("-").append(c.getTo());
 //                sb.append(" ").append(c.getFrame());
                 sb.append(newline);
-//                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), "/home/rad/coching_data/IWGSC_SS").get(0).getSequenceString());
+//                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), "/var/tomcat/persist/coching_data/IWGSC_SS").get(0).getSequenceString());
                 sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
                 sb.append(newline);
             }

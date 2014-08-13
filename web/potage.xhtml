@@ -338,7 +338,7 @@
 
 
             <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" selection="#{mainBean.selectedGenes}" transient="true"  
-                         id="dataTable" widgetVar="dataTable" filteredValue="#{mainBean.filteredGenes}" rowKey="#{gene.geneId}"  
+                         id="dataTable" widgetVar="dataTable" filteredValue="#{mainBean.filteredGenes}" rowKey="#{gene.geneId}"  lazy="true" 
                          paginator="true" rows="5" paginatorAlwaysVisible="true" rowsPerPageTemplate="5,10,20,40,80,160" style="text-align: center"
                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowStyleClass="#{mainBean.contains(mainBean.userQuery, gene.geneId, gene.contig.contigId) ? 'highlighted' : null}" >
@@ -427,9 +427,8 @@
 
                 <p:column exportable="false">  
                     <p:blockUI block="dataTable" widgetVar="blockTable"   />
-                    <p:commandButton icon="ui-icon-newwin" id="view" value="View" onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide()" >
-                        <f:setPropertyActionListener value="#{gene}" target="#{mainBean.geneSelectedForDialogDisplay}"  />
-                    </p:commandButton>
+                    <p:commandButton icon="ui-icon-newwin" id="view" value="View" onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide()" 
+                                     action="#{mainBean.setGeneSelectedForDialogDisplay(gene)}"/>
                     <p:commandButton icon="ui-icon-arrowthickstop-1-s" title="Add gene to FPKM charts display" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide()" 
                                      action="#{mainBean.addGeneToDisplay(gene)}" update=":formCentre:chartsGrid"  />
                 </p:column>
@@ -506,19 +505,17 @@
             <p:dataGrid var="gene" value="#{mainBean.selectedGenesForChartDisplay}" columns="3" rows="6" paginator="true" id="chartsGrid" widgetVar="chartsGrid"
                         emptyMessage="No genes selected for display." 
                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                        rowsPerPageTemplate="3,6,9" lazy="true" >
-                <p:ajax event="page" onstart="PF('blockCharts').show();" oncomplete="PF('blockCharts').hide();" />   
+                        rowsPerPageTemplate="3,6,9" >
+                <p:ajax event="page" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />   
                 <f:facet name="header" >
                     <p:toolbar>
                         <f:facet name="left">
                             <h:outputText value="FPKM charts for selected genes"  />
                         </f:facet>
                         <f:facet name="right">
-                            <p:blockUI block="chartsGrid" widgetVar="blockCharts"    />
-                            <p:commandButton id="clearCharts" widgetVar="clearCharts" value="Clear charts display"  icon="ui-icon-cancel" action="#{mainBean.clearSelectedGenesForChartDisplay()}" onstart="PF('blockCharts').show();"   
-                                             oncomplete="PF('blockCharts').hide();" title="Clear charts display" disabled="#{mainBean.hasNoGenesSelectedForDisplay()}" 
-                                             update=":formCentre:chartsGrid"                             
-                                             /> 
+                            <p:commandButton id="clearCharts" widgetVar="clearCharts" value="Clear charts display"  icon="ui-icon-cancel" action="#{mainBean.clearSelectedGenesForChartDisplay()}" 
+                                             onstart="PF('blockUI').show();"   oncomplete="PF('blockUI').hide();" title="Clear charts display" 
+                                             disabled="#{mainBean.hasNoGenesSelectedForDisplay()}" update=":formCentre:chartsGrid"/> 
                         </f:facet>
                     </p:toolbar>
                 </f:facet>
@@ -527,8 +524,8 @@
                         <!--<p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>-->
                     </p:chart>
                     <f:facet name="actions" >
-                        <p:commandButton icon="ui-icon-trash" action="#{mainBean.removeFromChartDisplay(gene)}" onstart="PF('blockCharts').show();"   
-                                         oncomplete="PF('blockCharts').hide();" title="Remove chart" process=":formCentre:chartsGrid" 
+                        <p:commandButton icon="ui-icon-trash" action="#{mainBean.removeFromChartDisplay(gene)}" onstart="PF('blockUI').show();"   
+                                         oncomplete="PF('blockUI').hide();" title="Remove chart" process=":formCentre:chartsGrid" 
                                          update=":formCentre:chartsGrid" styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default"/>   
                     </f:facet>
                 </p:panel>
