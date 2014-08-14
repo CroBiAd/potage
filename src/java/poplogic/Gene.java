@@ -8,6 +8,7 @@ import beans.MainPopsBean;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.BarChartModel;
@@ -127,6 +128,12 @@ public class Gene implements Serializable { //, Comparable<Contig> {
         return strand;
     }
     
-    
-
+    public boolean isContainedInList(List<Gene> list) {
+        for (Gene gene : list) {
+            if(gene.getGeneId().equalsIgnoreCase(this.geneId))
+                return true;
+        }
+        return false;
+    }
+ 
 }

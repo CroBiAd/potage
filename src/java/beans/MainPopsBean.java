@@ -566,7 +566,7 @@ public class MainPopsBean implements Serializable {
             if (selectedGenesForChartDisplay == null) {
                 selectedGenesForChartDisplay = new ArrayList<>(selectedGenes.size());
             }
-            if (!selectedGenesForChartDisplay.contains(gene)) {
+            if (!gene.isContainedInList(selectedGenesForChartDisplay)) {
                 selectedGenesForChartDisplay.add(gene);
             } else {
                 growl(FacesMessage.SEVERITY_WARN, "Chart already displayed for ", gene.getGeneId(), "growl");

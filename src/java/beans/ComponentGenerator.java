@@ -149,16 +149,16 @@ public class ComponentGenerator implements Serializable {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         UIComponent form = facesContext.getViewRoot().findComponent(parentId);
         for (int i = start; i < stop; i++) {
-//            OutputLabel outputLabel = new OutputLabel();
-//            String id = "dialogsDisplay_" + i;
-//            outputLabel.setId(id);
-//            availableDialogContainers.add(outputLabel);
-//            form.getChildren().add(outputLabel);
-            OutputPanel outputPanel = new OutputPanel();
+            OutputLabel outputLabel = new OutputLabel();
             String id = "dialogsDisplay_" + i;
-            outputPanel.setId(id);
-            availableDialogContainers.add(outputPanel);
-            form.getChildren().add(outputPanel);
+            outputLabel.setId(id);
+            availableDialogContainers.add(outputLabel);
+            form.getChildren().add(outputLabel);
+//            OutputPanel outputPanel = new OutputPanel();
+//            String id = "dialogsDisplay_" + i;
+//            outputPanel.setId(id);
+//            availableDialogContainers.add(outputPanel);
+//            form.getChildren().add(outputPanel);
         }
         RequestContext requestContext = RequestContext.getCurrentInstance();
         requestContext.update(parentId);
