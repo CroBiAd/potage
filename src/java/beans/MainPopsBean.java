@@ -349,7 +349,6 @@ public class MainPopsBean implements Serializable {
     public void setGeneSelectedForDialogDisplay(Gene geneSelectedForDialogDisplay) {
         this.geneSelectedForDialogDisplay = geneSelectedForDialogDisplay;
         generateChartDialog();
-        System.err.println("Generating dialog!");
     }
 
     public void generateDialogContainers() {
