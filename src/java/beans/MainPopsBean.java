@@ -41,12 +41,13 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.event.data.FilterEvent;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.menu.DefaultMenuModel;
 import poplogic.Contig;
 import poplogic.Gene;
-import poplogic.GeneDataModel;
 import poplogic.InputProcessor;
+import poplogic.LazyGeneDataModel;
 import poplogic.PerLocationContigs;
 import reusable.Hit;
 import reusable.HitDataModel;
@@ -79,12 +80,13 @@ public class MainPopsBean implements Serializable {
     private boolean autoDisplayCharts = true;
 
     private String currentChromosome;
-//    private GeneDataModel selectedDataModel;
-//    private GeneDataModel loadedDataModel;
+//    private LazyGeneDataModel selectedDataModel;
+    private LazyDataModel<Gene> loadedDataModel;
+//    private LazyGeneDataModel filteredDataModel;
     private ArrayList<Gene> loadedGenes;
     private ArrayList<Gene> selectedGenes;
-    private ArrayList<Gene> selectedGenesForChartDisplay;
     private ArrayList<Gene> filteredGenes;
+    private ArrayList<Gene> selectedGenesForChartDisplay;
     HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
     private Location_cMFilter cM_filter;
 
@@ -126,6 +128,8 @@ public class MainPopsBean implements Serializable {
         perLocationContigs = new PerLocationContigs(null, new Location_cMFilter());
         cM_filter = new Location_cMFilter();
     }
+    
+    
 
     public PerLocationContigs getPerLocationContigs() {
         return perLocationContigs;
@@ -345,6 +349,7 @@ public class MainPopsBean implements Serializable {
     public void setGeneSelectedForDialogDisplay(Gene geneSelectedForDialogDisplay) {
         this.geneSelectedForDialogDisplay = geneSelectedForDialogDisplay;
         generateChartDialog();
+        System.err.println("Generating dialog!");
     }
 
     public void generateDialogContainers() {
@@ -472,7 +477,8 @@ public class MainPopsBean implements Serializable {
             String fileName = getInputFilename(chrmArm, true);
             loadData(fileName);
         } else {
-//            loadedDataModel = null; //putting in a dummy
+            loadedDataModel = null; //putting in a dummy
+//            selectedDataModel = null;
             loadedGenes = null;
         }
     }
@@ -494,9 +500,10 @@ public class MainPopsBean implements Serializable {
         fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
         ArrayList<Gene> inputList = inputProcessor.getGenes();
         if (inputList != null && !inputList.isEmpty()) {
-//                selectedDataModel = new GeneDataModel(inputList);
 //            loadedDataModel = new GeneDataModel(inputProcessor);
             loadedGenes = inputList;
+            loadedDataModel = new LazyGeneDataModel(inputList); 
+            
             genesTissuesFPKMsMap = inputProcessor.getGenesTissuesFPKMsMap();
             cM_filter = inputProcessor.getcM_filter();
             filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
@@ -1029,4 +1036,9 @@ public class MainPopsBean implements Serializable {
         return loadedGenes;
     }
 
+    public LazyDataModel<Gene> getLoadedDataModel() {
+        return loadedDataModel;
+    }
+
+    
 }

@@ -133,7 +133,8 @@ public class ComponentGenerator implements Serializable {
 //                item.setId("_" + chrArm1);
                 item.setUpdate(":formCentre:dataTable,:formCentre:chartsGrid");
                 item.setOnstart("PF('blockUI').show()");
-                item.setOncomplete("PF('blockUI').hide();PF('dataTable').filter()");
+//                item.setOncomplete("PF('blockUI').hide();PF('dataTable').filter()");
+                item.setOncomplete("PF('blockUI').hide();");
                 item.setCommand("#{mainBean.onSelect(\'" + chrArm1 + "\')}");
                 item.setIcon("/images/chr_logos/" + chrArm1 + ".png");
                 menuModelSimple.addElement(item);

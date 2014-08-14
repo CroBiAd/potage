@@ -334,15 +334,15 @@
         <!--<p:commandButton type="button" onclick="jQuery('.ui-row-toggler').click()" value="Expand/collapse gene annotation"  />-->
 
 
-        <h:form id="formCentre">
+        <h:form id="formCentre" >
 
 
-            <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" selection="#{mainBean.selectedGenes}" transient="true"  
+            <p:dataTable var="gene" value="#{mainBean.loadedDataModel}" styleClass="myTable" selection="#{mainBean.selectedGenes}"  
                          id="dataTable" widgetVar="dataTable" filteredValue="#{mainBean.filteredGenes}" rowKey="#{gene.geneId}"  lazy="true" 
                          paginator="true" rows="5" paginatorAlwaysVisible="true" rowsPerPageTemplate="5,10,20,40,80,160" style="text-align: center"
                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowStyleClass="#{mainBean.contains(mainBean.userQuery, gene.geneId, gene.contig.contigId) ? 'highlighted' : null}" >
-                <p:ajax event="page" onstart="PF('block2Table').show();" oncomplete="PF('block2Table').hide();" />    
+                <p:ajax event="page" onstart="PF('block2Table').show();" oncomplete="PF('block2Table').hide();" process="@this" update="@this"   />    
                 <f:facet name="header" >
                     <p:toolbar>
                         <f:facet name="left">
@@ -427,8 +427,8 @@
 
                 <p:column exportable="false">  
                     <p:blockUI block="dataTable" widgetVar="blockTable"   />
-                    <p:commandButton icon="ui-icon-newwin" id="view" value="View" onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide()" 
-                                     action="#{mainBean.setGeneSelectedForDialogDisplay(gene)}"/>
+                    <p:commandButton icon="ui-icon-newwin" id="view" value="View" onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide()"  
+                                     action="#{mainBean.setGeneSelectedForDialogDisplay(gene)}" />
                     <p:commandButton icon="ui-icon-arrowthickstop-1-s" title="Add gene to FPKM charts display" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide()" 
                                      action="#{mainBean.addGeneToDisplay(gene)}" update=":formCentre:chartsGrid"  />
                 </p:column>
@@ -447,7 +447,7 @@
                 <p:column> <h:outputText value="#{gene.annotationRice.getRiceHTML('mediumseagreen')}" escape="fasle" /> </p:column> 
                 <p:column> <h:outputText value="#{gene.annotationRice.annotationString}" style="color: mediumseagreen"/> </p:column>  
 
-                <p:ajax event="rowSelect" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid"/>  
+                <p:ajax event="rowSelect" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid" />  
                 <p:ajax event="rowUnselect" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid"/>
                 <p:ajax event="toggleSelect" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid"/>
                 <p:ajax event="rowSelectCheckbox" update="exportToolbar,:formCentre:chartsGrid" process="@this,:formCentre:chartsGrid"/>
