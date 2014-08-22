@@ -18,6 +18,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.chart.Chart;
+import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.outputlabel.OutputLabel;
 import org.primefaces.component.outputpanel.OutputPanel;
@@ -175,6 +176,7 @@ public class ComponentGenerator implements Serializable {
         chartComponent.setModel(barModel);
         chartComponent.setStyle("height:" + chartHeight + "px; width: " + chartWidth + "px");
         chartComponent.setId("chart_" + idSuffix);
+       
 
         return chartComponent;
     }
@@ -224,7 +226,14 @@ public class ComponentGenerator implements Serializable {
         ajaxBehavior.setListener(expression2);
         ajaxBehavior.addAjaxBehaviorListener(new CloseDialoglListener(geneIdToDialogMap, availableDialogContainers));
         dialog.addClientBehavior("close", ajaxBehavior);
+        
 
+//        CommandButton button = new CommandButton();
+//        button.setIcon("ui-icon-newwin");
+//        button.setActionExpression(facesContext.getApplication().getExpressionFactory().createMethodExpression(facesContext.getELContext(), "#{mainBean.exportChart(gene)}", null, null));
+//        button.setOncomplete("exportChart(xhr, status, args);");
+//        button.setTitle("Export chart as image");      
+//        dialog.getChildren().add(button);
         return dialog;
     }
 

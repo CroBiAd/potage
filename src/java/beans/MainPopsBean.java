@@ -128,8 +128,6 @@ public class MainPopsBean implements Serializable {
         perLocationContigs = new PerLocationContigs(null, new Location_cMFilter());
         cM_filter = new Location_cMFilter();
     }
-    
-    
 
     public PerLocationContigs getPerLocationContigs() {
         return perLocationContigs;
@@ -501,13 +499,13 @@ public class MainPopsBean implements Serializable {
         if (inputList != null && !inputList.isEmpty()) {
 //            loadedDataModel = new GeneDataModel(inputProcessor);
             loadedGenes = inputList;
-            loadedDataModel = new LazyGeneDataModel(inputList); 
-            
+            loadedDataModel = new LazyGeneDataModel(inputList);
+
             genesTissuesFPKMsMap = inputProcessor.getGenesTissuesFPKMsMap();
             cM_filter = inputProcessor.getcM_filter();
             filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
             selectedGenes = null;
-            
+
 //            selectedDataModel = loadedDataModel;
 //                updateDisplayedContigs(); //by default only dispaly contigs with genes not all
         }
@@ -582,6 +580,12 @@ public class MainPopsBean implements Serializable {
             }
         }
     }
+
+    public void exportChart(Gene gene) {
+        RequestContext.getCurrentInstance().getCallbackParams().put("exportChart", "chart__"+gene.getGeneId());
+//        System.err.println(RequestContext.getCurrentInstance().getCallbackParams().get("exportChart"));
+    }
+
 
     public ArrayList<Gene> getSelectedGenesForChartDisplay() {
         return selectedGenesForChartDisplay;
@@ -779,11 +783,11 @@ public class MainPopsBean implements Serializable {
                 }
             }
             ArrayList<Double> fpkms = genesTissuesFPKMsMap.get(geneId);
-            if(fpkms != null && !fpkms.isEmpty()) {
-                for (int i=2; i<fpkms.size(); i++) {
+            if (fpkms != null && !fpkms.isEmpty()) {
+                for (int i = 2; i < fpkms.size(); i++) {
                     Double fpkmDouble = fpkms.get(i);
-                    Cell createdCell = row.createCell(row.getLastCellNum());            
-                    createdCell.setCellValue(fpkmDouble);                    
+                    Cell createdCell = row.createCell(row.getLastCellNum());
+                    createdCell.setCellValue(fpkmDouble);
                 }
             }
 //            cellIterator = row.cellIterator();
@@ -1039,5 +1043,4 @@ public class MainPopsBean implements Serializable {
         return loadedDataModel;
     }
 
-    
 }

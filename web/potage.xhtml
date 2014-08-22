@@ -520,13 +520,16 @@
                     </p:toolbar>
                 </f:facet>
                 <p:panel header="#{gene.geneId}  on  #{gene.contig.contigId}" style="text-align:center;"   >
-                    <p:chart type="bar" model="#{gene.barChartModel}"    >
+                    <p:chart type="bar" model="#{gene.barChartModel}" widgetVar="chart__#{gene.geneId}"  >
                         <!--<p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>-->
                     </p:chart>
                     <f:facet name="actions" >
                         <p:commandButton icon="ui-icon-trash" action="#{mainBean.removeFromChartDisplay(gene)}" onstart="PF('blockUI').show();"   
                                          oncomplete="PF('blockUI').hide();" title="Remove chart" process=":formCentre:chartsGrid" 
                                          update=":formCentre:chartsGrid" styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default"/>   
+                        <p:commandButton icon="ui-icon-image" action="#{mainBean.exportChart(gene)}"    
+                                         oncomplete="exportChart(xhr, status, args);" title="Export chart as image"  
+                                         styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default"/>   
                     </f:facet>
                 </p:panel>
 
@@ -543,11 +546,12 @@
 
 
 
-     <!--<h:outputText value="#{locationBean.cM_original}" />-->
-            <!--TODO: list of all contigs at this--> 
-
             <p:remoteCommand name="updatechartsgrid"  update=":formCentre:chartsGrid" action="#{randomBean.getRandom(1)}" process=":formCentre:chartsGrid" />
         </h:form>
+
+        <p:dialog widgetVar="exportChart" showEffect="fade" modal="true" header="Right-click on the chart to copy/save it as image." resizable="false"  >
+            <p:outputPanel id="outputChart" layout="block"/>
+        </p:dialog>
 
         <p:spacer />
         <div class="footer">©&nbsp;Copyright&nbsp;2014&nbsp;
@@ -557,6 +561,17 @@
     <script type="text/javascript">
         window.onresize = function(event) {
             updatechartsgrid();
+        }
+    </script>
+    <script type="text/javascript">
+        function exportChart(xhr, status, args) {
+            var gene = args.exportChart;
+//            alert(gene);            
+            //export image
+//            $('#outputChart').empty().append(PF('Traes_3DS_310A77808').exportAsImage());
+            $('#outputChart').empty().append(PF(gene).exportAsImage());
+            //show the dialog
+            PF('exportChart').show();
         }
     </script>
 </f:view>

@@ -87,6 +87,7 @@ public class Gene implements Serializable { //, Comparable<Contig> {
     public BarChartModel getBarChartModel() {
         if (barChartModel == null) {
             barChartModel = new BarChartModel();
+            barChartModel.setTitle(getGeneId());
             for (int i = 2; i < tissuesFPKMs.size(); i++) { //0,1 are start and stop postioins
                 BarChartSeries series = new BarChartSeries();
                 for (int j = 2; j < tissuesFPKMs.size(); j++) {

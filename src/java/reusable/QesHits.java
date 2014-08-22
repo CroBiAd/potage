@@ -49,8 +49,8 @@ public class QesHits implements Serializable{
                 results.add(new HitsForQuery(hits,s.getIdentifierString()));
         }
 //TODO uncomment this::::
-        String cmd2[] = {"rm", infile};
-        reusable.ExecProcessor.execute(cmd2);
+//        String cmd2[] = {"rm", infile};
+//        reusable.ExecProcessor.execute(cmd2);
         return results;
 
     }
