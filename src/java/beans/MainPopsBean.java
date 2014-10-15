@@ -107,8 +107,8 @@ public class MainPopsBean implements Serializable {
     private String[] fpkmTableHeaders;
     private final static String DIALOG_CONTAINERS_PARENT = "formCentre";
     private final static int DIALOGS_MAX_NUMBER = 15;
-    private final static int DIALOG_WIDTH = 550; //450;
-    private final static int DIALOG_HEIGHT = 350; //250;
+    private final static int DIALOG_WIDTH = 480; //450;
+    private final static int DIALOG_HEIGHT = 280; //250;
 //    protected HashMap<String, Dialog> dialogIdToDialogMap = new HashMap<>();
     protected HashMap<String, Dialog> geneIdToDialogMap = new HashMap<>();
     protected ArrayList<UIComponent> availableDialogContainers = new ArrayList<>();
