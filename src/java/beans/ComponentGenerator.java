@@ -38,11 +38,11 @@ import poplogic.Gene;
  */
 public class ComponentGenerator implements Serializable {
 
-     public DefaultMenuModel generateDynamicMenuForOtherContigs() {
-         
+    public DefaultMenuModel generateDynamicMenuForOtherContigs() {
+
         DefaultMenuModel menuModel = new DefaultMenuModel();
         String genomes[] = {"A", "B", "D"};
-            for (String g : genomes) {
+        for (String g : genomes) {
             DefaultSubMenu submenu = new DefaultSubMenu();
             submenu.setLabel(g);
             for (int i = 1; i < 8; i++) {
@@ -62,8 +62,12 @@ public class ComponentGenerator implements Serializable {
         }
         return menuModel;
     }
-     
-     public DefaultMenuModel generateDynamicMenuMultilevel() {
+
+    /**
+     * not used with dock
+     * @return 
+     */
+    public DefaultMenuModel generateDynamicMenuMultilevel() {
         DefaultMenuModel menuModel = new DefaultMenuModel();
         String genomes[] = {"A", "B", "D"};
         String arms[] = {"L", "S"};
@@ -90,7 +94,7 @@ public class ComponentGenerator implements Serializable {
 
     public DefaultMenuModel generateDynamicMenuSingleLevel() {
         DefaultMenuModel menuModelSimple = new DefaultMenuModel();
-        
+
         //add help icon/button
         DefaultMenuItem helpMenuItem = new DefaultMenuItem();
         helpMenuItem.setId("helpIcon");
@@ -107,7 +111,7 @@ public class ComponentGenerator implements Serializable {
         searchMenuItem.setOnclick("PF('searchPanel').show()");
 //        elem.setId("_searchButton");
         menuModelSimple.addElement(searchMenuItem);
-        
+
 //add search button-icon
         DefaultMenuItem searchSeqMenuItem = new DefaultMenuItem();
         searchSeqMenuItem.setId("searchSeqIcon");
@@ -116,14 +120,14 @@ public class ComponentGenerator implements Serializable {
         searchSeqMenuItem.setOnclick("PF('searchSeqPanel').show()");
 //        elem.setId("_searchButton");
         menuModelSimple.addElement(searchSeqMenuItem);
-        
+
         DefaultMenuItem searchOtherContigs = new DefaultMenuItem();
         searchOtherContigs.setId("searchOtherContigsIcon");
         searchOtherContigs.setIcon("/images/list.png");
         searchOtherContigs.setValue("All contigs within a cM range...");
         searchOtherContigs.setOnclick("PF('allContigsDialog').show()");
         menuModelSimple.addElement(searchOtherContigs);
-        
+
         String genomes[] = {"A", "B", "D"};
         for (int i = 1; i < 8; i++) {
             String chrArm = "" + i;
@@ -144,7 +148,7 @@ public class ComponentGenerator implements Serializable {
 
         return menuModelSimple;
     }
-    
+
     public ArrayList<UIComponent> generateDialogContainers(int start, int stop, String parentId) {
         ArrayList<UIComponent> availableDialogContainers = new ArrayList<>(stop - start + 1);
         FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -169,14 +173,13 @@ public class ComponentGenerator implements Serializable {
 
     public Chart generateChart(String idSuffix, int dialogWidth, int dialogHeight, BarChartModel barModel) {
 
-        int chartWidth = dialogWidth - dialogWidth / 20;
-        int chartHeight = dialogHeight - dialogHeight / 25;
+        int chartWidth = dialogWidth - dialogWidth /10; /// 20;
+        int chartHeight = dialogHeight - dialogHeight /4; /// 25;
         Chart chartComponent = new Chart();
         chartComponent.setType("bar");
         chartComponent.setModel(barModel);
         chartComponent.setStyle("height:" + chartHeight + "px; width: " + chartWidth + "px");
         chartComponent.setId("chart_" + idSuffix);
-       
 
         return chartComponent;
     }
@@ -220,13 +223,12 @@ public class ComponentGenerator implements Serializable {
 ////        Draggable drag = new Draggable();
 ////        drag.setFor(currentDisplay + ":" + dialogId);
 ////        Ajax event handing needed to be able to permamently remove closed dialogs from the tree (otherwise they are just hidden onClose)
-        String exp = "#{mainBean.handleClose('" + dialogId + "')}";
+        String exp = "#{mainBean.handleClose('" + dialogId + "')}"; //there is no such method!
         AjaxBehavior ajaxBehavior = new AjaxBehavior();
         MethodExpression expression2 = facesContext.getApplication().getExpressionFactory().createMethodExpression(facesContext.getELContext(), exp, null, null); //expectedParamTypes); //If you receive parameters put new Class[]{Object.class});
         ajaxBehavior.setListener(expression2);
         ajaxBehavior.addAjaxBehaviorListener(new CloseDialoglListener(geneIdToDialogMap, availableDialogContainers));
         dialog.addClientBehavior("close", ajaxBehavior);
-        
 
 //        CommandButton button = new CommandButton();
 //        button.setIcon("ui-icon-newwin");

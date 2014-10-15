@@ -82,8 +82,11 @@
                     <!--<li>.....</li>-->
                 </ul>
             </ul>
-            <h4>RNASeq data - Chinese Spring</h4> 
+            <h4>RNASeq data </h4> 
             <ul> 
+                <li>Chinese Spring</li>
+                <li>Chinese Spring/Cornerstone</li>
+                <li>Chris</li>
                 <li></li>
             </ul>
             <h4>MIPS gene predictions</h4> 
@@ -93,6 +96,11 @@
             <h4>Functional annotation</h4> 
             <ul> 
                 <li></li>
+            </ul>
+            <h4>Words of caution</h4>
+            <ul> 
+                <li>The FPKM counts are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions.  </li>
+                <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and FPKM values may be quite misleading. </li>
             </ul>
 
 
@@ -428,7 +436,7 @@
                 <p:column exportable="false">  
                     <p:blockUI block="dataTable" widgetVar="blockTable"   />
                     <p:commandButton icon="ui-icon-newwin" id="view" value="View" onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide()"  
-                                     action="#{mainBean.setGeneSelectedForDialogDisplay(gene)}" />
+                                     action="#{mainBean.setGeneSelectedForDialogDisplay(gene)}"/>
                     <p:commandButton icon="ui-icon-arrowthickstop-1-s" title="Add gene to FPKM charts display" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide()" 
                                      action="#{mainBean.addGeneToDisplay(gene)}" update=":formCentre:chartsGrid"  />
                 </p:column>
@@ -520,14 +528,25 @@
                     </p:toolbar>
                 </f:facet>
                 <p:panel header="#{gene.geneId}  on  #{gene.contig.contigId}" style="text-align:center;"   >
-                    <p:chart type="bar" model="#{gene.barChartModel}" widgetVar="chart__#{gene.geneId}"  >
-                        <!--<p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>-->
-                    </p:chart>
+                    <p:tabView id="chartsTabView" >
+                        <p:ajax event="tabChange" update="chartsTabView" listener="#{gene.onTabChange}"/>
+                        <p:tab >
+                            <p:chart type="bar" model="#{gene.getBarChartModel(0)}" widgetVar="chart_0_#{gene.geneId}"   >
+                                <!--<p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>-->
+                            </p:chart>                            
+                        </p:tab>
+                        <p:tab >
+                            <p:chart type="bar" model="#{gene.getBarChartModel(1)}" widgetVar="chart_1_#{gene.geneId}"  />
+                        </p:tab>
+                        <p:tab >
+                            <p:chart type="bar" model="#{gene.getBarChartModel(2)}" widgetVar="chart_2_#{gene.geneId}"  />
+                        </p:tab>
+                    </p:tabView>
                     <f:facet name="actions" >
                         <p:commandButton icon="ui-icon-trash" action="#{mainBean.removeFromChartDisplay(gene)}" onstart="PF('blockUI').show();"   
                                          oncomplete="PF('blockUI').hide();" title="Remove chart" process=":formCentre:chartsGrid" 
                                          update=":formCentre:chartsGrid" styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default"/>   
-                        <p:commandButton icon="ui-icon-image" action="#{mainBean.exportChart(gene)}"    
+                        <p:commandButton icon="ui-icon-image" action="#{gene.exportChart(gene)}"    
                                          oncomplete="exportChart(xhr, status, args);" title="Export chart as image"  
                                          styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default"/>   
                     </f:facet>
@@ -544,9 +563,8 @@
 
 
 
-
-
             <p:remoteCommand name="updatechartsgrid"  update=":formCentre:chartsGrid" action="#{randomBean.getRandom(1)}" process=":formCentre:chartsGrid" />
+            
         </h:form>
 
         <p:dialog widgetVar="exportChart" showEffect="fade" modal="true" header="Right-click on the chart to copy/save it as image." resizable="false"  >
@@ -568,7 +586,7 @@
             var gene = args.exportChart;
 //            alert(gene);            
             //export image
-//            $('#outputChart').empty().append(PF('Traes_3DS_310A77808').exportAsImage());
+//            $('#outputChart').empty().append(PF('Traes_3DS_310A77808' ).exportAsImage());
             $('#outputChart').empty().append(PF(gene).exportAsImage());
             //show the dialog
             PF('exportChart').show();

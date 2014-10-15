@@ -31,11 +31,17 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.primefaces.component.carousel.Carousel;
 import org.primefaces.component.chart.Chart;
+import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datagrid.DataGrid;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.resizable.Resizable;
+import org.primefaces.component.ring.Ring;
+import org.primefaces.component.spacer.Spacer;
+import org.primefaces.component.tabview.Tab;
+import org.primefaces.component.tabview.TabView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.ItemSelectEvent;
@@ -43,6 +49,7 @@ import org.primefaces.event.data.FilterEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.menu.DefaultMenuModel;
 import poplogic.Contig;
 import poplogic.Gene;
@@ -75,6 +82,7 @@ public class MainPopsBean implements Serializable {
     private final String TRAES_CSS_MAP = "/var/tomcat/persist/pops_data/Traes_to_CSS.map";
     private final String FPKMS = "/var/tomcat/persist/pops_data/FPKMs/reordered/popseqed_genes_on_with_header.fpkms";
     private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/pops_data/FPKMs/reordered/unordered_genes_with_header.fpkms";
+    private final String FPKM_SETTINGS = "/var/tomcat/persist/pops_data/FPKMs/reordered/fpkm_data_settings.txt";
     public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM (corrected),cM(original),MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
 
     private boolean autoDisplayCharts = true;
@@ -99,8 +107,8 @@ public class MainPopsBean implements Serializable {
     private String[] fpkmTableHeaders;
     private final static String DIALOG_CONTAINERS_PARENT = "formCentre";
     private final static int DIALOGS_MAX_NUMBER = 15;
-    private final static int DIALOG_WIDTH = 450;
-    private final static int DIALOG_HEIGHT = 250;
+    private final static int DIALOG_WIDTH = 550; //450;
+    private final static int DIALOG_HEIGHT = 350; //250;
 //    protected HashMap<String, Dialog> dialogIdToDialogMap = new HashMap<>();
     protected HashMap<String, Dialog> geneIdToDialogMap = new HashMap<>();
     protected ArrayList<UIComponent> availableDialogContainers = new ArrayList<>();
@@ -346,9 +354,16 @@ public class MainPopsBean implements Serializable {
 
     public void setGeneSelectedForDialogDisplay(Gene geneSelectedForDialogDisplay) {
         this.geneSelectedForDialogDisplay = geneSelectedForDialogDisplay;
+//        currentContainerId = generateChartDialog();
         generateChartDialog();
     }
+    private String currentContainerId;
 
+    public String getCurrentContainerId() {
+        return currentContainerId;
+    }
+    
+    
     public void generateDialogContainers() {
         if (availableDialogContainers == null || availableDialogContainers.isEmpty()) {
             ComponentGenerator componentGenerator = new ComponentGenerator();
@@ -367,23 +382,69 @@ public class MainPopsBean implements Serializable {
     }
 
     private void generateChartDialog() {
-
         Dialog dlg = geneIdToDialogMap.get(geneSelectedForDialogDisplay.getGeneId());
         if (dlg != null) {
             growl(FacesMessage.SEVERITY_WARN, "Note!", "FPKM chart already opened for " + geneSelectedForDialogDisplay.getGeneId(), "growl");
             //for now re-draw
             RequestContext.getCurrentInstance().update(dlg.getParent().getId());
+//            return null;
         } else if (availableDialogContainers.isEmpty()) {
-            growl(FacesMessage.SEVERITY_WARN, "Getting crowded", "You have reached the maximum number of " + DIALOGS_MAX_NUMBER + " charts displayed simultaneously. Close some before openning more.", "growl");
+            growl(FacesMessage.SEVERITY_WARN, "Getting crowded", "You have reached the maximum number of " + DIALOGS_MAX_NUMBER + " charts displayed simultaneously. Close some before openning more.", "growl");            
+//            return null;
         } else {
             UIComponent container = availableDialogContainers.remove(availableDialogContainers.size() - 1);
             String currentDisplay = DIALOG_CONTAINERS_PARENT + ":" + container.getId();
+            
             ComponentGenerator componentGenerator = new ComponentGenerator();
             Dialog dialog = componentGenerator.generateDialog(geneSelectedForDialogDisplay, geneIdToDialogMap, DIALOG_WIDTH, DIALOG_HEIGHT, availableDialogContainers);
             container.getChildren().add(dialog);
+//            containerId = container.getClientId().split("_")[1];
             String suffix = container.getClientId().split("_")[1]; //for no good reason using the same suffix for component identifiers
-            Chart chart = componentGenerator.generateChart(suffix, DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel());
-            dialog.getChildren().add(chart);
+            
+            
+            ArrayList<BarChartModel> models = geneSelectedForDialogDisplay.getBarChartModels();
+            for (int i = 0; i < models.size(); i++) {
+                BarChartModel barChartModel = models.get(i);
+                Chart chart = componentGenerator.generateChart(suffix+i, DIALOG_WIDTH, DIALOG_HEIGHT, barChartModel);
+                dialog.getChildren().add(chart);
+                dialog.getChildren().add(new Spacer());
+            }
+            
+//            Chart chart1 = componentGenerator.generateChart(suffix+"1", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(0));
+//            Chart chart3 = componentGenerator.generateChart(suffix+"2", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(1));
+            
+//            CommandButton left = new CommandButton();
+//            left.setIcon("ui-icon-arrowthick-1-w");
+//            CommandButton right = new CommandButton();
+//            right.setIcon("ui-icon-arrowthick-1-e");
+//            right.setUpdate(currentDisplay);
+//            dialog.getChildren().add(left);
+//            dialog.getChildren().add(right);
+            
+//            dialog.getChildren().add(chart3);
+//            TabView tabView = new TabView();
+//            tabView.setId("TabView");
+//            tabView.setWidgetVar("TabViewWV");
+//            
+////            tabView.setScrollable(true);
+//            Tab tab1 = new Tab();
+//            tab1.setTitle("Chinese Spring");            
+////            tab1.setId("tab1"+suffix);
+////            Tab tab2 = new Tab();
+////            tab2.setTitletip("Chinese Spring/Cornerstone");
+////            tab2.setTitle("CS/Cornerstone");
+//            Tab tab3 = new Tab();
+//            tab3.setTitle("Chris");
+////            tab3.setId("tab3"+suffix);
+//            tabView.getChildren().add(tab1);
+////            tabView.getChildren().add(tab2);
+//            tabView.getChildren().add(tab3);
+//            tab1.getChildren().add(componentGenerator.generateChart(suffix+"A", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(0)));
+//            tabView.setActiveIndex(1);
+//            tab3.getChildren().add(componentGenerator.generateChart(suffix+"B", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(1)));
+//            dialog.getChildren().add(tabView);
+            
+//            tab3.getChildren().add(componentGenerator.generateChart(suffix+"C", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel().get(0)));
 
             //Using resizable component as built-in dialog resize currently does not trigger an event
 //            Resizable resizable = new Resizable();
@@ -393,6 +454,7 @@ public class MainPopsBean implements Serializable {
 //            resizable.setOnResize("updateDialogCharts();");
 //            container.getChildren().add(resizable);
             RequestContext.getCurrentInstance().update(currentDisplay);
+//            return currentDisplay;
         }
     }
 
@@ -493,7 +555,7 @@ public class MainPopsBean implements Serializable {
         if (appendUnordered) {
             unordered = FPKMS_UNORDERED_GENES;
         }
-        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered);
+        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS);
         fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
         ArrayList<Gene> inputList = inputProcessor.getGenes();
         if (inputList != null && !inputList.isEmpty()) {
@@ -581,10 +643,7 @@ public class MainPopsBean implements Serializable {
         }
     }
 
-    public void exportChart(Gene gene) {
-        RequestContext.getCurrentInstance().getCallbackParams().put("exportChart", "chart__"+gene.getGeneId());
-//        System.err.println(RequestContext.getCurrentInstance().getCallbackParams().get("exportChart"));
-    }
+  
 
 
     public ArrayList<Gene> getSelectedGenesForChartDisplay() {
