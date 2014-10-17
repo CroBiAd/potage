@@ -173,8 +173,8 @@ public class ComponentGenerator implements Serializable {
 
     public Chart generateChart(String idSuffix, int dialogWidth, int dialogHeight, BarChartModel barModel) {
 
-        int chartWidth = dialogWidth - dialogWidth /10; /// 20;
-        int chartHeight = dialogHeight - dialogHeight /4; /// 25;
+        int chartWidth = dialogWidth - dialogWidth / 15; /// 20;
+        int chartHeight = dialogHeight - dialogHeight / 25; /// 25;
         Chart chartComponent = new Chart();
         chartComponent.setType("bar");
         chartComponent.setModel(barModel);

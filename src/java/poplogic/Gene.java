@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import org.primefaces.component.chart.Chart;
+import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.TabChangeEvent;
@@ -38,7 +40,7 @@ public class Gene implements Serializable { //, Comparable<Contig> {
 
     //for FPKM charts:
 //    private ArrayList<BarChartModel> barChartModel;
-    private BarChartModel barChartModel;
+//    private BarChartModel barChartModel;
     private final String[] fpkmTableHeaders;
     private final ArrayList<String> fpkmSettings;
 
@@ -145,6 +147,17 @@ public class Gene implements Serializable { //, Comparable<Contig> {
         }
         return models;
     }
+    
+//    public ArrayList<ModelWithId> getCharts() {
+//        ArrayList<ModelWithId> chartModels = new ArrayList<>();
+//        ArrayList<BarChartModel> barChartModels = getBarChartModels();
+//        for (int i = 0; i < barChartModels.size(); i++) {
+//            BarChartModel barChartModel = barChartModels.get(i);
+//            ModelWithId modelWithId = new ModelWithId(barChartModel, "chart_"+i+"_"+getGeneId());
+//            chartModels.add(modelWithId);
+//        }
+//        return chartModels;
+//    }
 
 //    public ArrayList<BarChartModel> getBarChartModel() {
 //        if (barChartModel == null) {
@@ -214,6 +227,28 @@ public class Gene implements Serializable { //, Comparable<Contig> {
     
       public void exportChart(Gene gene) {
         RequestContext.getCurrentInstance().getCallbackParams().put("exportChart", "chart_"+currentTabIndex+"_"+gene.getGeneId());
+//        RequestContext.getCurrentInstance().getCallbackParams().put("exportChart", );
 //        System.err.println(RequestContext.getCurrentInstance().getCallbackParams().get("exportChart"));
     }
+      
+//    public class ModelWithId {
+//        private final BarChartModel model;
+//        private final String chartId;
+//
+//        public ModelWithId(BarChartModel model, String chartId) {
+//            this.model = model;
+//            this.chartId = chartId;
+//            System.err.println(model+" "+chartId);
+//        }
+//
+//        public BarChartModel getModel() {
+//            return model;
+//        }
+//
+//        public String getChartId() {
+//            return chartId;
+//        }
+//        
+//        
+//    }
 }

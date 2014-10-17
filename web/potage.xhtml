@@ -57,51 +57,90 @@
 
 
 
-        <p:dialog  id="helpDialog" header="You are on your own!" widgetVar="helpPanel" modal="false"  styleClass="logos" fitViewport="true" 
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="600">
+        <p:dialog  id="helpDialog" header="Help and information" widgetVar="helpPanel" modal="false"  styleClass="logos" fitViewport="true" 
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="750" height="550">
 
 
             <h2> <u>POTAGE</u> - PopSeq Ordered Triticum Aestivum Gene Expression  </h2>
 
-            <h4> This is a <i>beta</i> version of POTAGE, more information and some extra features should become available soon.</h4>
+            <h4> As of October 2014 POTAGE is still being developed, additional datasets and features are being added.</h4>
             <ul> 
-                <li> Please report bugs to  <a href="mailto:radoslaw.suchecki@acpfg.com.au?Subject=POTAGE" target="_top">Rad</a> </li>
+                <li> Please report bugs to  <a href="mailto:radoslaw.suchecki@acpfg.com.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
             </ul>
 
-            <h3> POTAGE functionality depends on:</h3>
-
-            <h4> PopSeq </h4>
-            <ul> 
-                <li> Utilizes whole genome sequencing for genotyping to establish maker order from sequencing data </li>
-                <li> Provides the genetic anchoring of the IWGSC survey sequences by population sequencing 
-                    <a href="http://onlinelibrary.wiley.com/doi/10.1111/tpj.12319/abstract" target="_blank">Anchoring and ordering NGS contig assemblies by population sequencing (POPSEQ), Plant J. 76(4) 718-727</a>  
-                </li>
-                <ul>
-                    <li>Number of contigs per cM interval is dependent on recombination frequency </li>
-                    <li>The resolution of a genetic map is dependent on the population size</li>
-                    <!--<li>.....</li>-->
-                </ul>
-            </ul>
-            <h4>RNASeq data </h4> 
-            <ul> 
-                <li>Chinese Spring</li>
-                <li>Chinese Spring/Cornerstone</li>
-                <li>Chris</li>
-                <li></li>
-            </ul>
-            <h4>MIPS gene predictions</h4> 
-            <ul> 
-                <li></li>
-            </ul>
-            <h4>Functional annotation</h4> 
-            <ul> 
-                <li></li>
-            </ul>
-            <h4>Words of caution</h4>
+            <h3>Words of caution</h3>
             <ul> 
                 <li>The FPKM counts are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions.  </li>
                 <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and FPKM values may be quite misleading. </li>
             </ul>
+            
+            <h3> POTAGE functionality depends on:</h3>
+            
+            <h4> PopSeq </h4>
+            <ul> 
+                <li> Utilizes whole genome sequencing for genotyping to establish maker order from sequencing data </li>
+                <li> 
+                    Provides the genetic anchoring of the IWGSC survey sequences by population sequencing. For more details, see <a href="http://onlinelibrary.wiley.com/doi/10.1111/tpj.12319/abstract" target="_blank">Anchoring and ordering NGS contig assemblies by population sequencing (POPSEQ), Plant J. 76(4) 718-727</a>  
+                    Please note that: 
+                </li>
+                <ul>
+                    <li>Number of contigs per cM interval is dependent on recombination frequency </li>
+                    <li>The resolution of a genetic map is dependent on the population size</li>
+                </ul>
+            </ul>
+            
+            <h4>High Confidence (HC) wheat gene predictions (a.k.a MIPS gene predictions)</h4> 
+            <ul> 
+                <li>
+                    Described in <a href="http://www.sciencemag.org/content/345/6194/1251788.abstract" target="_blank">A chromosome-based draft sequence of the hexaploid bread wheat (Triticum aestivum) genome, Science 18 July 2014, Vol. 345 no. 6194</a>
+                </li>
+                <li>
+                    POTAGE utilizes <a href="ftp://ftpmips.helmholtz-muenchen.de/plants/wheat/IWGSC/genePrediction_v2.1/" target="_blank">version 2.1 </a> 
+                </li>
+            </ul>
+            <h4>Functional annotation</h4> 
+            <ol> 
+                <li>MIPS annotation provided with the HC predictions</li>
+                <li>Rice-derived annotation, obtained by</li>                
+                <ul>
+                    <li>
+                        Aligning HC coding sequences to rice proteins from <a href="http://rapdb.dna.arc.go.jp" target="_blank">International Rice Genome Sequencing Project (2005), </a> 
+                        <a href="http://www.nature.com/nature/journal/v436/n7052/abs/nature03895.html" target="_blank">The map-based sequence of the rice genome. Nature 436: 793–800</a>
+                    </li>
+                    <li>Annotation retrieved from top rice hits if available and if alignment quality thresholds were met.</li>
+                </ul>
+            </ol>
+            
+            <h4>RNASeq data </h4> 
+            <ul> 
+                <li>
+                    <a href="http://wheat-urgi.versailles.inra.fr/Seq-Repository/RNA-Seq" target="_blank"> Chinese Spring (public)</a>.
+                    Non-oriented library (TruSeq, Illumina) sequenced on Illumina HiSeq2000 2x100bp (PE) for 15 different conditions corresponding to five wheat organs (root, leaf, stem, spike, grain) at three developmental stages each in 2 duplicates
+                    <table>
+                        <tr><td></td></tr>
+                        <tr><td>Stage</td><td>Wheat growth stage</td><td>Feekes scale</td><td>Zadoks scale</td><td>Leaves</td><td>Root</td><td>Stem</td><td>Spike</td><td>Grain</td></tr>
+                        <tr><td>Seedling</td><td>First leaf through coleoptile</td><td>1</td><td>10</td><td>x</td><td>x</td><td></td><td></td><td></td></tr>
+                        <tr><td>Three leaves</td><td>3 leaves unfolded</td><td></td><td>13</td><td></td><td>x</td><td></td><td></td><td></td></tr>
+                        <tr><td>Three tillers</td><td>Main shoot and 3 tillers</td><td></td><td>23</td><td>x</td><td></td><td></td><td></td><td></td></tr>
+                        <tr><td>Spike at 1 cm</td><td>Pseudostem erection</td><td>5</td><td>30</td><td></td><td></td><td>x</td><td></td><td></td></tr>
+                        <tr><td>Two nodes</td><td>2nd detectable node</td><td>7</td><td>32</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
+                        <tr><td>Meiosis</td><td>Flag leaf ligule and collar visible</td><td>9</td><td>39</td><td></td><td>x</td><td></td><td>x</td><td></td></tr>
+                        <tr><td>Anthesis</td><td>1/2 of flowering complete</td><td></td><td>65</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
+                        <tr><td>2 DAAs</td></tr>
+                        <tr><td>(50°C.days)"</td><td>Kernel (caryopsis) watery ripe</td><td></td><td>71</td><td>x</td><td></td><td></td><td></td><td>x</td></tr>
+                        <tr><td>14 DAAs</td></tr>
+                        <tr><td>(350°C.days)"</td><td>Medium Milk</td><td></td><td>75</td><td></td><td></td><td></td><td></td><td>x</td></tr>
+                        <tr><td>30 DAAs</td></tr>
+                        <tr><td>(700°C.days)"</td><td>Soft dough</td><td></td><td>85</td><td></td><td></td><td></td><td></td><td>x</td></tr>
+                        <tr><td></td></tr>
+                    </table>
+                </li>
+                <li>Chinese Spring/Cornerstone (ACPFG in-house). Anthers, four developmental stages. Single end reads only.</li>
+                <li>Chris (ACPFG in-house). Anther, seedling, Illumina 2x100bp (PE)</li>
+                <li></li>
+            </ul>
+            
+            
 
 
         </p:dialog>
@@ -530,15 +569,15 @@
                 <p:panel header="#{gene.geneId}  on  #{gene.contig.contigId}" style="text-align:center;"   >
                     <p:tabView id="chartsTabView" >
                         <p:ajax event="tabChange" update="chartsTabView" listener="#{gene.onTabChange}"/>
-                        <p:tab >
+                        <p:tab title="Chinese Spring">
                             <p:chart type="bar" model="#{gene.getBarChartModel(0)}" widgetVar="chart_0_#{gene.geneId}"   >
                                 <!--<p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>-->
                             </p:chart>                            
                         </p:tab>
-                        <p:tab >
+                        <p:tab title="Chris">
                             <p:chart type="bar" model="#{gene.getBarChartModel(1)}" widgetVar="chart_1_#{gene.geneId}"  />
                         </p:tab>
-                        <p:tab >
+                        <p:tab title="Cornerstone/CS">
                             <p:chart type="bar" model="#{gene.getBarChartModel(2)}" widgetVar="chart_2_#{gene.geneId}"  />
                         </p:tab>
                     </p:tabView>
@@ -564,7 +603,7 @@
 
 
             <p:remoteCommand name="updatechartsgrid"  update=":formCentre:chartsGrid" action="#{randomBean.getRandom(1)}" process=":formCentre:chartsGrid" />
-            
+
         </h:form>
 
         <p:dialog widgetVar="exportChart" showEffect="fade" modal="true" header="Right-click on the chart to copy/save it as image." resizable="false"  >

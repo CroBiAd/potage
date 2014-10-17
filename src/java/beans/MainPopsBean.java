@@ -407,7 +407,9 @@ public class MainPopsBean implements Serializable {
                 BarChartModel barChartModel = models.get(i);
                 Chart chart = componentGenerator.generateChart(suffix+i, DIALOG_WIDTH, DIALOG_HEIGHT, barChartModel);
                 dialog.getChildren().add(chart);
-                dialog.getChildren().add(new Spacer());
+                Spacer s = new Spacer();
+                s.setId(chart.getId()+"_spacer");
+                dialog.getChildren().add(s);
             }
             
 //            Chart chart1 = componentGenerator.generateChart(suffix+"1", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(0));
@@ -758,7 +760,7 @@ public class MainPopsBean implements Serializable {
             String newline = System.getProperty("line.separator");
             StringBuilder sb = new StringBuilder();
             for (Gene c : selectedGenes) {
-                System.err.println("Selected: " + c.getGeneId() + " " + c.getContig().getId());
+//                System.err.println("Selected: " + c.getGeneId() + " " + c.getContig().getId());
                 sb.append(">");
                 sb.append(c.getContig().getId());
 //                sb.append(" ").append(p.getHit().getHitDef());
