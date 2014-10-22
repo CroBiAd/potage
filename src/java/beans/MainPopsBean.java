@@ -74,15 +74,17 @@ import reusable.Sequence;
 @ViewScoped
 public class MainPopsBean implements Serializable {
 
-    public final static String BLAST_DB_FOR_FETCHING = "/var/tomcat/persist/coching_data/IWGSC_SS";
-    private final String BLAST_DB = "//resources//pops_all_rad.nal";
-    private final String PATH = "/var/tomcat/persist/pops_data";
+//    public final static String BLAST_DB_FOR_FETCHING = "//resources//pops_all_rad.nal";
+//    public final static String BLAST_DB = "//resources//pops_all_rad.nal";
+//    public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/POPSeq_all_blastdb";
+    public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/IWGSC_SS";
+    private final String PATH = "/var/tomcat/persist/potage_data";
     private final String ANNOTATION_RICE = "/var/tomcat/persist/coching_data/anchoring/HCS_2013_annotations_rice.txt";
-    private final String ANNOTATION = "/var/tomcat/persist/pops_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
-    private final String TRAES_CSS_MAP = "/var/tomcat/persist/pops_data/Traes_to_CSS.map";
-    private final String FPKMS = "/var/tomcat/persist/pops_data/FPKMs/reordered/popseqed_genes_on_with_header.fpkms";
-    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/pops_data/FPKMs/reordered/unordered_genes_with_header.fpkms";
-    private final String FPKM_SETTINGS = "/var/tomcat/persist/pops_data/FPKMs/reordered/fpkm_data_settings.txt";
+    private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
+    private final String TRAES_CSS_MAP = "/var/tomcat/persist/potage_data/Traes_to_CSS.map";
+    private final String FPKMS = "/var/tomcat/persist/potage_data/FPKMs/reordered/popseqed_genes_on_with_header.fpkms";
+    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/potage_data/FPKMs/reordered/unordered_genes_with_header.fpkms";
+    private final String FPKM_SETTINGS = "/var/tomcat/persist/potage_data/FPKMs/reordered/fpkm_data_settings.txt";
     public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM (corrected),cM(original),MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
 
     private boolean autoDisplayCharts = true;
@@ -362,8 +364,7 @@ public class MainPopsBean implements Serializable {
     public String getCurrentContainerId() {
         return currentContainerId;
     }
-    
-    
+
     public void generateDialogContainers() {
         if (availableDialogContainers == null || availableDialogContainers.isEmpty()) {
             ComponentGenerator componentGenerator = new ComponentGenerator();
@@ -389,32 +390,30 @@ public class MainPopsBean implements Serializable {
             RequestContext.getCurrentInstance().update(dlg.getParent().getId());
 //            return null;
         } else if (availableDialogContainers.isEmpty()) {
-            growl(FacesMessage.SEVERITY_WARN, "Getting crowded", "You have reached the maximum number of " + DIALOGS_MAX_NUMBER + " charts displayed simultaneously. Close some before openning more.", "growl");            
+            growl(FacesMessage.SEVERITY_WARN, "Getting crowded", "You have reached the maximum number of " + DIALOGS_MAX_NUMBER + " charts displayed simultaneously. Close some before openning more.", "growl");
 //            return null;
         } else {
             UIComponent container = availableDialogContainers.remove(availableDialogContainers.size() - 1);
             String currentDisplay = DIALOG_CONTAINERS_PARENT + ":" + container.getId();
-            
+
             ComponentGenerator componentGenerator = new ComponentGenerator();
             Dialog dialog = componentGenerator.generateDialog(geneSelectedForDialogDisplay, geneIdToDialogMap, DIALOG_WIDTH, DIALOG_HEIGHT, availableDialogContainers);
             container.getChildren().add(dialog);
 //            containerId = container.getClientId().split("_")[1];
             String suffix = container.getClientId().split("_")[1]; //for no good reason using the same suffix for component identifiers
-            
-            
+
             ArrayList<BarChartModel> models = geneSelectedForDialogDisplay.getBarChartModels();
             for (int i = 0; i < models.size(); i++) {
                 BarChartModel barChartModel = models.get(i);
-                Chart chart = componentGenerator.generateChart(suffix+i, DIALOG_WIDTH, DIALOG_HEIGHT, barChartModel);
+                Chart chart = componentGenerator.generateChart(suffix + i, DIALOG_WIDTH, DIALOG_HEIGHT, barChartModel);
                 dialog.getChildren().add(chart);
                 Spacer s = new Spacer();
-                s.setId(chart.getId()+"_spacer");
+                s.setId(chart.getId() + "_spacer");
                 dialog.getChildren().add(s);
             }
-            
+
 //            Chart chart1 = componentGenerator.generateChart(suffix+"1", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(0));
 //            Chart chart3 = componentGenerator.generateChart(suffix+"2", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(1));
-            
 //            CommandButton left = new CommandButton();
 //            left.setIcon("ui-icon-arrowthick-1-w");
 //            CommandButton right = new CommandButton();
@@ -422,7 +421,6 @@ public class MainPopsBean implements Serializable {
 //            right.setUpdate(currentDisplay);
 //            dialog.getChildren().add(left);
 //            dialog.getChildren().add(right);
-            
 //            dialog.getChildren().add(chart3);
 //            TabView tabView = new TabView();
 //            tabView.setId("TabView");
@@ -445,9 +443,7 @@ public class MainPopsBean implements Serializable {
 //            tabView.setActiveIndex(1);
 //            tab3.getChildren().add(componentGenerator.generateChart(suffix+"B", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(1)));
 //            dialog.getChildren().add(tabView);
-            
 //            tab3.getChildren().add(componentGenerator.generateChart(suffix+"C", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel().get(0)));
-
             //Using resizable component as built-in dialog resize currently does not trigger an event
 //            Resizable resizable = new Resizable();
 //            resizable.setId("resizable_"+dialog.getId());
@@ -645,9 +641,6 @@ public class MainPopsBean implements Serializable {
         }
     }
 
-  
-
-
     public ArrayList<Gene> getSelectedGenesForChartDisplay() {
         return selectedGenesForChartDisplay;
     }
@@ -757,6 +750,7 @@ public class MainPopsBean implements Serializable {
 //            exportFile = null;
             System.err.println("Nothing selected on chromosome " + currentChromosome);
         } else {
+//            ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
             String newline = System.getProperty("line.separator");
             StringBuilder sb = new StringBuilder();
             for (Gene c : selectedGenes) {
@@ -772,7 +766,11 @@ public class MainPopsBean implements Serializable {
 //                sb.append(" ").append(c.getFrame());
                 sb.append(newline);
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), "/var/tomcat/persist/coching_data/IWGSC_SS").get(0).getSequenceString());
-                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
+//                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), extContext.getRealPath(BLAST_DB)).
+                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB).
+                get(0).getSequenceString()
+                );
+//                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
                 sb.append(newline);
             }
             InputStream stream = new ByteArrayInputStream(sb.toString().getBytes());
@@ -980,8 +978,9 @@ public class MainPopsBean implements Serializable {
             QesHits finder = new QesHits();
             int totalRetrieved = 0;
             try {
-                ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
-                String blastdbIWGSC = extContext.getRealPath(BLAST_DB);
+//                ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
+//                String blastdbIWGSC = extContext.getRealPath(BLAST_DB);
+                String blastdbIWGSC = BLAST_DB;
                 perQueryResults = finder.findHits(sequences, blastdbIWGSC);      //<------------------------------------------------------------            
 
                 hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults);

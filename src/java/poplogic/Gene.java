@@ -44,8 +44,11 @@ public class Gene implements Serializable { //, Comparable<Contig> {
     private final String[] fpkmTableHeaders;
     private final ArrayList<String> fpkmSettings;
 
+    //for charts tabview
     private int currentTabIndex = 0;
-    
+//    private ArrayList<ChartModelWithId> chartModels;
+//    private TabView chartsTabView;
+
     public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<Double> tissuesFPKMs,
             String[] fpkmTableHeaders, String traes_to_CSS_entry, ArrayList<String> fpkmSettings) {
         this.geneId = geneId;
@@ -147,14 +150,37 @@ public class Gene implements Serializable { //, Comparable<Contig> {
         }
         return models;
     }
+
+//    public TabView getChartsTabView() {
+//        if(chartsTabView == null ){
+//            chartsTabView = new TabView();
+//            ArrayList<BarChartModel> barChartModels = getBarChartModels();
+//            for (int i = 0; i < barChartModels.size(); i++) {
+//                BarChartModel barChartModel = barChartModels.get(i);
+//                ChartModelWithId modelWithId = new ChartModelWithId(barChartModel, "chart_" + i + "_" + getGeneId());
+//                Tab tab = new Tab();
+//                Chart chart = new Chart();
+//                chart.setModel(barChartModel);
+//                chart.setWidgetVar("chart_"+i+"_"+geneId);
+//                tab.getChildren().add(chart);
+//                chartsTabView.getChildren().add(tab);
+//            }
+//        }
+//        return chartsTabView;
+//    }
+
     
-//    public ArrayList<ModelWithId> getCharts() {
-//        ArrayList<ModelWithId> chartModels = new ArrayList<>();
-//        ArrayList<BarChartModel> barChartModels = getBarChartModels();
-//        for (int i = 0; i < barChartModels.size(); i++) {
-//            BarChartModel barChartModel = barChartModels.get(i);
-//            ModelWithId modelWithId = new ModelWithId(barChartModel, "chart_"+i+"_"+getGeneId());
-//            chartModels.add(modelWithId);
+    
+//    public ArrayList<ChartModelWithId> getChartModels() {
+////        ArrayList<ModelWithId> chartModels = new ArrayList<>();
+//        if (chartModels == null) {
+//            chartModels = new ArrayList<>();
+//            ArrayList<BarChartModel> barChartModels = getBarChartModels();
+//            for (int i = 0; i < barChartModels.size(); i++) {
+//                BarChartModel barChartModel = barChartModels.get(i);
+//                ChartModelWithId modelWithId = new ChartModelWithId(barChartModel, "chart_" + i + "_" + getGeneId());
+//                chartModels.add(modelWithId);
+//            }
 //        }
 //        return chartModels;
 //    }
@@ -224,31 +250,12 @@ public class Gene implements Serializable { //, Comparable<Contig> {
         TabView tabView = (TabView) event.getComponent();
         currentTabIndex = tabView.getActiveIndex();
     }
-    
-      public void exportChart(Gene gene) {
-        RequestContext.getCurrentInstance().getCallbackParams().put("exportChart", "chart_"+currentTabIndex+"_"+gene.getGeneId());
+
+    public void exportChart(Gene gene) {
+        RequestContext.getCurrentInstance().getCallbackParams().put("exportChart", "chart_" + currentTabIndex + "_" + gene.getGeneId());
 //        RequestContext.getCurrentInstance().getCallbackParams().put("exportChart", );
 //        System.err.println(RequestContext.getCurrentInstance().getCallbackParams().get("exportChart"));
     }
-      
-//    public class ModelWithId {
-//        private final BarChartModel model;
-//        private final String chartId;
-//
-//        public ModelWithId(BarChartModel model, String chartId) {
-//            this.model = model;
-//            this.chartId = chartId;
-//            System.err.println(model+" "+chartId);
-//        }
-//
-//        public BarChartModel getModel() {
-//            return model;
-//        }
-//
-//        public String getChartId() {
-//            return chartId;
-//        }
-//        
-//        
-//    }
+
+   
 }

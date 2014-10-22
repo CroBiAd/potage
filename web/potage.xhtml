@@ -3,7 +3,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <f:view contentType="text/html">        
         <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
@@ -567,11 +567,15 @@
                     </p:toolbar>
                 </f:facet>
                 <p:panel header="#{gene.geneId}  on  #{gene.contig.contigId}" style="text-align:center;"   >
+                    <!--<p:tabView id="chartsTabView" value="#{gene.chartModels}" var="chartModel"  >-->
                     <p:tabView id="chartsTabView" >
                         <p:ajax event="tabChange" update="chartsTabView" listener="#{gene.onTabChange}"/>
+<!--                        <p:tab >
+                            <p:chart type="bar" model="#{chartModel.model}" widgetVar="#{chart.chartId}"   />
+                        </p:tab>-->
                         <p:tab title="Chinese Spring">
                             <p:chart type="bar" model="#{gene.getBarChartModel(0)}" widgetVar="chart_0_#{gene.geneId}"   >
-                                <!--<p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>-->
+                                <p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>
                             </p:chart>                            
                         </p:tab>
                         <p:tab title="Chris">

@@ -159,7 +159,7 @@ public class PerLocationContigs implements Serializable {
 //                sb.append("-").append(c.getTo());
 //                sb.append(" ").append(c.getFrame());
                 sb.append(newline);
-                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContigId(), MainPopsBean.BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
+                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContigId(), MainPopsBean.BLAST_DB).get(0).getSequenceString());
                 sb.append(newline);
             }
             InputStream stream = new ByteArrayInputStream(sb.toString().getBytes());

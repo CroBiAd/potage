@@ -3,7 +3,7 @@
 #
 TITLE popseq.all@acpfg.com.au multi
 #
-DBLIST  /var/tomcat/persist/pops_data/blast_db/POPSeq_all_blastdb
+DBLIST  /var/tomcat/persist/potage_data/blast_db/POPSeq_all_blastdb.00 /var/tomcat/persist/potage_data/blast_db/POPSeq_all_blastdb.01
 #
 #GILIST 
 #
