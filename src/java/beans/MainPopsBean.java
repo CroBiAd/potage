@@ -31,14 +31,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.primefaces.component.carousel.Carousel;
 import org.primefaces.component.chart.Chart;
-import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datagrid.DataGrid;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.dialog.Dialog;
-import org.primefaces.component.resizable.Resizable;
-import org.primefaces.component.ring.Ring;
 import org.primefaces.component.spacer.Spacer;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
@@ -79,7 +75,7 @@ public class MainPopsBean implements Serializable {
 //    public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/POPSeq_all_blastdb";
     public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/IWGSC_SS";
     private final String PATH = "/var/tomcat/persist/potage_data";
-    private final String ANNOTATION_RICE = "/var/tomcat/persist/coching_data/anchoring/HCS_2013_annotations_rice.txt";
+    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
     private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
     private final String TRAES_CSS_MAP = "/var/tomcat/persist/potage_data/Traes_to_CSS.map";
     private final String FPKMS = "/var/tomcat/persist/potage_data/FPKMs/reordered/popseqed_genes_on_with_header.fpkms";

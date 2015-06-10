@@ -190,6 +190,20 @@ public class PerLocationContigs implements Serializable {
         }
         return idx;
     }
+    
+    public ArrayList<Integer> getIndicesOfContigs(ArrayList<String> contigIds) {
+        ArrayList<Integer> indices = new ArrayList<>(contigIds.size());
+        for (int i = 0; i < contigs.size(); i++) {
+            String id = contigs.get(i).getId();
+            for (String contigId : contigIds) {
+                if (id.equalsIgnoreCase(contigId)) {
+                    indices.add(i);
+                    break;
+                }
+            }
+        }
+        return indices;
+    }
 
     public String getToExport() {
         return toExport;

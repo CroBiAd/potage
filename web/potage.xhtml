@@ -547,7 +547,7 @@
             </p:confirmDialog>  
 
 
-            <p:spacer height="50" />
+            <p:spacer height="20" />
 
             <p:dataGrid var="gene" value="#{mainBean.selectedGenesForChartDisplay}" columns="3" rows="6" paginator="true" id="chartsGrid" widgetVar="chartsGrid"
                         emptyMessage="No genes selected for display." 
@@ -578,10 +578,12 @@
                                 <p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>
                             </p:chart>                            
                         </p:tab>
-                        <p:tab title="Chris">
+                        <!--<p:tab title="Chris">-->
+                        <p:tab title="Cultivar X">
                             <p:chart type="bar" model="#{gene.getBarChartModel(1)}" widgetVar="chart_1_#{gene.geneId}"  />
                         </p:tab>
-                        <p:tab title="Cornerstone/CS">
+                        <p:tab title="Cultivar Y">
+                        <!--<p:tab title="Cornerstone/CS">-->
                             <p:chart type="bar" model="#{gene.getBarChartModel(2)}" widgetVar="chart_2_#{gene.geneId}"  />
                         </p:tab>
                     </p:tabView>
