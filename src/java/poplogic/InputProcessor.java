@@ -181,7 +181,7 @@ public class InputProcessor implements Serializable {
                     ArrayList<String> wheatGeneIdsList = cssToTraesIdsMap.get(toks[0]);
 
                     Double cM_corrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
-                    Double cM_original = reusable.CommonMaths.round(Double.parseDouble(toks[3]), 3);
+                    Double cM_original = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
                     cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(cM_corrected, cM_original);
                     Contig c = new Contig(toks[0], toks[1], cM_corrected, cM_original, wheatGeneIdsList, genesTissuesFPKMsMap);
                     boolean isRice = false;
@@ -321,7 +321,7 @@ public class InputProcessor implements Serializable {
                 String toks[] = inputLine.split("\t");
                 if (toks != null && toks.length > 1) {
                     Double locationCorrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
-                    Double locationOriginal = reusable.CommonMaths.round(Double.parseDouble(toks[3]), 3);
+                    Double locationOriginal = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
                     cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(locationCorrected, locationOriginal);
                     contigs.addContig(new Contig(toks[0], chromosome, locationCorrected, locationOriginal, null, null));
                 }
