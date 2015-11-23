@@ -40,7 +40,7 @@ public class InputProcessor implements Serializable {
 //    private ChartBean donutBean;
 
     public InputProcessor(String inputFileName, String queryId, int offset, String annotationFileName, String annotationRiceFileName,
-            String traesToCssMapFileName, String FPKMsFileName, String FPKMsFileNameUnordered, String fpkmSamplesSettings) {
+            String traesToCssMapFileName, String FPKMsFileName, String FPKMsFileNameUnordered, String fpkmSamplesSettings, ArrayList<String> queryIds) {
         boolean isRiceAnnotation = false;
         HashMap<String, String[]> mipsIdToAnnotationStringToksMap = buildAnnotationMap(annotationFileName, isRiceAnnotation);
         isRiceAnnotation = true;
@@ -52,9 +52,9 @@ public class InputProcessor implements Serializable {
         //this file could also be used in the future as a more generic settings file
         InReader ir = new InReader(fpkmSamplesSettings);
         ArrayList<String> fpkmSettings = ir.returnInput();
-        
+
         chromosome = inputFileName.split("_")[2];
-        processInput(inputFileName, queryId, mipsIdToAnnotationStringToksMap, mipsIdToRiceAnnotationStringToksMap, cssToTraesIdMap, genesTissuesFPKMsMap, fpkmSettings);
+        processInput(inputFileName, queryId, mipsIdToAnnotationStringToksMap, mipsIdToRiceAnnotationStringToksMap, cssToTraesIdMap, genesTissuesFPKMsMap, fpkmSettings, queryIds);
 
         //IF we want the unordered genes to be included as well
         if (FPKMsFileNameUnordered != null) {
@@ -162,14 +162,14 @@ public class InputProcessor implements Serializable {
 //    }
     private void processInput(String inputFileName, String queryId, HashMap<String, String[]> mipsIdToAnnotationStringToksMap,
             HashMap<String, String[]> mipsIdToRiceAnnotationStringToksMap, HashMap<String, ArrayList<String>> cssToTraesIdsMap, HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap,
-            ArrayList<String> fpkmSettings) {
+            ArrayList<String> fpkmSettings, ArrayList<String> queryIds) {
         cM_filter = new Location_cMFilter();
         genes = new ArrayList<>(99000);
-        String queries[] = null;
-        if (queryId != null) {
-            queries = queryId.split("[^_|\\w]"); //split on anything that is not a alphanumeric or an underscore
-            queryFoundAt = new ArrayList<>(queries.length);
-        }
+//        String queries[] = null;
+//        if (queryId != null) {
+//            queries = queryId.split("[^_|\\w]"); //split on anything that is not a alphanumeric or an underscore
+//            queryFoundAt = new ArrayList<>(queries.length);
+//        }
         File file = new File(inputFileName);
         BufferedReader myData = null;
         try {
@@ -193,26 +193,28 @@ public class InputProcessor implements Serializable {
                     //For each geneId on current contig, create Gene object with a ref to the contig it is derived from
 
                     if (wheatGeneIdsList == null) {
-                        System.err.println("InputProcessor - should not be reading contigs without genes!");
+                        System.err.println("InputProcessor - should not be reading contigs without genes! "+c.getContigId());
                         Gene placeholderGene = new Gene(c.getContigId(), c, null, null, null, null, null, fpkmSettings);
                         genes.add(placeholderGene);
                     } else {
                         for (String geneId : c.getWheatGeneIdsList()) {
-                            String entry = traesOnCssMap.get(geneId);
-                            Gene g = new Gene(geneId, c, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false), getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true),
-                                    genesTissuesFPKMsMap.get(geneId), fpkmTableHeaders, entry, fpkmSettings);
-                            genes.add(g);
+                            if (queryIds == null || queryIds.contains(geneId) || queryIds.contains(c.getContigId())) {
+                                    String entry = traesOnCssMap.get(geneId);
+                                    Gene g = new Gene(geneId, c, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false), getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true),
+                                            genesTissuesFPKMsMap.get(geneId), fpkmTableHeaders, entry, fpkmSettings);
+                                    genes.add(g);
+                                }
+                            }
                         }
-                    }
 
+                    }
                 }
-            }
-            genes.trimToSize();
-        } catch (FileNotFoundException ex) {
+                genes.trimToSize();
+            }catch (FileNotFoundException ex) {
             System.err.println("File not found exception!\t" + file.getName());
-        } catch (IOException ex) {
+        }catch (IOException ex) {
             ex.printStackTrace();
-        } finally {
+        }finally {
             try {
                 if (myData != null) {
                     myData.close();
@@ -221,7 +223,9 @@ public class InputProcessor implements Serializable {
                 ex.printStackTrace();
             }
         }
-    }
+        }
+
+    
 
     private void addUnorderedGenes(HashMap<String, String[]> mipsIdToAnnotationStringToksMap,
             HashMap<String, String[]> mipsIdToRiceAnnotationStringToksMap, HashMap<String, ArrayList<Double>> fPKMsMap, ArrayList<String> fpkmSettings) {
@@ -243,6 +247,7 @@ public class InputProcessor implements Serializable {
 
     public String quickFindQuery(HashMap<String, String> filenames, String queryId, String traesCssMapFile) {
         String foundIn = null;
+//        ArrayList<String> foundInChromosomes = new ArrayList<>(21);
         for (Map.Entry<String, String> entry : filenames.entrySet()) {
             String chr = entry.getKey();
             String inputFileName = entry.getValue();
@@ -510,11 +515,12 @@ public class InputProcessor implements Serializable {
 //        return genesTissuesFPKMsMap;
 //    }
     private HashMap<String, ArrayList<Double>> getGenesTissuesFPKMs(String FPKMsFileName) {
-        HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap = new HashMap<>(100000, 1);
+//        HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap = new HashMap<>(100000, 1);
+        genesTissuesFPKMsMap = new HashMap<>(100000, 1);
         File file = new File(FPKMsFileName);
         BufferedReader myData = null;
         try {
-            int countCasesOfMultipleFpkmValuesPerGenePrediction = 0;
+//            int countCasesOfMultipleFpkmValuesPerGenePrediction = 0;
             String inputLine;
             myData = new BufferedReader(new FileReader(file));
             String readLine = myData.readLine();
@@ -528,7 +534,7 @@ public class InputProcessor implements Serializable {
                     if (storedGenePerTissueFPKMs == null) {
                         overwrite = true;
                     } else {
-                        countCasesOfMultipleFpkmValuesPerGenePrediction++;
+//                        countCasesOfMultipleFpkmValuesPerGenePrediction++;
                         double lenStored = storedGenePerTissueFPKMs.get(2) - storedGenePerTissueFPKMs.get(1) + 1;
                         double lenCurrent = Double.parseDouble(toks[2]) - Double.parseDouble(toks[1]) + 1;
                         if (lenCurrent > lenStored) {

@@ -11,12 +11,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -255,7 +258,7 @@ public class MainPopsBean implements Serializable {
         searchAll(userQuery, ":formSearch:searchMessages");
     }
 
-    private HashMap<String, String> generateFileNames(boolean onlyDisplayContigsWithGenes) {
+    private HashMap<String, String> generateChromosomeToFileNameMap(boolean onlyDisplayContigsWithGenes) {
         HashMap<String, String> filenames = new HashMap<>();
         String genomes[] = {"A", "B", "D"};
         for (int i = 1; i < 8; i++) {
@@ -275,50 +278,59 @@ public class MainPopsBean implements Serializable {
             growl(FacesMessage.SEVERITY_FATAL, "Searching for nothing?!", "Consider inputting an identifier before clicking 'Search'", messageComponent);
         } else {
             boolean onlyDisplayContigsWithGenes = true;
-            HashMap<String, String> fileNames = generateFileNames(onlyDisplayContigsWithGenes);
+            HashMap<String, String> fileNames = generateChromosomeToFileNameMap(onlyDisplayContigsWithGenes);
             InputProcessor ip = new InputProcessor(TRAES_CSS_MAP);
-            String foundIn = ip.quickFindQuery(fileNames, userQuery, TRAES_CSS_MAP);
 
-            if (foundIn == null) {
-                growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered and gene containing contigs", messageComponent);
-//                growl(FacesMessage.SEVERITY_INFO, "Searching further", "on the remaingng POPSeq ordered contigs...", messageComponent);
-                onlyDisplayContigsWithGenes = false; //no search remaing popseqed contigs...
-                fileNames = generateFileNames(onlyDisplayContigsWithGenes);
-                foundIn = ip.quickFindQuery(fileNames, userQuery, TRAES_CSS_MAP);
+            String[] queries = userQuery.split(" |,|\n|\t|;");
+
+            if (queries.length < 2) {
+                String foundIn = ip.quickFindQuery(fileNames, userQuery.trim(), TRAES_CSS_MAP);
                 if (foundIn == null) {
-                    growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered contigs", messageComponent);
-                } else {
-                    chromosomeForNonGeneContigs = foundIn;
-                    loadAllContigs();
-                    growl(FacesMessage.SEVERITY_INFO, "Further search...", "Query found among contigs ordered on " + foundIn + ", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
-                    RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
+                    growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered and gene containing contigs", messageComponent);
+//                growl(FacesMessage.SEVERITY_INFO, "Searching further", "on the remaingng POPSeq ordered contigs...", messageComponent);
+                    onlyDisplayContigsWithGenes = false; //no search remaing popseqed contigs...
+                    fileNames = generateChromosomeToFileNameMap(onlyDisplayContigsWithGenes);
+                    foundIn = ip.quickFindQuery(fileNames, userQuery, TRAES_CSS_MAP);
+                    if (foundIn == null) {
+                        growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered contigs", messageComponent);
+                    } else {
+                        chromosomeForNonGeneContigs = foundIn;
+                        loadAllContigs();
+                        growl(FacesMessage.SEVERITY_INFO, "Further search...", "Query found among contigs ordered on " + foundIn + ", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
+                        RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
 //                    perLocationContigs = ip.getContigsWithinRange(foundIn.split("\t")[0], Double.MIN_NORMAL, Double.MIN_NORMAL, Double.MAX_VALUE, Double.MAX_VALUE);
 //                    RequestContext.getCurrentInstance().update(":formSearch3:contigList");
-                    final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formSearch3:contigList");
-                    Integer rowIndex = perLocationContigs.getIndexOfContig(userQuery);
+                        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formSearch3:contigList");
+                        Integer rowIndex = perLocationContigs.getIndexOfContig(userQuery);
+
+                        //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
+                        int rows = d.getRows();
+                        int page = rowIndex / rows;
+                        d.setFirst(rows * page);
+
+                    }
+                } else {
+                    String fileName = getInputFilename(foundIn, true);
+                    loadData(fileName);
+
+                    final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
+//                Integer rowIndex = loadedDataModel.getRowIndex(userQuery);
+                    Integer rowIndex = getIndexOfQuery(userQuery);
 
                     //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
                     int rows = d.getRows();
                     int page = rowIndex / rows;
                     d.setFirst(rows * page);
 
+//                setGlobalFilter(userQuery); //not as useful as d.setFirst
+                    currentChromosome = fileName.split("_")[2];
+                    growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
                 }
             } else {
-                String fileName = getInputFilename(foundIn, true);
-                loadData(fileName);
-
-                final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
-//                Integer rowIndex = loadedDataModel.getRowIndex(userQuery);
-                Integer rowIndex = getIndexOfQuery(userQuery);
-
-                //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
-                int rows = d.getRows();
-                int page = rowIndex / rows;
-                d.setFirst(rows * page);
-
-//                setGlobalFilter(userQuery); //not as useful as d.setFirst
-                currentChromosome = fileName.split("_")[2];
-                growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
+                ArrayList<String> qList = new ArrayList<>(queries.length);
+                qList.addAll(Arrays.asList(queries));
+                loadDataMultipleQueries(qList);
+                
             }
         }
     }
@@ -549,7 +561,7 @@ public class MainPopsBean implements Serializable {
         if (appendUnordered) {
             unordered = FPKMS_UNORDERED_GENES;
         }
-        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS);
+        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, null);
         fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
         ArrayList<Gene> inputList = inputProcessor.getGenes();
         if (inputList != null && !inputList.isEmpty()) {
@@ -566,6 +578,38 @@ public class MainPopsBean implements Serializable {
 //                updateDisplayedContigs(); //by default only dispaly contigs with genes not all
         }
 
+    }
+
+    private void loadDataMultipleQueries(ArrayList<String> queries) {
+        String unordered = null;
+        if (appendUnordered) {
+            unordered = FPKMS_UNORDERED_GENES;
+        }
+
+        HashMap<String, String> chromosomeToFileNameMap = generateChromosomeToFileNameMap(true);
+        Collection<String> fileNames = chromosomeToFileNameMap.values();
+        
+        genesTissuesFPKMsMap = new HashMap<String, ArrayList<Double>>();
+        loadedGenes = new ArrayList<>(queries.size());
+        for (String fileName : fileNames) {
+            InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, queries);
+            ArrayList<Gene> inputList = inputProcessor.getGenes();
+            if (inputList != null && !inputList.isEmpty()) {
+//            loadedDataModel = new GeneDataModel(inputProcessor);
+                for (Gene gene : inputList) {
+                    if (queries.contains(gene.getGeneId()) || queries.contains(gene.getContig().getContigId())) {
+                        loadedGenes.add(gene);
+                        genesTissuesFPKMsMap.put(gene.getGeneId(), inputProcessor.getGenesTissuesFPKMsMap().get(gene.getGeneId()));
+                    }
+                }
+//                cM_filter = inputProcessor.getcM_filter();
+                fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
+            }
+        }
+        cM_filter = new Location_cMFilter();
+        loadedDataModel = new LazyGeneDataModel(loadedGenes);
+        filteredGenes = null;
+        selectedGenes = null;
     }
 
     public void loadAllContigs() {
@@ -764,7 +808,7 @@ public class MainPopsBean implements Serializable {
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), "/var/tomcat/persist/coching_data/IWGSC_SS").get(0).getSequenceString());
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), extContext.getRealPath(BLAST_DB)).
                 sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB).
-                get(0).getSequenceString()
+                        get(0).getSequenceString()
                 );
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
                 sb.append(newline);
