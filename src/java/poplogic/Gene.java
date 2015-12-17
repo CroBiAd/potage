@@ -24,7 +24,7 @@ import org.primefaces.model.chart.BarChartSeries;
  *
  * @author rad
  */
-public class Gene implements Serializable { //, Comparable<Contig> {
+public class Gene implements Serializable, Comparable<Gene> {
     //wheat contig info
 
     private final String geneId;
@@ -255,6 +255,11 @@ public class Gene implements Serializable { //, Comparable<Contig> {
         RequestContext.getCurrentInstance().getCallbackParams().put("exportChart", "chart_" + currentTabIndex + "_" + gene.getGeneId());
 //        RequestContext.getCurrentInstance().getCallbackParams().put("exportChart", );
 //        System.err.println(RequestContext.getCurrentInstance().getCallbackParams().get("exportChart"));
+    }
+
+    @Override
+    public int compareTo(Gene o) {
+        return getGeneId().compareTo(o.getGeneId());
     }
 
    
