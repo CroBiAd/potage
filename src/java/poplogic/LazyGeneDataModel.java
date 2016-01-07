@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.NavigableSet;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.mapdb.HTreeMap;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
@@ -21,7 +22,15 @@ public class LazyGeneDataModel extends LazyDataModel<Gene> implements Serializab
     List<Gene> datasource;
 //    private final DB dbStore;
 //    private final NavigableSet<Gene> dbStoreFace;
+    HTreeMap<String, ArrayList<String>> dbStoreMainMap;
+    HTreeMap<String, ArrayList<Double>> dbStoreExpressionMap;
+    String[] fpkmTableHeaders;
 
+    public LazyGeneDataModel(DB dbStore, String MAIN_MAP_KEY, String EXPRESSION_MAP_KEY, String[] fpkmTableHeaders) {
+        this.dbStoreMainMap = dbStore.hashMap(MAIN_MAP_KEY);
+        this.dbStoreExpressionMap = dbStore.hashMap(EXPRESSION_MAP_KEY);
+        this.fpkmTableHeaders = fpkmTableHeaders;
+    }
     public LazyGeneDataModel(List<Gene> data) {
 ////        File dbFile = new File("/var/tomcat/persist/potage_data/tmp.db");
 //        File dbFile = new File("tmp.db");
@@ -57,12 +66,26 @@ public class LazyGeneDataModel extends LazyDataModel<Gene> implements Serializab
 
     @Override
     public Gene getRowData(String rowKey) {
-        for (Gene gene : datasource) {
-            if (gene.getGeneId().equals(rowKey)) {
-                return gene;
+        if (datasource != null) {
+            for (Gene gene : datasource) {
+                if (gene.getGeneId().equals(rowKey)) {
+                    return gene;
+                }
             }
+            return null;
+        } else {
+            ArrayList<String> record = dbStoreMainMap.get(rowKey);
+            if(record != null) {
+                ArrayList<Double> expression = dbStoreExpressionMap.get(rowKey);
+//                Gene g = new Gene(rowKey, record.get(0), null, null, expression, fpkmTableHeaders, , )
+            }
+//            
+            
+//            Gene g = new Gene(rowKey, c, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false), 
+//                                getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true),
+//                                genesTissuesFPKMsMap.get(geneId), fpkmTableHeaders, entry, fpkmSettings);
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -103,7 +126,6 @@ public class LazyGeneDataModel extends LazyDataModel<Gene> implements Serializab
         }
 
 //        dbStore.close();
-        
         //sort
         if (sortField != null) {
 //            Collections.sort(data, new LazySorter(sortField, sortOrder));

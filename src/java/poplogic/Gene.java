@@ -70,6 +70,17 @@ public class Gene implements Serializable, Comparable<Gene> {
         this.fpkmSettings = fpkmSettings;
     }
 
+//    public Gene(String geneId, ArrayList<String> record, ArrayList<Double> tissuesFPKMs, 
+//        String[] fpkmTableHeaders, ArrayList<String> fpkmSettings) {
+//        this.geneId = geneId;
+//        this.contig = new Contigrecord.get(0);
+//        this.tissuesFPKMs = tissuesFPKMs;
+//        this.fpkmTableHeaders = fpkmTableHeaders;
+//        this.fpkmSettings = fpkmSettings;
+//    }
+    
+    
+
     public boolean isPlaceHolder() {
         if (geneId.equals(contig.getContigId())) {
             return true;
