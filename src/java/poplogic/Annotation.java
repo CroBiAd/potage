@@ -8,8 +8,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  *
@@ -52,6 +54,37 @@ public class Annotation implements Serializable {
             }
             try {
                 interpro = annotationToks[i++];
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+        } else {
+//            System.err.println("no annotation!");
+            annotationString = "nothing found in rice";
+
+        }
+    }
+    
+    public Annotation(String gene, ArrayList<String> annotationStrings, boolean isRice) {                
+        geneId = gene;
+        
+        if (annotationStrings != null && (!isRice || annotationStrings.size() > 3)) {
+            int i = 1;
+            try {
+                if (isRice) {
+                    i += 2;
+                }
+                hitId = annotationStrings.get(i++);
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            try {
+                evalue = annotationStrings.get(i++);
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            try {
+                annotationString = annotationStrings.get(i++);
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            try {
+                interpro = annotationStrings.get(i++);
             } catch (ArrayIndexOutOfBoundsException e) {
             }
         } else {

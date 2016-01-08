@@ -15,34 +15,38 @@ import java.util.HashMap;
 public class Contig implements Serializable { //, Comparable<Contig> {
     //wheat contig info
     private final String contigId;
-    private final String popedAtChromosome;
+//    private final String popedAtChromosome;
     private final Double cM_corrected;
     private final Double cM_original;
 
 //    private long len;
    
-    private final ArrayList<String> wheatGeneIdsList;
-    private ArrayList<Annotation> annotations;
-    private ArrayList<Annotation> annotationsRice;
-    private HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
+    private ArrayList<String> wheatGeneIdsList;
+//    private ArrayList<Annotation> annotations;
+//    private ArrayList<Annotation> annotationsRice;
+//    private HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
 
-    public Contig(String contigId, String popedAtChromosome, double cM_corrected, double cM_original, ArrayList<String> wheatGeneIdsList, HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap) {
+    public Contig(String contigId,  double cM_original, ArrayList<String> wheatGeneIdsList) {
         this.contigId = contigId;
-        this.popedAtChromosome = popedAtChromosome;
-        this.cM_corrected = cM_corrected;
+//        this.popedAtChromosome = popedAtChromosome;
+        this.cM_corrected = cM_original;
         this.cM_original = cM_original;
         this.wheatGeneIdsList = wheatGeneIdsList;
-        this.genesTissuesFPKMsMap = genesTissuesFPKMsMap;
+//        this.genesTissuesFPKMsMap = genesTissuesFPKMsMap;
     }
     
-    public Contig(String contigId) {
+    public Contig(String contigId,  double cM_original) {
         this.contigId = contigId;
-        this.popedAtChromosome = null;
+        this.cM_corrected = cM_original;
+        this.cM_original = cM_original;
+    }
+public Contig(String contigId) {
+        this.contigId = contigId;
+//        this.popedAtChromosome = null;
         this.cM_corrected = null;
         this.cM_original = null;
         this.wheatGeneIdsList = null;
     }
-
 //    public Contig(String contigId, String popedAtChromosome, double cM_corrected, double cM_original, ArrayList<String> wheatGeneIdsList, 
 //            ArrayList<Annotation> annotations, ArrayList<Annotation> annotationsRice, HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap) {
 //        this.contigId = contigId;
@@ -59,9 +63,9 @@ public class Contig implements Serializable { //, Comparable<Contig> {
         return contigId;
     }
 
-    public String getPopedAtChromosome() {
-        return popedAtChromosome;
-    }
+//    public String getPopedAtChromosome() {
+//        return popedAtChromosome;
+//    }
 
     public Double getcM_corrected() {
         return cM_corrected;
@@ -83,21 +87,21 @@ public class Contig implements Serializable { //, Comparable<Contig> {
     
     
 
-    public void setAnnotations(ArrayList<Annotation> annotations) {
-        this.annotations = annotations;
-    }
-
-    public ArrayList<Annotation> getAnnotations() {
-        return annotations;
-    }
-
-    public ArrayList<Annotation> getAnnotationsRice() {
-        return annotationsRice;
-    }
-
-    public void setAnnotationsRice(ArrayList<Annotation> annotationsRice) {
-        this.annotationsRice = annotationsRice;
-    }
+//    public void setAnnotations(ArrayList<Annotation> annotations) {
+//        this.annotations = annotations;
+//    }
+//
+//    public ArrayList<Annotation> getAnnotations() {
+//        return annotations;
+//    }
+//
+//    public ArrayList<Annotation> getAnnotationsRice() {
+//        return annotationsRice;
+//    }
+//
+//    public void setAnnotationsRice(ArrayList<Annotation> annotationsRice) {
+//        this.annotationsRice = annotationsRice;
+//    }
     
     
     

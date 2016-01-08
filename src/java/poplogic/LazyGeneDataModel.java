@@ -23,14 +23,20 @@ public class LazyGeneDataModel extends LazyDataModel<Gene> implements Serializab
 //    private final DB dbStore;
 //    private final NavigableSet<Gene> dbStoreFace;
     HTreeMap<String, ArrayList<String>> dbStoreMainMap;
+    HTreeMap<String, ArrayList<String>> dbStoreContig2GenesMap;
     HTreeMap<String, ArrayList<Double>> dbStoreExpressionMap;
+    ArrayList<String> fpkmSettings;
     String[] fpkmTableHeaders;
 
-    public LazyGeneDataModel(DB dbStore, String MAIN_MAP_KEY, String EXPRESSION_MAP_KEY, String[] fpkmTableHeaders) {
+    public LazyGeneDataModel(DB dbStore, String MAIN_MAP_KEY, String EXPRESSION_MAP_KEY, String CONTIG_2_GENES_MAP_KEY,
+        String[] fpkmTableHeaders, ArrayList<String> fpkmSettings) {
         this.dbStoreMainMap = dbStore.hashMap(MAIN_MAP_KEY);
         this.dbStoreExpressionMap = dbStore.hashMap(EXPRESSION_MAP_KEY);
+        this.dbStoreContig2GenesMap = dbStore.hashMap(CONTIG_2_GENES_MAP_KEY);
         this.fpkmTableHeaders = fpkmTableHeaders;
+        this.fpkmSettings = fpkmSettings;
     }
+
     public LazyGeneDataModel(List<Gene> data) {
 ////        File dbFile = new File("/var/tomcat/persist/potage_data/tmp.db");
 //        File dbFile = new File("tmp.db");
@@ -74,13 +80,16 @@ public class LazyGeneDataModel extends LazyDataModel<Gene> implements Serializab
             }
             return null;
         } else {
-            ArrayList<String> record = dbStoreMainMap.get(rowKey);
-            if(record != null) {
-                ArrayList<Double> expression = dbStoreExpressionMap.get(rowKey);
-//                Gene g = new Gene(rowKey, record.get(0), null, null, expression, fpkmTableHeaders, , )
-            }
+//            ArrayList<String> record = dbStoreMainMap.get(rowKey);
+//            if (record != null) {
+//                ArrayList<String> genesOnContig = dbStoreContig2GenesMap.get(record.get(0));
+//                ArrayList<Double> expression = dbStoreExpressionMap.get(rowKey);
+//                return new Gene(rowKey, new Contig(record.get(0), Double.parseDouble(record.get(4))),
+//                    new Annotation(rowKey, ???, false), null, expression, fpkmTableHeaders,
+//                    Integer.parseInt(record.get(1)), Integer.parseInt(record.get(2)), record.get(3), fpkmSettings);
+//            }
 //            
-            
+
 //            Gene g = new Gene(rowKey, c, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false), 
 //                                getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true),
 //                                genesTissuesFPKMsMap.get(geneId), fpkmTableHeaders, entry, fpkmSettings);

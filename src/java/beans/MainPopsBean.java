@@ -75,15 +75,14 @@ import reusable.Sequence;
 @ManagedBean(name = "mainBean")
 @ViewScoped
 public class MainPopsBean implements Serializable {
-    
-    
+
     //MapDB & keys //Keys are used to retrieve a given datastructure from the DB
     private final String DB_FILE_NAME = "/var/tomcat/persist/potage_data/potage.db";
     private final String MAIN_MAP_KEY = "mainMap";
+    private final String CONTIG_2_GENES_MAP_KEY = "contig2Genes";
     private final String EXPRESSION_MAP_KEY = "expressionMap";
     private final String EXPRESSION_HEADER_KEY = "expressionHeader";
     private final String SETTINGS_MAP_NAME = "settingsMap";
-    
 
 //    public final static String BLAST_DB_FOR_FETCHING = "//resources//pops_all_rad.nal";
 //    public final static String BLAST_DB = "//resources//pops_all_rad.nal";
@@ -342,7 +341,7 @@ public class MainPopsBean implements Serializable {
                 ArrayList<String> qList = new ArrayList<>(queries.length);
                 qList.addAll(Arrays.asList(queries));
                 loadDataMultipleQueries(qList);
-                
+
             }
         }
     }
@@ -598,23 +597,22 @@ public class MainPopsBean implements Serializable {
             unordered = FPKMS_UNORDERED_GENES;
         }
         InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, null);
-        
 
         File dbFile = new File(DB_FILE_NAME);
         DBMaker.Maker fileDB = DBMaker.fileDB(dbFile);
         fileDB.closeOnJvmShutdown();
         fileDB.transactionDisable();
+        fileDB.fileLockDisable(); //allows multiple potage instances to access DB
+        fileDB.readOnly();    
+//        fileDB.
         DB dbStore = fileDB.make();
 //        fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
 //        System.err.println(Arrays.toString(fpkmTableHeaders));
-        fpkmTableHeaders =  dbStore.atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
+        fpkmTableHeaders = dbStore.atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
 //        System.err.println(Arrays.toString(fpkmTableHeaders));
-        
+
 //        HTreeMap<String, ArrayList<String>> dbStoremainMap = dbStore.hashMap(MAIN_MAP_KEY);
 //        loadedDataModel = new LazyGeneDataModel(dbStoremainMap);
-        
-        
-        
         ArrayList<Gene> inputList = inputProcessor.getGenes();
         if (inputList != null && !inputList.isEmpty()) {
 //            loadedDataModel = new GeneDataModel(inputProcessor);
@@ -640,7 +638,7 @@ public class MainPopsBean implements Serializable {
 
         HashMap<String, String> chromosomeToFileNameMap = generateChromosomeToFileNameMap(true);
         Collection<String> fileNames = chromosomeToFileNameMap.values();
-        
+
         genesTissuesFPKMsMap = new HashMap<String, ArrayList<Double>>();
         loadedGenes = new ArrayList<>(queries.size());
         for (String fileName : fileNames) {
@@ -860,7 +858,7 @@ public class MainPopsBean implements Serializable {
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), "/var/tomcat/persist/coching_data/IWGSC_SS").get(0).getSequenceString());
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), extContext.getRealPath(BLAST_DB)).
                 sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB).
-                        get(0).getSequenceString()
+                    get(0).getSequenceString()
                 );
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
                 sb.append(newline);
@@ -1136,10 +1134,10 @@ public class MainPopsBean implements Serializable {
         sb.append("\nJob submitted: ").append(submitTime).append("\n");;
         sb.append("\nJob completed: ").append(new Date()).append("\n");
         sb.append("\nContact radoslaw.suchecki@acpfg.com.au with questions or comments about the POTAGE application. \n\n"
-                + "ACPFG Bioinformatics Group "
-                //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
-                //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "
-                + "\n");
+            + "ACPFG Bioinformatics Group "
+            //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
+            //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "
+            + "\n");
         return sb.toString();
     }
 

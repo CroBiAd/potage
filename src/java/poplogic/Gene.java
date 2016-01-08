@@ -69,11 +69,27 @@ public class Gene implements Serializable, Comparable<Gene> {
         this.fpkmTableHeaders = fpkmTableHeaders;
         this.fpkmSettings = fpkmSettings;
     }
+    
+    public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<Double> tissuesFPKMs,
+            String[] fpkmTableHeaders, int from, int to, String strand, ArrayList<String> fpkmSettings) {
+        this.geneId = geneId;
+        this.contig = contig;
+        this.annotationMips = annotationMips;
+        this.annotationRice = annotationRice;
+        this.tissuesFPKMs = tissuesFPKMs;
+        this.from = from;
+        this.to = to;
+        this.strand = strand;
+        this.fpkmTableHeaders = fpkmTableHeaders;
+        this.fpkmSettings = fpkmSettings;
+    }
 
-//    public Gene(String geneId, ArrayList<String> record, ArrayList<Double> tissuesFPKMs, 
+//    public Gene(String geneId, ArrayList<String> record, ArrayList<Double> tissuesFPKMs, ArrayList<String> 
 //        String[] fpkmTableHeaders, ArrayList<String> fpkmSettings) {
 //        this.geneId = geneId;
-//        this.contig = new Contigrecord.get(0);
+////        this.contig = new Contigrecord.get(0);
+////        this.annotationMips = annotationMips;
+////        this.annotationRice = annotationRice;
 //        this.tissuesFPKMs = tissuesFPKMs;
 //        this.fpkmTableHeaders = fpkmTableHeaders;
 //        this.fpkmSettings = fpkmSettings;
@@ -138,6 +154,11 @@ public class Gene implements Serializable, Comparable<Gene> {
 //                    if(seriesName.length() >= 10) {
 //                        seriesName = seriesName.replaceFirst("_", "\n");
 //                    }
+                            if(tissuesFPKMs == null ) {
+                                System.err.println("tissuesFPKMs == null");
+//                            } else {
+//                                System.err.println("tissuesFPKMs.size() = "+tissuesFPKMs.size()+", j="+j);
+                            }
                             series.set(seriesName, tissuesFPKMs.get(j)); //+1 as headers are geneid, start, stop and then sample ids
                         } else {
                             series.set(fpkmTableHeaders[j + 1], 0);

@@ -183,7 +183,8 @@ public class InputProcessor implements Serializable {
                     Double cM_corrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
                     Double cM_original = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
                     cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(cM_corrected, cM_original);
-                    Contig c = new Contig(toks[0], toks[1], cM_corrected, cM_original, wheatGeneIdsList, genesTissuesFPKMsMap);
+                    Contig c = new Contig(toks[0], cM_original, wheatGeneIdsList);
+//                    Contig c = new Contig(toks[0], toks[1], cM_original, wheatGeneIdsList);
                     boolean isRice = false;
 //                    if (wheatGeneIdsList != null) { //if no mips gene predictions then no annotations to retrieve 
 //                        c.setAnnotations(getAnnotations(wheatGeneIdsList, mipsIdToAnnotationStringToksMap, isRice));
@@ -328,7 +329,8 @@ public class InputProcessor implements Serializable {
                     Double locationCorrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
                     Double locationOriginal = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
                     cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(locationCorrected, locationOriginal);
-                    contigs.addContig(new Contig(toks[0], chromosome, locationCorrected, locationOriginal, null, null));
+                    contigs.addContig(new Contig(toks[0], locationOriginal, null));
+//                    contigs.addContig(new Contig(toks[0], chromosome, locationOriginal, null));
                 }
             }
         } catch (FileNotFoundException ex) {
