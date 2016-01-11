@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
@@ -77,12 +78,16 @@ import reusable.Sequence;
 public class MainPopsBean implements Serializable {
 
     //MapDB & keys //Keys are used to retrieve a given datastructure from the DB
-    private final String DB_FILE_NAME = "/var/tomcat/persist/potage_data/potage.db";
     private final String MAIN_MAP_KEY = "mainMap";
     private final String CONTIG_2_GENES_MAP_KEY = "contig2Genes";
     private final String EXPRESSION_MAP_KEY = "expressionMap";
     private final String EXPRESSION_HEADER_KEY = "expressionHeader";
     private final String SETTINGS_MAP_NAME = "settingsMap";
+    
+     @ManagedProperty(value="#{mapDbFrontBean}")
+     private MapDbFrontBean mapDbFrontBean;
+    
+    
 
 //    public final static String BLAST_DB_FOR_FETCHING = "//resources//pops_all_rad.nal";
 //    public final static String BLAST_DB = "//resources//pops_all_rad.nal";
@@ -593,22 +598,17 @@ public class MainPopsBean implements Serializable {
     private void loadData(String fileName) {
 //            InputProcessor ip = new InputProcessor(fileName, null, Integer.MAX_VALUE, extContext.getRealPath(ANNOTATION));
         String unordered = null;
-        if (appendUnordered) {
+        if (appendUnordered) { 
+            
             unordered = FPKMS_UNORDERED_GENES;
         }
         InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, null);
 
-        File dbFile = new File(DB_FILE_NAME);
-        DBMaker.Maker fileDB = DBMaker.fileDB(dbFile);
-        fileDB.closeOnJvmShutdown();
-        fileDB.transactionDisable();
-        fileDB.fileLockDisable(); //allows multiple potage instances to access DB
-        fileDB.readOnly();    
-//        fileDB.
-        DB dbStore = fileDB.make();
+
 //        fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
 //        System.err.println(Arrays.toString(fpkmTableHeaders));
-        fpkmTableHeaders = dbStore.atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
+        
+        fpkmTableHeaders = mapDbFrontBean.getDbStore().atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
 //        System.err.println(Arrays.toString(fpkmTableHeaders));
 
 //        HTreeMap<String, ArrayList<String>> dbStoremainMap = dbStore.hashMap(MAIN_MAP_KEY);
@@ -1192,5 +1192,15 @@ public class MainPopsBean implements Serializable {
     public LazyDataModel<Gene> getLoadedDataModel() {
         return loadedDataModel;
     }
+
+    public MapDbFrontBean getMapDbFrontBean() {
+        return mapDbFrontBean;
+    }
+
+    public void setMapDbFrontBean(MapDbFrontBean mapDbFrontBean) {
+        this.mapDbFrontBean = mapDbFrontBean;
+    }
+    
+    
 
 }
