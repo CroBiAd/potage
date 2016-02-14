@@ -50,7 +50,7 @@ public class Gene implements Serializable, Comparable<Gene> {
 //    private TabView chartsTabView;
 
     public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<Double> tissuesFPKMs,
-            String[] fpkmTableHeaders, String traes_to_CSS_entry, ArrayList<String> fpkmSettings) {
+        String[] fpkmTableHeaders, String traes_to_CSS_entry, ArrayList<String> fpkmSettings) {
         this.geneId = geneId;
         this.contig = contig;
         this.annotationMips = annotationMips;
@@ -69,9 +69,9 @@ public class Gene implements Serializable, Comparable<Gene> {
         this.fpkmTableHeaders = fpkmTableHeaders;
         this.fpkmSettings = fpkmSettings;
     }
-    
+
     public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<Double> tissuesFPKMs,
-            String[] fpkmTableHeaders, int from, int to, String strand, ArrayList<String> fpkmSettings) {
+        String[] fpkmTableHeaders, int from, int to, String strand, ArrayList<String> fpkmSettings) {
         this.geneId = geneId;
         this.contig = contig;
         this.annotationMips = annotationMips;
@@ -94,9 +94,6 @@ public class Gene implements Serializable, Comparable<Gene> {
 //        this.fpkmTableHeaders = fpkmTableHeaders;
 //        this.fpkmSettings = fpkmSettings;
 //    }
-    
-    
-
     public boolean isPlaceHolder() {
         if (geneId.equals(contig.getContigId())) {
             return true;
@@ -106,6 +103,20 @@ public class Gene implements Serializable, Comparable<Gene> {
 
     public String getGeneId() {
         return geneId;
+    }
+
+    public String getGeneIdHTML(String fontColour) {
+        StringBuilder html = new StringBuilder();
+        if (getGeneId().startsWith("Traes")) {
+            html.append("<a href=\"http://plants.ensembl.org/Triticum_aestivum/Gene/Summary?db=core;g=");
+            html.append(getGeneId());
+            html.append("\" target=\"_blank\" style=\"color: ").append(fontColour).append("\">");
+            html.append(getGeneId()).append("</a> ");
+            return html.toString();
+        } else {
+            return getGeneId();
+        }
+
     }
 
     public Contig getContig() {
@@ -154,7 +165,7 @@ public class Gene implements Serializable, Comparable<Gene> {
 //                    if(seriesName.length() >= 10) {
 //                        seriesName = seriesName.replaceFirst("_", "\n");
 //                    }
-                            if(tissuesFPKMs == null ) {
+                            if (tissuesFPKMs == null) {
                                 System.err.println("tissuesFPKMs == null");
 //                            } else {
 //                                System.err.println("tissuesFPKMs.size() = "+tissuesFPKMs.size()+", j="+j);
@@ -200,9 +211,6 @@ public class Gene implements Serializable, Comparable<Gene> {
 //        }
 //        return chartsTabView;
 //    }
-
-    
-    
 //    public ArrayList<ChartModelWithId> getChartModels() {
 ////        ArrayList<ModelWithId> chartModels = new ArrayList<>();
 //        if (chartModels == null) {
@@ -216,7 +224,6 @@ public class Gene implements Serializable, Comparable<Gene> {
 //        }
 //        return chartModels;
 //    }
-
 //    public ArrayList<BarChartModel> getBarChartModel() {
 //        if (barChartModel == null) {
 //            barChartModel = new ArrayList<>();
@@ -294,5 +301,4 @@ public class Gene implements Serializable, Comparable<Gene> {
         return getGeneId().compareTo(o.getGeneId());
     }
 
-   
 }

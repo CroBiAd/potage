@@ -419,8 +419,8 @@
                                             completeMethod="#{mainBean.cM_filter.correctedRangePrefix}" >
                                 <p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />
                             </p:autoComplete>
-                            <p:spacer height="0" width="75" />
-                            <h:outputText value="cM (original) between " />
+                            <!--<p:spacer height="0" width="75" />-->
+<!--                            <h:outputText value="cM (original) between " />
                             <p:autoComplete dropdown="true" value="#{mainBean.cM_filter.cM_original_min_user}"   disabled="#{!mainBean.dataLoaded}" 
                                             forceSelection="true" size="7" scrollHeight="400" title="Type in the desired cM (original) position (from)"   
                                             completeMethod="#{mainBean.cM_filter.originalRangePrefix}" >
@@ -432,7 +432,7 @@
                                             forceSelection="true" size="7"   scrollHeight="400" title="Type in the desired cM (original) position (to)"  
                                             completeMethod="#{mainBean.cM_filter.originalRangePrefix}" >
                                 <p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />
-                            </p:autoComplete>
+                            </p:autoComplete>-->
                             <p:spacer height="0" width="35" />
                             <p:commandButton title="Reset cM filtering" value="Reset cM filtering"  icon="ui-icon-cancel" update=":formCentre:dataTable" process="@this" action="#{mainBean.resetFilter()}" 
                                              onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide();" disabled="#{!mainBean.isFiltered()}" />
@@ -456,8 +456,8 @@
                         <p:column rowspan="2" headerText="To"   width="30"/>
                         <p:column rowspan="2" headerText="+/-"  width="10" id="strand" /> 
                         <p:column rowspan="2" headerText="Contig ID" filterBy="#{gene.contig.contigId}" filterFunction="#{mainBean.filterIgnoreCaseContains}" width="105"/>
-                        <p:column rowspan="2" headerText="cM corrected" style="text-align: center"   width="47" />
-                        <p:column rowspan="2" headerText="cM original" style="text-align: center" width="45" />
+                        <p:column rowspan="2" headerText="cM" style="text-align: center"   width="47" />
+                        <!--<p:column rowspan="2" headerText="cM original" style="text-align: center" width="45" />-->
                         <p:column colspan="3"  headerText="MIPS Annotation" style="color: peru" />
                         <p:column colspan="2" headerText="Rice-derived Annotation"  style="color: mediumseagreen"/>
                     </p:row>
@@ -479,13 +479,13 @@
                     <p:commandButton icon="ui-icon-arrowthickstop-1-s" title="Add gene to FPKM charts display" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide()" 
                                      action="#{mainBean.addGeneToDisplay(gene)}" update=":formCentre:chartsGrid"  />
                 </p:column>
-                <p:column> <h:outputText value="#{gene.geneId}"/></p:column>
+                <p:column> <h:outputText value="#{gene.getGeneIdHTML('peru')}" escape="false"/></p:column>
                 <p:column> <h:outputText value="#{gene.from}"/></p:column>
                 <p:column> <h:outputText value="#{gene.to}"/></p:column>
                 <p:column> <h:outputText value="#{gene.strand}"/></p:column>
                 <p:column> <h:outputText value="#{gene.contig.contigId}"  />  </p:column>
                 <p:column> <h:outputText value="#{gene.contig.cM_corrected}  " /> </p:column>
-                <p:column> <h:outputText value="#{gene.contig.cM_original}" /> </p:column>
+                <!--<p:column> <h:outputText value="#{gene.contig.cM_original}" /> </p:column>-->
                 <p:column> <h:outputText value="#{gene.annotationMips.getMipsHTML('peru')}" escape="false"/> </p:column> 
                 <p:column> <h:outputText value="#{gene.annotationMips.annotationString}" style="color: peru" /> </p:column>  
                 <p:column> 
@@ -578,12 +578,12 @@
                                 <p:ajax event="itemSelect" listener="#{mainBean.chartItemSelect}"/>
                             </p:chart>                            
                         </p:tab>
-                        <!--<p:tab title="Chris">-->
-                        <p:tab title="Cultivar X">
+                        <!--<p:tab title="Cultivar X">-->
+                        <p:tab title="Chris">
                             <p:chart type="bar" model="#{gene.getBarChartModel(1)}" widgetVar="chart_1_#{gene.geneId}"  />
                         </p:tab>
-                        <p:tab title="Cultivar Y">
-                        <!--<p:tab title="Cornerstone/CS">-->
+                        <!--<p:tab title="Cultivar Y">-->
+                        <p:tab title="Cornerstone/CS">
                             <p:chart type="bar" model="#{gene.getBarChartModel(2)}" widgetVar="chart_2_#{gene.geneId}"  />
                         </p:tab>
                     </p:tabView>

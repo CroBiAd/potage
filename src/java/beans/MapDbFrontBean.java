@@ -19,6 +19,16 @@ import org.mapdb.DBMaker;
 @ApplicationScoped
 public class MapDbFrontBean {
 
+    private final String CONTIG_2_GENES_MAP_KEY = "contig2Genes";
+    private final String CONTIG_2_LOCATION_MAP_KEY = "contig2Location";
+    private final String GENE_2_CONTIG_MAP_KEY = "gene2Contig";
+    private final String GENE_2_ANNOTATION_KEY = "annotationMips";
+    private final String GENE_2_ANNOTATION_RICE_KEY = "annotationRice";
+    private final String EXPRESSION_MAP_KEY = "expressionMap";
+    private final String EXPRESSION_HEADER_KEY = "expressionHeader";
+    private final String WITH_GENES_SFX = "_withGenes";
+    private final String NO_GENES_SFX = "_noGenes";
+    private final String SETTINGS_MAP_NAME = "settingsMap";
     private final String DB_FILE_NAME = "/var/tomcat/persist/potage_data/potage.db";
     private final DB dbStore;
     
@@ -37,7 +47,7 @@ public class MapDbFrontBean {
         return dbStore;
     }
     
-    
+//    public void getChromosome
     
     
 
