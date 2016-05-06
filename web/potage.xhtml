@@ -63,7 +63,7 @@
 
             <h2> <u>POTAGE</u> - PopSeq Ordered Triticum Aestivum Gene Expression  </h2>
 
-            <h4> As of October 2014 POTAGE is still being developed, additional datasets and features are being added.</h4>
+            <h4> Last updated May 2016 </h4>
             <ul> 
                 <li> Please report bugs to  <a href="mailto:radoslaw.suchecki@acpfg.com.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
             </ul>
@@ -137,7 +137,12 @@
                 </li>
                 <li>Chinese Spring/Cornerstone (ACPFG in-house). Anthers, four developmental stages. Single end reads only.</li>
                 <li>Chris (ACPFG in-house). Anther, seedling, Illumina 2x100bp (PE)</li>
-                <li></li>
+                <li>Drought experiment (ACPFG in-house)</li>
+                <ul>
+                    <li>Excalibur and RAC875</li>                    
+                    <li>3, 5, 9 days after anthesis</li>                    
+                    <li>Well-watered (WW), Mild-drought(MD), Severe-drought(SD)</li>                    
+                </ul>
             </ul>
             
             
@@ -585,6 +590,12 @@
                         <!--<p:tab title="Cultivar Y">-->
                         <p:tab title="Cornerstone/CS">
                             <p:chart type="bar" model="#{gene.getBarChartModel(2)}" widgetVar="chart_2_#{gene.geneId}"  />
+                        </p:tab>
+                        <p:tab title="Excalibur">
+                            <p:chart type="bar" model="#{gene.getBarChartModel(3)}" widgetVar="chart_3_#{gene.geneId}"  />
+                        </p:tab>
+                        <p:tab title="RAC875">
+                            <p:chart type="bar" model="#{gene.getBarChartModel(4)}" widgetVar="chart_4_#{gene.geneId}"  />
                         </p:tab>
                     </p:tabView>
                     <f:facet name="actions" >

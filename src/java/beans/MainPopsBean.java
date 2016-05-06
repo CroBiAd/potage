@@ -97,10 +97,10 @@ public class MainPopsBean implements Serializable {
     private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
     private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
     private final String TRAES_CSS_MAP = "/var/tomcat/persist/potage_data/Traes_to_CSS.map";
-    private final String FPKMS = "/var/tomcat/persist/potage_data/FPKMs/reordered/popseqed_genes_on_with_header.fpkms";
-    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/potage_data/FPKMs/reordered/unordered_genes_with_header.fpkms";
-    private final String FPKM_SETTINGS = "/var/tomcat/persist/potage_data/FPKMs/reordered/fpkm_data_settings.txt";
-    public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM (corrected),cM(original),MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
+    private final String FPKMS = "/var/tomcat/persist/potage_data/FPKMs/reordered/popseqed_genes_on_with_header2016.fpkms";
+    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/potage_data/FPKMs/reordered/unordered_genes_with_header2016.fpkms";
+    private final String FPKM_SETTINGS = "/var/tomcat/persist/potage_data/FPKMs/reordered/fpkm_data_settings2016.txt";
+    public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM,MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
 
     private boolean autoDisplayCharts = true;
 
@@ -604,11 +604,11 @@ public class MainPopsBean implements Serializable {
         }
         InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, null);
 
+//        fpkmTableHeaders = mapDbFrontBean.getDbStore().atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
 
-//        fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
+        fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
 //        System.err.println(Arrays.toString(fpkmTableHeaders));
         
-        fpkmTableHeaders = mapDbFrontBean.getDbStore().atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
 //        System.err.println(Arrays.toString(fpkmTableHeaders));
 
 //        HTreeMap<String, ArrayList<String>> dbStoremainMap = dbStore.hashMap(MAIN_MAP_KEY);
@@ -918,18 +918,26 @@ public class MainPopsBean implements Serializable {
         HSSFSheet sheet = wb.getSheetAt(0);
 
         Iterator<Row> rowIterator = sheet.rowIterator();
+        rowIterator.next();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             Iterator<Cell> cellIterator = row.cellIterator();
-            Cell firstCell = cellIterator.next();
-            String geneId = firstCell.getStringCellValue();
-            cellIterator = row.cellIterator();
+//            Cell firstCell = cellIterator.next();
+//            String geneId = firstCell.getStringCellValue();
+//            cellIterator = row.cellIterator();
+//            System.err.println("id: "+geneId);
+            String geneId = null;
+//            int j=0;
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
                 String stringCellValue = cell.getStringCellValue();
                 if (stringCellValue != null && !stringCellValue.isEmpty()) {
                     cell.setCellValue(stringCellValue.replaceAll("\\<[^>]*>", "")); //strip off HTML
                 }
+                if(geneId == null || geneId.isEmpty()) {
+                    geneId = cell.getStringCellValue().trim();
+                }
+//                System.err.println("["+(j++)+"]"+cell.getStringCellValue());
             }
             ArrayList<Double> fpkms = genesTissuesFPKMsMap.get(geneId);
             if (fpkms != null && !fpkms.isEmpty()) {
@@ -938,7 +946,7 @@ public class MainPopsBean implements Serializable {
                     Cell createdCell = row.createCell(row.getLastCellNum());
                     createdCell.setCellValue(fpkmDouble);
                 }
-            }
+            } 
 //            cellIterator = row.cellIterator();
 //            String geneId = cellIterator.next().getStringCellValue();
 //            Gene gene = selectedDataModel.getRowData(geneId);
@@ -951,8 +959,11 @@ public class MainPopsBean implements Serializable {
         Row row = sheet.getRow(0);
         Iterator<Cell> cellIterator = row.cellIterator();
         String headers[] = TABLE_HEADERS.split(",");
+        int p = 0;
         for (String h : headers) {
+//            System.err.println("Adding "+h+" at "+(p++));
             cellIterator.next().setCellValue(h);
+    
         }
 
         //Add headers for FPKM values
