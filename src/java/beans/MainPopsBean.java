@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -152,6 +153,37 @@ public class MainPopsBean implements Serializable {
     public MainPopsBean() {
         perLocationContigs = new PerLocationContigs(null, new Location_cMFilter());
         cM_filter = new Location_cMFilter();
+    }
+    
+    @PostConstruct
+    public void init() {
+//        if (!FacesContext.getCurrentInstance().isPostback()) {
+//            RequestContext.getCurrentInstance().execute("alert('This onload script is added from backing bean.')");
+//        }
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        Map<String, String> parameterMap = (Map<String, String>) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        if (!parameterMap.isEmpty()) {
+            if (parameterMap.containsKey("query")) {
+                String id = parameterMap.get("query").trim().replaceFirst("\\.\\d+$", ""); 
+                setUserQuery(id);
+                searchAll(id, ":formSearch:searchMessages");
+            }
+//            if (parameterMap.containsKey("from")) {
+//                try {
+//                    setFrom(Integer.parseInt(parameterMap.get("from")));
+//                } catch (NumberFormatException e) {
+//
+//                }
+//            }
+//            if (parameterMap.containsKey("to")) {
+//                try {
+//                    setTo(Integer.parseInt(parameterMap.get("to")));
+//                } catch (NumberFormatException e) {
+//
+//                }
+//            }
+            RequestContext.getCurrentInstance().update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
+        }
     }
 
     public PerLocationContigs getPerLocationContigs() {
