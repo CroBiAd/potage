@@ -30,4 +30,7 @@ public class ChartModelWithId {
         return chartId;
     }
 
-}
+    public String getTitle() {
+        return model.getTitle().split(" in ")[1];
+    }
+ }

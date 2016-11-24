@@ -20,7 +20,7 @@ import javax.faces.component.behavior.ClientBehavior;
 import javax.faces.context.FacesContext;
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.component.chart.Chart;
-import org.primefaces.component.chart.bar.BarChart;
+//import org.primefaces.component.chart.bar.BarChart;
 import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.resizable.Resizable;
 import org.primefaces.context.RequestContext;

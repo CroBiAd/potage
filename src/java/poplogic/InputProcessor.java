@@ -180,10 +180,9 @@ public class InputProcessor implements Serializable {
                 if (toks != null && toks.length > 1) {
                     ArrayList<String> wheatGeneIdsList = cssToTraesIdsMap.get(toks[0]);
 
-                    Double cM_corrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
-                    Double cM_original = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
-                    cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(cM_corrected, cM_original);
-                    Contig c = new Contig(toks[0], cM_original, wheatGeneIdsList);
+                    Double cM = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
+                    cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(cM);
+                    Contig c = new Contig(toks[0], cM, wheatGeneIdsList);
 //                    Contig c = new Contig(toks[0], toks[1], cM_original, wheatGeneIdsList);
                     boolean isRice = false;
 //                    if (wheatGeneIdsList != null) { //if no mips gene predictions then no annotations to retrieve 
@@ -327,9 +326,9 @@ public class InputProcessor implements Serializable {
                 String toks[] = inputLine.split("\t");
                 if (toks != null && toks.length > 1) {
                     Double locationCorrected = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
-                    Double locationOriginal = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
-                    cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(locationCorrected, locationOriginal);
-                    contigs.addContig(new Contig(toks[0], locationOriginal, null));
+//                    Double locationOriginal = reusable.CommonMaths.round(Double.parseDouble(toks[2]), 3);
+                    cM_filter.add_cM_valuesToMinMaxAnd_cMRanges(locationCorrected);
+                    contigs.addContig(new Contig(toks[0], locationCorrected, null));
 //                    contigs.addContig(new Contig(toks[0], chromosome, locationOriginal, null));
                 }
             }

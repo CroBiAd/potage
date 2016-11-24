@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -73,7 +74,6 @@ public class PerLocationContigs implements Serializable {
     }
 
     public ArrayList<Contig> getFilteredContigs() {
-
         return filteredContigs;
     }
 
@@ -81,21 +81,21 @@ public class PerLocationContigs implements Serializable {
         this.filteredContigs = filteredContigs;
     }
 
-    public ArrayList<Double> correctedRangePrefix(String prefix) {
-        return cM_filterForNonGeneContigs.correctedRangePrefix(prefix);
+    public ArrayList<Double> rangePrefix(String prefix) {
+        return cM_filterForNonGeneContigs.rangePrefix(prefix);
     }
 
-    public ArrayList<Double> originalRangePrefix(String prefix) {
-        return cM_filterForNonGeneContigs.originalRangePrefix(prefix);
+//    public ArrayList<Double> originalRangePrefix(String prefix) {
+//        return cM_filterForNonGeneContigs.originalRangePrefix(prefix);
+//    }
+
+    public ArrayList<Double> getcM_range() {
+        return cM_filterForNonGeneContigs.getcM_Range();
     }
 
-    public ArrayList<Double> getcM_correctedRange() {
-        return cM_filterForNonGeneContigs.getcM_correctedRange();
-    }
-
-    public ArrayList<Double> getcM_originalRange() {
-        return cM_filterForNonGeneContigs.getcM_originalRange();
-    }
+//    public ArrayList<Double> getcM_originalRange() {
+//        return cM_filterForNonGeneContigs.getcM_originalRange();
+//    }
 
     public String getChromosome() {
         return chromosome;
@@ -107,23 +107,27 @@ public class PerLocationContigs implements Serializable {
     }
 
     public boolean isFiltered() {
-        return filteredContigs != null;
+        return cM_filterForNonGeneContigs.getcM_min() != cM_filterForNonGeneContigs.getcM_min_user() || cM_filterForNonGeneContigs.getcM_max() != cM_filterForNonGeneContigs.getcM_max_user();
+//        return filteredContigs != null;
     }
 
     public void filterByCm() {
         filteredContigs = new ArrayList<>();
         if (contigs != null) {
+            System.err.println(contigs.size()+" contigs ");
             for (Contig contig : contigs) {
-                double cM_corrected = contig.getcM_corrected();
-                double cM_original = contig.getcM_original();
-                if (cM_filterForNonGeneContigs.isWithinUserCoordinates(cM_corrected, cM_original)) {
+//                double cM_corrected = contig.getcM_corrected();
+//                double cM_original = contig.getcM_original();
+                if (cM_filterForNonGeneContigs.isWithinUserCoordinates(contig.getcM())) {
                     filteredContigs.add(contig);
                 }
             }
+            System.err.println(filteredContigs.size()+" filtered contigs ");
 
             //reset selection to prevent erratic behaviour (e.g. first elem in the table remains selected even though it is a different elem due to cM restriction
             setSelectedContigs(null);
         }
+//        RequestContext.getCurrentInstance().update(":formSearch3:contigList");
     }
 
     public ArrayList<Contig> getSelectedContigs() {

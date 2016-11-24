@@ -820,9 +820,9 @@ public class MainPopsBean implements Serializable {
             }
 
             for (Gene gene : preFilterGenes) {
-                Double cM_corrected = gene.getContig().getcM_corrected();
-                Double cM_original = gene.getContig().getcM_original();
-                if (cM_filter.isWithinUserCoordinates(cM_corrected, cM_original)) {
+                Double cM_corrected = gene.getContig().getcM();
+//                Double cM_original = gene.getContig().getcM_original();
+                if (cM_filter.isWithinUserCoordinates(cM_corrected)) {
 //                    genesWithinCoordinates.add(gene);
                     postFilterGenes.add(gene);
                 }

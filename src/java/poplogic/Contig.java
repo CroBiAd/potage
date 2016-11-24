@@ -16,8 +16,7 @@ public class Contig implements Serializable { //, Comparable<Contig> {
     //wheat contig info
     private final String contigId;
 //    private final String popedAtChromosome;
-    private final Double cM_corrected;
-    private final Double cM_original;
+    private final Double cM;
 
 //    private long len;
    
@@ -26,25 +25,23 @@ public class Contig implements Serializable { //, Comparable<Contig> {
 //    private ArrayList<Annotation> annotationsRice;
 //    private HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
 
-    public Contig(String contigId,  double cM_original, ArrayList<String> wheatGeneIdsList) {
+    public Contig(String contigId,  double cM, ArrayList<String> wheatGeneIdsList) {
         this.contigId = contigId;
 //        this.popedAtChromosome = popedAtChromosome;
-        this.cM_corrected = cM_original;
-        this.cM_original = cM_original;
+        this.cM = cM;
+   
         this.wheatGeneIdsList = wheatGeneIdsList;
 //        this.genesTissuesFPKMsMap = genesTissuesFPKMsMap;
     }
     
-    public Contig(String contigId,  double cM_original) {
+    public Contig(String contigId,  double cM) {
         this.contigId = contigId;
-        this.cM_corrected = cM_original;
-        this.cM_original = cM_original;
+        this.cM = cM;
     }
 public Contig(String contigId) {
         this.contigId = contigId;
 //        this.popedAtChromosome = null;
-        this.cM_corrected = null;
-        this.cM_original = null;
+        this.cM = null;        
         this.wheatGeneIdsList = null;
     }
 //    public Contig(String contigId, String popedAtChromosome, double cM_corrected, double cM_original, ArrayList<String> wheatGeneIdsList, 
@@ -67,13 +64,10 @@ public Contig(String contigId) {
 //        return popedAtChromosome;
 //    }
 
-    public Double getcM_corrected() {
-        return cM_corrected;
+    public Double getcM() {
+        return cM;
     }
 
-    public Double getcM_original() {
-        return cM_original;
-    }
 
     public ArrayList<String> getWheatGeneIdsList() {
         return wheatGeneIdsList;
