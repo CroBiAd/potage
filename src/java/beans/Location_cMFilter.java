@@ -19,6 +19,7 @@ public class Location_cMFilter implements Serializable {
     private Double cM_max;
     private Double cM_min_user;
     private Double cM_max_user;
+    private String cM_range_user; 
     
         //for contigs without genes - good to have the range of available cM locations for autocomplete
     private final ArrayList<Double> cM_Range;
@@ -30,12 +31,27 @@ public class Location_cMFilter implements Serializable {
     public void resetFilter() {
         cM_min_user = cM_min;
         cM_max_user = cM_max;
+        cM_range_user = cM_min+"-"+cM_max;
     }
     
     public ArrayList<Double> getcM_Range() {
         return cM_Range;
     }
 
+//    public Double[] getcM_range_user() {
+//        return cM_range_user;
+//    }
+    public String getcM_range_user() {
+        return cM_range_user;
+    }
+
+    public void setcM_range_user(Double min, Double max) {
+        this.cM_range_user = min+"-"+max;
+    }
+
+
+    
+    
 
     
     
@@ -46,8 +62,9 @@ public class Location_cMFilter implements Serializable {
         return cM_min_user;
     }
 
-    public void setcM_min_user(Double cM_corrected_min_user) {
-        this.cM_min_user = cM_corrected_min_user;
+    public void setcM_min_user(Double cM_min_user) {
+        this.cM_min_user = cM_min_user;
+        setcM_range_user(cM_min_user, cM_max_user);
     }
 
     public Double getcM_max_user() {
@@ -57,8 +74,14 @@ public class Location_cMFilter implements Serializable {
         return cM_max_user;
     }
 
-    public void setcM_max_user(Double cM_corrected_max_user) {
-        this.cM_max_user = cM_corrected_max_user;
+    public void setcM_range_user(String cM_range_user) {
+        this.cM_range_user = cM_range_user;
+    }
+
+    
+    public void setcM_max_user(Double cM_max_user) {
+        this.cM_max_user = cM_max_user;
+        setcM_range_user(cM_min_user, cM_max_user);
     }
 
     public Double getcM_min() {
@@ -110,7 +133,7 @@ public class Location_cMFilter implements Serializable {
 //                cM_original_max = Math.ceil(cM_original);
 //            }
         }
-        
+        setcM_range_user(cM_min, cM_max);
         
         Double rounded = reusable.CommonMaths.round(cM, 3);
 //        Double roundedOriginal = reusable.CommonMaths.round(cM_original, 3);

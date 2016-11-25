@@ -194,8 +194,8 @@ public class InputProcessor implements Serializable {
 
                     if (wheatGeneIdsList == null) {
                         System.err.println("InputProcessor - should not be reading contigs without genes! "+c.getContigId());
-                        Gene placeholderGene = new Gene(c.getContigId(), c, null, null, null, null, null, fpkmSettings);
-                        genes.add(placeholderGene);
+//                        Gene placeholderGene = new Gene(c.getContigId(), c, null, null, null, null, null, fpkmSettings);
+//                        genes.add(placeholderGene);
                     } else {
                         for (String geneId : c.getWheatGeneIdsList()) {
                             if (queryIds == null || queryIds.contains(geneId) || queryIds.contains(c.getContigId())) {

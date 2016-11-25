@@ -29,6 +29,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -49,6 +50,7 @@ import org.primefaces.component.tabview.TabView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.ItemSelectEvent;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.event.data.FilterEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.LazyDataModel;
@@ -373,6 +375,7 @@ public class MainPopsBean implements Serializable {
 //                setGlobalFilter(userQuery); //not as useful as d.setFirst
                     currentChromosome = fileName.split("_")[2];
                     growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
+                    RequestContext.getCurrentInstance().update(":formCentre:dataTable");
                 }
             } else {
                 ArrayList<String> qList = new ArrayList<>(queries.length);
@@ -809,7 +812,13 @@ public class MainPopsBean implements Serializable {
         return value.toString().toLowerCase().trim().contains(filterText);
     }
 
-    public void filterByCm() {
+    public void filterByCm(SelectEvent event) {
+        filterByCm1();
+    }
+//    public void filterByCm(AjaxBehaviorEvent event) {
+//        filterByCm1();
+//    }
+    public void filterByCm1() {
         if (loadedGenes != null) {
             ArrayList<Gene> preFilterGenes = loadedGenes;
             ArrayList<Gene> postFilterGenes = new ArrayList<>();
@@ -832,6 +841,8 @@ public class MainPopsBean implements Serializable {
 
             //reset selection to prevent erratic behaviour (e.g. first elem in the table remains selected even though it is a different elem due to cM restriction
             selectedGenes = null;
+//            RequestContext requestContext = RequestContext.getCurrentInstance();
+//            requestContext.update("form:dataTable");
         }
     }
 
