@@ -15,7 +15,7 @@ import org.mapdb.DBMaker;
  *
  * @author Radoslaw Suchecki <radoslaw.suchecki@adelaide.edu.au>
  */
-@ManagedBean(name = "mapDbFrontBean", eager = true) //eager i.e. "to be instantiated and placed in the application scope as soon as the application is started and before any request is made"
+@ManagedBean(name = "mapDbFrontBean", eager = false) //eager i.e. "to be instantiated and placed in the application scope as soon as the application is started and before any request is made"
 @ApplicationScoped
 public class MapDbFrontBean {
 
