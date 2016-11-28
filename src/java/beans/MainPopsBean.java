@@ -87,7 +87,7 @@ public class MainPopsBean implements Serializable {
     private final String EXPRESSION_HEADER_KEY = "expressionHeader";
     private final String SETTINGS_MAP_NAME = "settingsMap";
     
-     @ManagedProperty(value="#{mapDbFrontBean}")
+//     @ManagedProperty(value="#{mapDbFrontBean}")
      private MapDbFrontBean mapDbFrontBean;
     
     
