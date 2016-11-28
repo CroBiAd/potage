@@ -113,7 +113,7 @@ public class MainPopsBean implements Serializable {
 //    private LazyGeneDataModel filteredDataModel;
     private ArrayList<Gene> loadedGenes;
     private ArrayList<Gene> selectedGenes;
-    private ArrayList<Gene> filteredGenes;
+//    private ArrayList<Gene> filteredGenes;
     private ArrayList<Gene> selectedGenesForChartDisplay;
     HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
     private Location_cMFilter cM_filter;
@@ -656,7 +656,7 @@ public class MainPopsBean implements Serializable {
 
             genesTissuesFPKMsMap = inputProcessor.getGenesTissuesFPKMsMap();
             cM_filter = inputProcessor.getcM_filter();
-            filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
+//            filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
             selectedGenes = null;
 
 //            selectedDataModel = loadedDataModel;
@@ -693,7 +693,7 @@ public class MainPopsBean implements Serializable {
         }
         cM_filter = new Location_cMFilter();
         loadedDataModel = new LazyGeneDataModel(loadedGenes);
-        filteredGenes = null;
+//        filteredGenes = null;
         selectedGenes = null;
     }
 
@@ -782,24 +782,24 @@ public class MainPopsBean implements Serializable {
         return selectedGenesForChartDisplay == null || selectedGenesForChartDisplay.isEmpty();
     }
 
-    public List<Gene> getFilteredGenes() {
-        return filteredGenes;
-    }
+//    public List<Gene> getFilteredGenes() {
+//        return filteredGenes;
+//    }
 
-    public void setFilteredGenes(List<Gene> filteredGenes) {
-        this.filteredGenes = (ArrayList<Gene>) filteredGenes;
-    }
+//    public void setFilteredGenes(List<Gene> filteredGenes) {
+//        this.filteredGenes = (ArrayList<Gene>) filteredGenes;
+//    }
 
     public void resetFilter() {
 //        selectedDataModel = loadedDataModel;
         cM_filter.resetFilter();
-        setFilteredGenes(null);
+//        setFilteredGenes(null);
         setSelectedGenes(null);
     }
 
-    public boolean isFiltered() {
-        return filteredGenes != null;
-    }
+//    public boolean isFiltered() {
+//        return filteredGenes != null;
+//    }
 
     public boolean filterIgnoreCaseContains(Object value, Object filter, Locale locale) {
         String filterText = (filter == null) ? null : filter.toString().trim().toLowerCase();
@@ -812,39 +812,39 @@ public class MainPopsBean implements Serializable {
         return value.toString().toLowerCase().trim().contains(filterText);
     }
 
-    public void filterByCm(SelectEvent event) {
-        filterByCm1();
-    }
+//    public void filterByCm(SelectEvent event) {
+//        filterByCm1();
+//    }
 //    public void filterByCm(AjaxBehaviorEvent event) {
 //        filterByCm1();
 //    }
-    public void filterByCm1() {
-        if (loadedGenes != null) {
-            ArrayList<Gene> preFilterGenes = loadedGenes;
-            ArrayList<Gene> postFilterGenes = new ArrayList<>();
-            if (filteredGenes == null || filteredGenes.isEmpty()) {
-                filteredGenes = new ArrayList<>();
-            } else {
-                preFilterGenes = filteredGenes;
-            }
-
-            for (Gene gene : preFilterGenes) {
-                Double cM_corrected = gene.getContig().getcM();
-//                Double cM_original = gene.getContig().getcM_original();
-                if (cM_filter.isWithinUserCoordinates(cM_corrected)) {
-//                    genesWithinCoordinates.add(gene);
-                    postFilterGenes.add(gene);
-                }
-            }
-            filteredGenes = postFilterGenes;
-//            selectedDataModel = new GeneDataModel(loadedDataModel, genesWithinCoordinates);
-
-            //reset selection to prevent erratic behaviour (e.g. first elem in the table remains selected even though it is a different elem due to cM restriction
-            selectedGenes = null;
-//            RequestContext requestContext = RequestContext.getCurrentInstance();
-//            requestContext.update("form:dataTable");
-        }
-    }
+//    public void filterByCm1() {
+//        if (loadedGenes != null) {
+//            ArrayList<Gene> preFilterGenes = loadedGenes;
+//            ArrayList<Gene> postFilterGenes = new ArrayList<>();
+//            if (filteredGenes == null || filteredGenes.isEmpty()) {
+//                filteredGenes = new ArrayList<>();
+//            } else {
+//                preFilterGenes = filteredGenes;
+//            }
+//
+//            for (Gene gene : preFilterGenes) {
+//                Double cM_corrected = gene.getContig().getcM();
+////                Double cM_original = gene.getContig().getcM_original();
+//                if (cM_filter.isWithinUserCoordinates(cM_corrected)) {
+////                    genesWithinCoordinates.add(gene);
+//                    postFilterGenes.add(gene);
+//                }
+//            }
+//            filteredGenes = postFilterGenes;
+////            selectedDataModel = new GeneDataModel(loadedDataModel, genesWithinCoordinates);
+//
+//            //reset selection to prevent erratic behaviour (e.g. first elem in the table remains selected even though it is a different elem due to cM restriction
+//            selectedGenes = null;
+////            RequestContext requestContext = RequestContext.getCurrentInstance();
+////            requestContext.update("form:dataTable");
+//        }
+//    }
 
 //    public void filterListener(FilterEvent filterEvent) {
 //        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");

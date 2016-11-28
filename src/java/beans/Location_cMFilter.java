@@ -7,6 +7,8 @@ package beans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  *
@@ -50,9 +52,23 @@ public class Location_cMFilter implements Serializable {
     }
 
 
+    public boolean isFiltered() {
+        return !Objects.equals(getcM_min(), getcM_min_user()) || !Objects.equals(getcM_max(), getcM_max_user());
+//        return filteredContigs != null;
+    }
     
-    
-
+    public boolean filterByCm(Object value, Object filter, Locale locale) {
+        String filterText = (filter == null) ? null : filter.toString().trim();
+        if(filterText == null||filterText.equals("")) {
+            return true;
+        }         
+        if(value == null) {
+            return false;
+        }
+        String[] split = filterText.split("-");
+        return ((Comparable) value).compareTo(Double.valueOf(split[0])) >= 0 && ((Comparable) value).compareTo(Double.valueOf(split[1])) <= 0;
+//        return ((Comparable) value).compareTo(Double.valueOf(filterText)) >= 0;
+    }
     
     
     public Double getcM_min_user() {
