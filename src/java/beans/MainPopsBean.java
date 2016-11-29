@@ -86,11 +86,9 @@ public class MainPopsBean implements Serializable {
     private final String EXPRESSION_MAP_KEY = "expressionMap";
     private final String EXPRESSION_HEADER_KEY = "expressionHeader";
     private final String SETTINGS_MAP_NAME = "settingsMap";
-    
+
 //     @ManagedProperty(value="#{mapDbFrontBean}")
-     private MapDbFrontBean mapDbFrontBean;
-    
-    
+    private MapDbFrontBean mapDbFrontBean;
 
 //    public final static String BLAST_DB_FOR_FETCHING = "//resources//pops_all_rad.nal";
 //    public final static String BLAST_DB = "//resources//pops_all_rad.nal";
@@ -152,11 +150,21 @@ public class MainPopsBean implements Serializable {
     //display unordered genes
     private boolean appendUnordered;
 
+    
+    @ManagedProperty(value="#{appDataBean}")
+    private AppDataBean appData;
+    
     public MainPopsBean() {
         perLocationContigs = new PerLocationContigs(null, new Location_cMFilter());
         cM_filter = new Location_cMFilter();
     }
+
+    public void setAppData(AppDataBean appData) {
+        this.appData = appData;
+    }
     
+    
+
     @PostConstruct
     public void init() {
 //        if (!FacesContext.getCurrentInstance().isPostback()) {
@@ -166,7 +174,7 @@ public class MainPopsBean implements Serializable {
         Map<String, String> parameterMap = (Map<String, String>) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         if (!parameterMap.isEmpty()) {
             if (parameterMap.containsKey("query")) {
-                String id = parameterMap.get("query").trim().replaceFirst("\\.\\d+$", ""); 
+                String id = parameterMap.get("query").trim().replaceFirst("\\.\\d+$", "");
                 setUserQuery(id);
                 searchAll(id, ":formSearch:searchMessages");
             }
@@ -186,8 +194,13 @@ public class MainPopsBean implements Serializable {
 //            }
             RequestContext.getCurrentInstance().update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
         }
+        
+//        System.err.println("AppData size="+appData.getContigs("1A").size());
     }
 
+    
+    
+  
     public PerLocationContigs getPerLocationContigs() {
         return perLocationContigs;
     }
@@ -378,10 +391,11 @@ public class MainPopsBean implements Serializable {
                     RequestContext.getCurrentInstance().update(":formCentre:dataTable");
                 }
             } else {
-                ArrayList<String> qList = new ArrayList<>(queries.length);
-                qList.addAll(Arrays.asList(queries));
-                loadDataMultipleQueries(qList);
-
+//                ArrayList<String> qList = new ArrayList<>(queries.length);
+//                qList.addAll(Arrays.asList(queries));
+//                loadDataMultipleQueries(qList);
+                growl(FacesMessage.SEVERITY_WARN, "Unfortunatelly", "Not able to process multiple queries", messageComponent);
+                RequestContext.getCurrentInstance().update(":formCentre:dataTable");
             }
         }
     }
@@ -633,19 +647,17 @@ public class MainPopsBean implements Serializable {
     private void loadData(String fileName) {
 //            InputProcessor ip = new InputProcessor(fileName, null, Integer.MAX_VALUE, extContext.getRealPath(ANNOTATION));
         String unordered = null;
-        if (appendUnordered) { 
-            
+        if (appendUnordered) {
+
             unordered = FPKMS_UNORDERED_GENES;
         }
         InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, null);
 
 //        fpkmTableHeaders = mapDbFrontBean.getDbStore().atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
-
         fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
 //        System.err.println(Arrays.toString(fpkmTableHeaders));
-        
-//        System.err.println(Arrays.toString(fpkmTableHeaders));
 
+//        System.err.println(Arrays.toString(fpkmTableHeaders));
 //        HTreeMap<String, ArrayList<String>> dbStoremainMap = dbStore.hashMap(MAIN_MAP_KEY);
 //        loadedDataModel = new LazyGeneDataModel(dbStoremainMap);
         ArrayList<Gene> inputList = inputProcessor.getGenes();
@@ -698,10 +710,11 @@ public class MainPopsBean implements Serializable {
     }
 
     public void loadAllContigs() {
-        String fileName = getInputFilename(chromosomeForNonGeneContigs, false);
-        InputProcessor inputProcessor = new InputProcessor();
-        perLocationContigs = inputProcessor.getContigs(fileName);
-
+//        String fileName = getInputFilename(chromosomeForNonGeneContigs, false);
+//        InputProcessor inputProcessor = new InputProcessor();
+//        perLocationContigs = inputProcessor.getContigs(fileName);
+        
+        perLocationContigs = new PerLocationContigs(appData.getContigs(chromosomeForNonGeneContigs), chromosomeForNonGeneContigs, appData.getLocationFilter(chromosomeForNonGeneContigs) );
     }
 
     public void restrictContigsWithutGenes() {
@@ -785,11 +798,9 @@ public class MainPopsBean implements Serializable {
 //    public List<Gene> getFilteredGenes() {
 //        return filteredGenes;
 //    }
-
 //    public void setFilteredGenes(List<Gene> filteredGenes) {
 //        this.filteredGenes = (ArrayList<Gene>) filteredGenes;
 //    }
-
     public void resetFilter() {
 //        selectedDataModel = loadedDataModel;
         cM_filter.resetFilter();
@@ -800,7 +811,6 @@ public class MainPopsBean implements Serializable {
 //    public boolean isFiltered() {
 //        return filteredGenes != null;
 //    }
-
     public boolean filterIgnoreCaseContains(Object value, Object filter, Locale locale) {
         String filterText = (filter == null) ? null : filter.toString().trim().toLowerCase();
         if (filterText == null || filterText.isEmpty()) {
@@ -845,7 +855,6 @@ public class MainPopsBean implements Serializable {
 ////            requestContext.update("form:dataTable");
 //        }
 //    }
-
 //    public void filterListener(FilterEvent filterEvent) {
 //        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
 //        if (userQuery != null && !userQuery.isEmpty()) {
@@ -901,7 +910,7 @@ public class MainPopsBean implements Serializable {
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), "/var/tomcat/persist/coching_data/IWGSC_SS").get(0).getSequenceString());
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), extContext.getRealPath(BLAST_DB)).
                 sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB).
-                    get(0).getSequenceString()
+                        get(0).getSequenceString()
                 );
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
                 sb.append(newline);
@@ -977,7 +986,7 @@ public class MainPopsBean implements Serializable {
                 if (stringCellValue != null && !stringCellValue.isEmpty()) {
                     cell.setCellValue(stringCellValue.replaceAll("\\<[^>]*>", "")); //strip off HTML
                 }
-                if(geneId == null || geneId.isEmpty()) {
+                if (geneId == null || geneId.isEmpty()) {
                     geneId = cell.getStringCellValue().trim();
                 }
 //                System.err.println("["+(j++)+"]"+cell.getStringCellValue());
@@ -989,7 +998,7 @@ public class MainPopsBean implements Serializable {
                     Cell createdCell = row.createCell(row.getLastCellNum());
                     createdCell.setCellValue(fpkmDouble);
                 }
-            } 
+            }
 //            cellIterator = row.cellIterator();
 //            String geneId = cellIterator.next().getStringCellValue();
 //            Gene gene = selectedDataModel.getRowData(geneId);
@@ -1006,7 +1015,7 @@ public class MainPopsBean implements Serializable {
         for (String h : headers) {
 //            System.err.println("Adding "+h+" at "+(p++));
             cellIterator.next().setCellValue(h);
-    
+
         }
 
         //Add headers for FPKM values
@@ -1188,10 +1197,10 @@ public class MainPopsBean implements Serializable {
         sb.append("\nJob submitted: ").append(submitTime).append("\n");;
         sb.append("\nJob completed: ").append(new Date()).append("\n");
         sb.append("\nContact radoslaw.suchecki@acpfg.com.au with questions or comments about the POTAGE application. \n\n"
-            + "ACPFG Bioinformatics Group "
-            //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
-            //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "
-            + "\n");
+                + "ACPFG Bioinformatics Group "
+                //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
+                //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "
+                + "\n");
         return sb.toString();
     }
 
@@ -1254,7 +1263,5 @@ public class MainPopsBean implements Serializable {
     public void setMapDbFrontBean(MapDbFrontBean mapDbFrontBean) {
         this.mapDbFrontBean = mapDbFrontBean;
     }
-    
-    
 
 }

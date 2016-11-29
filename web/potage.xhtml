@@ -275,7 +275,6 @@
             <h:form id="formSearch3">
                 <p:spacer height="10" width="0" />
 
-             <!--filteredValue="#{mainBean.perLocationContigs.filteredContigs}"--> 
                 <p:dataTable id="contigList" widgetVar="contigList" value="#{mainBean.perLocationContigs.contigs}" var="contig" style="text-align: center" 
                              selection="#{mainBean.perLocationContigs.selectedContigs}" rowKey="#{contig.id}"  
                              rowStyleClass="#{mainBean.contains(mainBean.userQuery, contig.contigId) ? 'highlighted' : null}" 
@@ -288,7 +287,7 @@
                                 <p:autoComplete dropdown="true" value="#{mainBean.chromosomeForNonGeneContigs}" completeMethod="#{trivialBean.getChromosomes()}"  
                                                 forceSelection="true" size="2" >
                                     <p:ajax event="itemSelect" listener="#{mainBean.loadAllContigs()}" update=":formSearch3:contigList" 
-                                            process="@this" onstart="PF('blockContigList').show();" oncomplete="PF('blockContigList').hide();" />
+                                            process="@this" onstart="PF('blockContigList').show();" oncomplete="PF('contigList').filter();" />
                                 </p:autoComplete> 
                                 <p:spacer height="0" width="10" />
                                 <h:outputText value="between " />                                

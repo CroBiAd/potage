@@ -24,7 +24,7 @@ import org.primefaces.model.StreamedContent;
 public class PerLocationContigs implements Serializable {
 
     private final ArrayList<Contig> contigs;
-    private ArrayList<Contig> filteredContigs;
+//    private ArrayList<Contig> filteredContigs;
     private ArrayList<Contig> selectedContigs;
     private final String chromosome;
     private final Location_cMFilter cM_filterForNonGeneContigs;
@@ -36,10 +36,18 @@ public class PerLocationContigs implements Serializable {
     public PerLocationContigs(String chromosome, Location_cMFilter cM_filterForNonGeneContigs) {
         this.chromosome = chromosome;
         this.contigs = new ArrayList<>();
-        this.filteredContigs = null;
+//        this.filteredContigs = null;
 
         this.cM_filterForNonGeneContigs = cM_filterForNonGeneContigs;
     }
+
+    public PerLocationContigs(ArrayList<Contig> contigs, String chromosome, Location_cMFilter cM_filterForNonGeneContigs) {
+        this.contigs = contigs;
+        this.chromosome = chromosome;
+        this.cM_filterForNonGeneContigs = cM_filterForNonGeneContigs;
+    }
+    
+    
 
 //    public PerLocationContigs(String chromosome, double cM_corrected_min, double cM_corrected_max, double cM_original_min, double cM_original_max) {
 //        this.chromosome = chromosome;

@@ -14,34 +14,35 @@ import java.util.HashMap;
  */
 public class Contig implements Serializable { //, Comparable<Contig> {
     //wheat contig info
+
     private final String contigId;
 //    private final String popedAtChromosome;
     private final Double cM;
 
 //    private long len;
-   
     private ArrayList<String> wheatGeneIdsList;
 //    private ArrayList<Annotation> annotations;
 //    private ArrayList<Annotation> annotationsRice;
 //    private HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
 
-    public Contig(String contigId,  double cM, ArrayList<String> wheatGeneIdsList) {
+    public Contig(String contigId, double cM, ArrayList<String> wheatGeneIdsList) {
         this.contigId = contigId;
 //        this.popedAtChromosome = popedAtChromosome;
         this.cM = cM;
-   
+
         this.wheatGeneIdsList = wheatGeneIdsList;
 //        this.genesTissuesFPKMsMap = genesTissuesFPKMsMap;
     }
-    
-    public Contig(String contigId,  double cM) {
+
+    public Contig(String contigId, double cM) {
         this.contigId = contigId;
         this.cM = cM;
     }
-public Contig(String contigId) {
+
+    public Contig(String contigId) {
         this.contigId = contigId;
 //        this.popedAtChromosome = null;
-        this.cM = null;        
+        this.cM = null;
         this.wheatGeneIdsList = null;
     }
 //    public Contig(String contigId, String popedAtChromosome, double cM_corrected, double cM_original, ArrayList<String> wheatGeneIdsList, 
@@ -63,23 +64,20 @@ public Contig(String contigId) {
 //    public String getPopedAtChromosome() {
 //        return popedAtChromosome;
 //    }
-
     public Double getcM() {
         return cM;
     }
 
-
     public ArrayList<String> getWheatGeneIdsList() {
         return wheatGeneIdsList;
     }
-  
+
     public boolean hasGenes() {
-        if(wheatGeneIdsList == null || wheatGeneIdsList.isEmpty())
+        if (wheatGeneIdsList == null || wheatGeneIdsList.isEmpty()) {
             return false;
+        }
         return true;
     }
-    
-    
 
 //    public void setAnnotations(ArrayList<Annotation> annotations) {
 //        this.annotations = annotations;
@@ -96,19 +94,14 @@ public Contig(String contigId) {
 //    public void setAnnotationsRice(ArrayList<Annotation> annotationsRice) {
 //        this.annotationsRice = annotationsRice;
 //    }
-    
-    
-    
 //    @Override
 //    public int compareTo(Contig another ) {        
 //        return (int) (getFrom()-another.getFrom());        
 //    }    
-
     public String getId() {
         return contigId;
     }
 
-    
     private String getColour(double value) {
         if (value >= 90) {
             return "color: green";
