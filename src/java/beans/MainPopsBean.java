@@ -1153,7 +1153,7 @@ public class MainPopsBean implements Serializable {
                 for (StackTraceElement ste : e.getStackTrace()) {
                     s.append("\n").append(ste.toString());
                 }
-                reusable.ExecProcessor.email(s.toString(), "POTAGE FATAL exception!", "radoslaw.suchecki@acpfg.com.au", "no-reply@hathor.acpfg.local");
+                reusable.ExecProcessor.email(s.toString(), "POTAGE FATAL exception!", "radoslaw.suchecki@adelaide.edu.au", "no-reply@hathor.acpfg.local");
                 growl(FacesMessage.SEVERITY_FATAL, "Fatal error!", "Alignment failed!", ":formSearch2:searchMessages2");
                 setSeqSearchTabActive("0");
             }
@@ -1187,7 +1187,7 @@ public class MainPopsBean implements Serializable {
         }
         sb.append("\nJob submitted: ").append(submitTime).append("\n");;
         sb.append("\nJob completed: ").append(new Date()).append("\n");
-        sb.append("\nContact radoslaw.suchecki@acpfg.com.au with questions or comments about the POTAGE application. \n\n"
+        sb.append("\nContact radoslaw.suchecki@adelaide.edu.au with questions or comments about the POTAGE application. \n\n"
             + "ACPFG Bioinformatics Group "
             //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
             //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "
