@@ -31,7 +31,7 @@ import reusable.InReader;
 @ApplicationScoped
 public class AppDataBean {
 
-    private final boolean DEBUG = true;
+    private final boolean DEBUG = false;
     private final String POPSEQ = "/var/tomcat/persist/potage_data/IWGSC_CSS_POPSEQ_v2.tsv";
     private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
     private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
@@ -66,6 +66,8 @@ public class AppDataBean {
         readPopSeq();
         readMainTableData();
         integrateGeneWithPopSeqData();
+//        SearchResult quickFind = quickFind("1BL_3811941");
+//        System.err.println("");
     }
 
     public SearchResult quickFind(String id) {
@@ -84,6 +86,7 @@ public class AppDataBean {
                 for (int i = 0; i < genes.size(); i++) {
                     if (genes.get(i).getGeneId().equals(id)) {
                         Gene gene = genes.get(i);
+                        System.out.println("Found gene "+gene.getGeneId());
                         return new SearchResult(gene, gene.getContig(), chromosome, i);
                     }
                 }
@@ -91,11 +94,13 @@ public class AppDataBean {
                 ArrayList<Contig> contigs = popSeqChromosomeMap1.get(chromosome);
                 for (int i = 0; i < contigs.size(); i++) {
                     if (contigs.get(i).getContigId().equals(contig.getId())) {
+                        System.out.println("Found contig "+contigs.get(i).getId());
                         return new SearchResult(null, contig, chromosome, i);
                     }
                 }
             }
         }
+        System.out.println("Found nothing ");
         return null;
     }
 

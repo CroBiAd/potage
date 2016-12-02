@@ -52,15 +52,8 @@ public class CounterBean implements Serializable{
         sb.append(request.getRemoteAddr());
         sb.append(separator);
 
-        String cmd[] = {"nslookup", request.getRemoteAddr()};
-        String stdOut = reusable.ExecProcessor.executeString(cmd);
-
-        String toks[] = stdOut.split(" ");
-
 //        System.err.println("stream: "+stdOut);
 //        System.err.println("last: "+toks[toks.length-1]);
-        sb.append(toks[toks.length - 1]);
-        sb.append(separator);
         sb.append(extContext.getRequestHeaderMap().get("user-agent"));
         sb.append(separator);
         sb.append(request.getSession().getId());

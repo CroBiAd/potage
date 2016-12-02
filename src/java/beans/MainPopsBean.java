@@ -361,11 +361,11 @@ public class MainPopsBean implements Serializable {
                 }
                 System.err.println(sb.toString());
 
-                if (result == null) {
-                    growl(FacesMessage.SEVERITY_FATAL, "no luck..", "Query not found among POPSeq ordered and/or gene containing contigs", messageComponent);
+                Gene g = null;
+                Contig c = null;
+                if (result == null || ((g = result.getGene()) == null && (c = result.getContig()) == null)) {
+                    growl(FacesMessage.SEVERITY_FATAL, "Search failed.", "Query not found among POPSeq ordered and/or gene containing contigs", messageComponent);
                 } else {
-                    Gene g = null;
-                    if ((g = result.getGene()) != null) {
                         onSelect(result.getChromosome());
                         final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
 //                        d.reset();
@@ -380,7 +380,6 @@ public class MainPopsBean implements Serializable {
 //                setGlobalFilter(userQuery); //not as useful as d.setFirst
                         growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
                         RequestContext.getCurrentInstance().update(":formCentre:dataTable");
-                    }
                 }
 //                String foundIn = ip.quickFindQuery(fileNames, userQuery.trim(), TRAES_CSS_MAP);
 //                if (foundIn == null) {
@@ -1222,7 +1221,7 @@ public class MainPopsBean implements Serializable {
                 for (StackTraceElement ste : e.getStackTrace()) {
                     s.append("\n").append(ste.toString());
                 }
-                reusable.ExecProcessor.email(s.toString(), "POTAGE FATAL exception!", "radoslaw.suchecki@acpfg.com.au", "no-reply@hathor.acpfg.local");
+                reusable.ExecProcessor.email(s.toString(), "POTAGE FATAL exception!", "radoslaw.suchecki@adelaide.edu.au", "no-reply@hathor.acpfg.local");
                 growl(FacesMessage.SEVERITY_FATAL, "Fatal error!", "Alignment failed!", ":formSearch2:searchMessages2");
                 setSeqSearchTabActive("0");
             }
@@ -1256,11 +1255,11 @@ public class MainPopsBean implements Serializable {
         }
         sb.append("\nJob submitted: ").append(submitTime).append("\n");;
         sb.append("\nJob completed: ").append(new Date()).append("\n");
-        sb.append("\nContact radoslaw.suchecki@acpfg.com.au with questions or comments about the POTAGE application. \n\n"
-                + "ACPFG Bioinformatics Group "
-                //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
-                //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "
-                + "\n");
+        sb.append("\nContact radoslaw.suchecki@adelaide.edu.au with questions or comments about the POTAGE application. \n\n"
+            + "ACPFG Bioinformatics Group "
+            //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
+            //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "
+            + "\n");
         return sb.toString();
     }
 

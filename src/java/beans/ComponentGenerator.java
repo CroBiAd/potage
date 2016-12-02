@@ -99,7 +99,7 @@ public class ComponentGenerator implements Serializable {
         DefaultMenuItem helpMenuItem = new DefaultMenuItem();
         helpMenuItem.setId("helpIcon");
         helpMenuItem.setIcon("/images/help1.png");
-        helpMenuItem.setValue("Help and info...");
+        helpMenuItem.setValue("Help");
         helpMenuItem.setOnclick("PF('helpPanel').show()");
         menuModelSimple.addElement(helpMenuItem);
 
@@ -107,7 +107,7 @@ public class ComponentGenerator implements Serializable {
         DefaultMenuItem searchMenuItem = new DefaultMenuItem();
         searchMenuItem.setId("searchAllIcon");
         searchMenuItem.setIcon("/images/search5.png");
-        searchMenuItem.setValue("Search on all chromosomes...");
+        searchMenuItem.setValue("Search by identifier");
         searchMenuItem.setOnclick("PF('searchPanel').show()");
 //        elem.setId("_searchButton");
         menuModelSimple.addElement(searchMenuItem);
@@ -116,7 +116,7 @@ public class ComponentGenerator implements Serializable {
         DefaultMenuItem searchSeqMenuItem = new DefaultMenuItem();
         searchSeqMenuItem.setId("searchSeqIcon");
         searchSeqMenuItem.setIcon("/images/searchATGC.png");
-        searchSeqMenuItem.setValue("Search by aligning a sequence...");
+        searchSeqMenuItem.setValue("Search by sequence");
         searchSeqMenuItem.setOnclick("PF('searchSeqPanel').show()");
 //        elem.setId("_searchButton");
         menuModelSimple.addElement(searchSeqMenuItem);
@@ -124,7 +124,7 @@ public class ComponentGenerator implements Serializable {
         DefaultMenuItem searchOtherContigs = new DefaultMenuItem();
         searchOtherContigs.setId("searchOtherContigsIcon");
         searchOtherContigs.setIcon("/images/list.png");
-        searchOtherContigs.setValue("All contigs within a cM range...");
+        searchOtherContigs.setValue("Search by genetic map position");
         searchOtherContigs.setOnclick("PF('allContigsDialog').show()");
         menuModelSimple.addElement(searchOtherContigs);
 
