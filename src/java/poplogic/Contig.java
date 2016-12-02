@@ -18,6 +18,8 @@ public class Contig implements Serializable { //, Comparable<Contig> {
     private final String contigId;
 //    private final String popedAtChromosome;
     private final Double cM;
+    private final String chromosome;
+    
 
 //    private long len;
     private ArrayList<String> wheatGeneIdsList;
@@ -25,17 +27,25 @@ public class Contig implements Serializable { //, Comparable<Contig> {
 //    private ArrayList<Annotation> annotationsRice;
 //    private HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
 
-    public Contig(String contigId, double cM, ArrayList<String> wheatGeneIdsList) {
+    public Contig(String contigId, String chromosome, double cM, ArrayList<String> wheatGeneIdsList) {
         this.contigId = contigId;
 //        this.popedAtChromosome = popedAtChromosome;
+        this.chromosome = chromosome;
         this.cM = cM;
 
         this.wheatGeneIdsList = wheatGeneIdsList;
 //        this.genesTissuesFPKMsMap = genesTissuesFPKMsMap;
     }
 
+    public Contig(String contigId, String chromosome, double cM) {
+        this.contigId = contigId;
+        this.chromosome = chromosome;
+        this.cM = cM;
+    }
+    
     public Contig(String contigId, double cM) {
         this.contigId = contigId;
+        this.chromosome =  contigId.split("_")[0].substring(0, 2);
         this.cM = cM;
     }
 
@@ -44,6 +54,7 @@ public class Contig implements Serializable { //, Comparable<Contig> {
 //        this.popedAtChromosome = null;
         this.cM = null;
         this.wheatGeneIdsList = null;
+        this.chromosome = contigId.split("_")[0].substring(0, 2);
     }
 //    public Contig(String contigId, String popedAtChromosome, double cM_corrected, double cM_original, ArrayList<String> wheatGeneIdsList, 
 //            ArrayList<Annotation> annotations, ArrayList<Annotation> annotationsRice, HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap) {
@@ -71,6 +82,12 @@ public class Contig implements Serializable { //, Comparable<Contig> {
     public ArrayList<String> getWheatGeneIdsList() {
         return wheatGeneIdsList;
     }
+
+    public void setWheatGeneIdsList(ArrayList<String> wheatGeneIdsList) {
+        this.wheatGeneIdsList = wheatGeneIdsList;
+    }
+    
+    
 
     public boolean hasGenes() {
         if (wheatGeneIdsList == null || wheatGeneIdsList.isEmpty()) {
@@ -101,6 +118,12 @@ public class Contig implements Serializable { //, Comparable<Contig> {
     public String getId() {
         return contigId;
     }
+
+    public String getChromosome() {
+        return chromosome;
+    }
+    
+    
 
     private String getColour(double value) {
         if (value >= 90) {

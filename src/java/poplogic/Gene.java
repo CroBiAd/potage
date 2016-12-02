@@ -28,27 +28,35 @@ public class Gene implements Serializable, Comparable<Gene> {
     //wheat contig info
 
     private final String geneId;
-    private final Contig contig;
-    private final Annotation annotationMips;
-    private final Annotation annotationRice;
-    private final ArrayList<Double> tissuesFPKMs;
+    private Contig contig;
+    private Annotation annotationMips;
+    private Annotation annotationRice;
+    private ArrayList<Double> tissuesFPKMs;
 
     //location on contig
-    private final Integer from;
-    private final Integer to;
-    private final String strand;
+    private Integer from;
+    private Integer to;
+    private String strand;
 
     //for FPKM charts:
     private ArrayList<BarChartModel> barChartModel;
 //    private BarChartModel barChartModel;
-    private final String[] fpkmTableHeaders;
-    private final ArrayList<String> fpkmSettings;
+    private String[] fpkmTableHeaders;
+    private ArrayList<String> fpkmSettings;
 
     //for charts tabview
     private int currentTabIndex = 0;
     private ArrayList<ChartModelWithId> chartModels;
     private TabView chartsTabView;
+    
+//    //place in full chromosome (pops and unanchored)
+//    private int index;
 
+    public Gene(String geneId) {
+        this.geneId = geneId;
+    }
+
+    
     public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<Double> tissuesFPKMs,
         String[] fpkmTableHeaders, String traes_to_CSS_entry, ArrayList<String> fpkmSettings) {
         this.geneId = geneId;
@@ -303,5 +311,15 @@ public class Gene implements Serializable, Comparable<Gene> {
     public int compareTo(Gene o) {
         return getGeneId().compareTo(o.getGeneId());
     }
+//
+//    public int getIndex() {
+//        return index;
+//    }
+//
+//    public void setIndex(int index) {
+//        this.index = index;
+//    }
+    
+    
 
 }

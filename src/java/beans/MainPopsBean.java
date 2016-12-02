@@ -59,7 +59,6 @@ import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.menu.DefaultMenuModel;
 import poplogic.Contig;
 import poplogic.Gene;
-import poplogic.InputProcessor;
 import poplogic.LazyGeneDataModel;
 import poplogic.PerLocationContigs;
 import reusable.Hit;
@@ -107,7 +106,7 @@ public class MainPopsBean implements Serializable {
 
     private String currentChromosome;
 //    private LazyGeneDataModel selectedDataModel;
-    private LazyDataModel<Gene> loadedDataModel;
+//    private LazyDataModel<Gene> loadedDataModel;
 //    private LazyGeneDataModel filteredDataModel;
     private ArrayList<Gene> loadedGenes;
     private ArrayList<Gene> selectedGenes;
@@ -150,10 +149,9 @@ public class MainPopsBean implements Serializable {
     //display unordered genes
     private boolean appendUnordered;
 
-    
-    @ManagedProperty(value="#{appDataBean}")
+    @ManagedProperty(value = "#{appDataBean}")
     private AppDataBean appData;
-    
+
     public MainPopsBean() {
         perLocationContigs = new PerLocationContigs(null, new Location_cMFilter());
         cM_filter = new Location_cMFilter();
@@ -162,8 +160,6 @@ public class MainPopsBean implements Serializable {
     public void setAppData(AppDataBean appData) {
         this.appData = appData;
     }
-    
-    
 
     @PostConstruct
     public void init() {
@@ -194,13 +190,10 @@ public class MainPopsBean implements Serializable {
 //            }
             RequestContext.getCurrentInstance().update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
         }
-        
+
 //        System.err.println("AppData size="+appData.getContigs("1A").size());
     }
 
-    
-    
-  
     public PerLocationContigs getPerLocationContigs() {
         return perLocationContigs;
     }
@@ -337,63 +330,105 @@ public class MainPopsBean implements Serializable {
     private void searchAll(String userQuery, String messageComponent) {
         appendUnordered = true;
         RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", false);
+
         if (userQuery == null || userQuery.isEmpty()) {
             growl(FacesMessage.SEVERITY_FATAL, "Searching for nothing?!", "Consider inputting an identifier before clicking 'Search'", messageComponent);
         } else {
             boolean onlyDisplayContigsWithGenes = true;
-            HashMap<String, String> fileNames = generateChromosomeToFileNameMap(onlyDisplayContigsWithGenes);
-            InputProcessor ip = new InputProcessor(TRAES_CSS_MAP);
-
+//            HashMap<String, String> fileNames = generateChromosomeToFileNameMap(onlyDisplayContigsWithGenes);
+//            InputProcessor ip = new InputProcessor(TRAES_CSS_MAP);
+//
             String[] queries = userQuery.split(" |,|\n|\t|;");
-
+//
             if (queries.length < 2) {
-                String foundIn = ip.quickFindQuery(fileNames, userQuery.trim(), TRAES_CSS_MAP);
-                if (foundIn == null) {
-                    growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered and gene containing contigs", messageComponent);
-//                growl(FacesMessage.SEVERITY_INFO, "Searching further", "on the remaingng POPSeq ordered contigs...", messageComponent);
-                    onlyDisplayContigsWithGenes = false; //no search remaing popseqed contigs...
-                    fileNames = generateChromosomeToFileNameMap(onlyDisplayContigsWithGenes);
-                    foundIn = ip.quickFindQuery(fileNames, userQuery, TRAES_CSS_MAP);
-                    if (foundIn == null) {
-                        growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered contigs", messageComponent);
-                    } else {
-                        chromosomeForNonGeneContigs = foundIn;
-                        loadAllContigs();
-                        growl(FacesMessage.SEVERITY_INFO, "Further search...", "Query found among contigs ordered on " + foundIn + ", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
-                        RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
-//                    perLocationContigs = ip.getContigsWithinRange(foundIn.split("\t")[0], Double.MIN_NORMAL, Double.MIN_NORMAL, Double.MAX_VALUE, Double.MAX_VALUE);
-//                    RequestContext.getCurrentInstance().update(":formSearch3:contigList");
-                        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formSearch3:contigList");
-                        Integer rowIndex = perLocationContigs.getIndexOfContig(userQuery);
+                SearchResult result = appData.quickFind(userQuery.trim());
+
+                StringBuilder sb = new StringBuilder("Q=");
+                sb.append(userQuery).append("\n");
+                if (result != null) {
+                    if (result.getGene() != null) {
+                        sb.append(result.getGene().getGeneId()).append(" <- Gene\n");
+                    }
+                    if (result.getContig() != null) {
+                        sb.append(result.getContig().getId()).append(" <- Contig\n");
+                    }
+                    if (result.getChromosome() != null) {
+                        sb.append(result.getChromosome()).append(" <- Chromosome\n");
+                    }
+                    if (result.getIndex() != null) {
+                        sb.append(result.getIndex()).append(" <- Index\n");
+                    }
+                }
+                System.err.println(sb.toString());
+
+                if (result == null) {
+                    growl(FacesMessage.SEVERITY_FATAL, "no luck..", "Query not found among POPSeq ordered and/or gene containing contigs", messageComponent);
+                } else {
+                    Gene g = null;
+                    if ((g = result.getGene()) != null) {
+                        onSelect(result.getChromosome());
+                        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
+//                        d.reset();
+//                    Integer rowIndex = getIndexOfQuery(userQuery);
+                        Integer rowIndex = result.getIndex();
 
                         //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
                         int rows = d.getRows();
                         int page = rowIndex / rows;
                         d.setFirst(rows * page);
 
-                    }
-                } else {
-                    String fileName = getInputFilename(foundIn, true);
-                    loadData(fileName);
-
-                    final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
-//                Integer rowIndex = loadedDataModel.getRowIndex(userQuery);
-                    Integer rowIndex = getIndexOfQuery(userQuery);
-
-                    //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
-                    int rows = d.getRows();
-                    int page = rowIndex / rows;
-                    d.setFirst(rows * page);
-
 //                setGlobalFilter(userQuery); //not as useful as d.setFirst
-                    currentChromosome = fileName.split("_")[2];
-                    growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
-                    RequestContext.getCurrentInstance().update(":formCentre:dataTable");
+                        growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
+                        RequestContext.getCurrentInstance().update(":formCentre:dataTable");
+                    }
                 }
+//                String foundIn = ip.quickFindQuery(fileNames, userQuery.trim(), TRAES_CSS_MAP);
+//                if (foundIn == null) {
+//                    growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered and gene containing contigs", messageComponent);
+////                growl(FacesMessage.SEVERITY_INFO, "Searching further", "on the remaingng POPSeq ordered contigs...", messageComponent);
+//                    onlyDisplayContigsWithGenes = false; //no search remaing popseqed contigs...
+//                    fileNames = generateChromosomeToFileNameMap(onlyDisplayContigsWithGenes);
+//                    foundIn = ip.quickFindQuery(fileNames, userQuery, TRAES_CSS_MAP);
+//                    if (foundIn == null) {
+//                        growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered contigs", messageComponent);
+//                    } else {
+//                        chromosomeForNonGeneContigs = foundIn;
+//                        loadAllContigs();
+//                        growl(FacesMessage.SEVERITY_INFO, "Further search...", "Query found among contigs ordered on " + foundIn + ", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
+//                        RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
+////                    perLocationContigs = ip.getContigsWithinRange(foundIn.split("\t")[0], Double.MIN_NORMAL, Double.MIN_NORMAL, Double.MAX_VALUE, Double.MAX_VALUE);
+////                    RequestContext.getCurrentInstance().update(":formSearch3:contigList");
+//                        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formSearch3:contigList");
+//                        Integer rowIndex = perLocationContigs.getIndexOfContig(userQuery);
+//
+//                        //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
+//                        int rows = d.getRows();
+//                        int page = rowIndex / rows;
+//                        d.setFirst(rows * page);
+//
+//                    }
+//                } else {
+//                    String fileName = getInputFilename(foundIn, true);
+//                    loadData(fileName);
+//
+//                    final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
+////                Integer rowIndex = loadedDataModel.getRowIndex(userQuery);
+//                    Integer rowIndex = getIndexOfQuery(userQuery);
+//
+//                    //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
+//                    int rows = d.getRows();
+//                    int page = rowIndex / rows;
+//                    d.setFirst(rows * page);
+//
+////                setGlobalFilter(userQuery); //not as useful as d.setFirst
+//                    currentChromosome = fileName.split("_")[2];
+//                    growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
+//                    RequestContext.getCurrentInstance().update(":formCentre:dataTable");
+//                }
             } else {
-//                ArrayList<String> qList = new ArrayList<>(queries.length);
-//                qList.addAll(Arrays.asList(queries));
-//                loadDataMultipleQueries(qList);
+////                ArrayList<String> qList = new ArrayList<>(queries.length);
+////                qList.addAll(Arrays.asList(queries));
+////                loadDataMultipleQueries(qList);
                 growl(FacesMessage.SEVERITY_WARN, "Unfortunatelly", "Not able to process multiple queries", messageComponent);
                 RequestContext.getCurrentInstance().update(":formCentre:dataTable");
             }
@@ -600,23 +635,51 @@ public class MainPopsBean implements Serializable {
         return fileName.toString();
     }
 
-    public void onSelect(String chrmArm) {
+//    public void onSelect(String chrmArm) {
+////        ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();//        String path = extContext.getRealPath(PATH);
+//        if (chrmArm != null) {
+//            currentChromosome = chrmArm;
+//            String fileName = getInputFilename(chrmArm, true);
+//            loadData(fileName);
+//        } else {
+////            loadedDataModel = null; //putting in a dummy
+////            selectedDataModel = null;
+//            loadedGenes = null;
+//        }
+//    }
+//    
+    public void onSelect(String chromosome) {
 //        ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();//        String path = extContext.getRealPath(PATH);
-        if (chrmArm != null) {
-            currentChromosome = chrmArm;
-            String fileName = getInputFilename(chrmArm, true);
-            loadData(fileName);
+        if (chromosome != null) {
+            currentChromosome = chromosome;
+            fpkmTableHeaders = appData.getFpkmTableHeaders();
+            if (appendUnordered) {
+                loadedGenes = appData.getGenesAll(chromosome);
+                System.out.println("Loading all " + loadedGenes.size() + " genes");
+            } else {
+                loadedGenes = appData.getGenesBinned(chromosome);
+                System.out.println("Loading binned " + loadedGenes.size() + " genes");
+            }
+            genesTissuesFPKMsMap = appData.getGenesToExpressionMap(); //SUPERFLOUS?
+            cM_filter = appData.getLocationFilterGenes(chromosome);
+            selectedGenes = null;
+
+            System.out.println(loadedGenes.size() + " genes loaded");
+
         } else {
-            loadedDataModel = null; //putting in a dummy
+//            loadedDataModel = null; //putting in a dummy
 //            selectedDataModel = null;
             loadedGenes = null;
         }
+        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
+        d.reset();
     }
 
     public void reload() {
         if (currentChromosome != null) {
-            String fileName = getInputFilename(currentChromosome, true);
-            loadData(fileName);
+//            String fileName = getInputFilename(currentChromosome, true);
+//            loadData(fileName);
+            onSelect(currentChromosome);
         }
     }
 
@@ -644,77 +707,74 @@ public class MainPopsBean implements Serializable {
 //        }
 //
 //    }
-    private void loadData(String fileName) {
-//            InputProcessor ip = new InputProcessor(fileName, null, Integer.MAX_VALUE, extContext.getRealPath(ANNOTATION));
-        String unordered = null;
-        if (appendUnordered) {
-
-            unordered = FPKMS_UNORDERED_GENES;
-        }
-        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, null);
-
-//        fpkmTableHeaders = mapDbFrontBean.getDbStore().atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
-        fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
-//        System.err.println(Arrays.toString(fpkmTableHeaders));
-
-//        System.err.println(Arrays.toString(fpkmTableHeaders));
-//        HTreeMap<String, ArrayList<String>> dbStoremainMap = dbStore.hashMap(MAIN_MAP_KEY);
-//        loadedDataModel = new LazyGeneDataModel(dbStoremainMap);
-        ArrayList<Gene> inputList = inputProcessor.getGenes();
-        if (inputList != null && !inputList.isEmpty()) {
-//            loadedDataModel = new GeneDataModel(inputProcessor);
-            loadedGenes = inputList;
-            loadedDataModel = new LazyGeneDataModel(inputList);
-
-            genesTissuesFPKMsMap = inputProcessor.getGenesTissuesFPKMsMap();
-            cM_filter = inputProcessor.getcM_filter();
-//            filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
-            selectedGenes = null;
-
-//            selectedDataModel = loadedDataModel;
-//                updateDisplayedContigs(); //by default only dispaly contigs with genes not all
-        }
-
-    }
-
-    private void loadDataMultipleQueries(ArrayList<String> queries) {
-        String unordered = null;
-        if (appendUnordered) {
-            unordered = FPKMS_UNORDERED_GENES;
-        }
-
-        HashMap<String, String> chromosomeToFileNameMap = generateChromosomeToFileNameMap(true);
-        Collection<String> fileNames = chromosomeToFileNameMap.values();
-
-        genesTissuesFPKMsMap = new HashMap<String, ArrayList<Double>>();
-        loadedGenes = new ArrayList<>(queries.size());
-        for (String fileName : fileNames) {
-            InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, queries);
-            ArrayList<Gene> inputList = inputProcessor.getGenes();
-            if (inputList != null && !inputList.isEmpty()) {
-//            loadedDataModel = new GeneDataModel(inputProcessor);
-                for (Gene gene : inputList) {
-                    if (queries.contains(gene.getGeneId()) || queries.contains(gene.getContig().getContigId())) {
-                        loadedGenes.add(gene);
-                        genesTissuesFPKMsMap.put(gene.getGeneId(), inputProcessor.getGenesTissuesFPKMsMap().get(gene.getGeneId()));
-                    }
-                }
-//                cM_filter = inputProcessor.getcM_filter();
-                fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
-            }
-        }
-        cM_filter = new Location_cMFilter();
-        loadedDataModel = new LazyGeneDataModel(loadedGenes);
-//        filteredGenes = null;
-        selectedGenes = null;
-    }
-
+//    private void loadData(String fileName) {
+////            InputProcessor ip = new InputProcessor(fileName, null, Integer.MAX_VALUE, extContext.getRealPath(ANNOTATION));
+//        String unordered = null;
+//        if (appendUnordered) {
+//
+//            unordered = FPKMS_UNORDERED_GENES;
+//        }
+//        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, null);
+//
+////        fpkmTableHeaders = mapDbFrontBean.getDbStore().atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
+//        fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
+////        System.err.println(Arrays.toString(fpkmTableHeaders));
+//
+////        System.err.println(Arrays.toString(fpkmTableHeaders));
+////        HTreeMap<String, ArrayList<String>> dbStoremainMap = dbStore.hashMap(MAIN_MAP_KEY);
+////        loadedDataModel = new LazyGeneDataModel(dbStoremainMap);
+//        ArrayList<Gene> inputList = inputProcessor.getGenes();
+//        if (inputList != null && !inputList.isEmpty()) {
+////            loadedDataModel = new GeneDataModel(inputProcessor);
+//            loadedGenes = inputList;
+////            loadedDataModel = new LazyGeneDataModel(inputList);
+//            genesTissuesFPKMsMap = inputProcessor.getGenesTissuesFPKMsMap();
+//            cM_filter = inputProcessor.getcM_filter();
+////            filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
+//            selectedGenes = null;
+//
+////            selectedDataModel = loadedDataModel;
+////                updateDisplayedContigs(); //by default only dispaly contigs with genes not all
+//        }
+//
+//    }
+//    private void loadDataMultipleQueries(ArrayList<String> queries) {
+//        String unordered = null;
+//        if (appendUnordered) {
+//            unordered = FPKMS_UNORDERED_GENES;
+//        }
+//
+//        HashMap<String, String> chromosomeToFileNameMap = generateChromosomeToFileNameMap(true);
+//        Collection<String> fileNames = chromosomeToFileNameMap.values();
+//
+//        genesTissuesFPKMsMap = new HashMap<String, ArrayList<Double>>();
+//        loadedGenes = new ArrayList<>(queries.size());
+//        for (String fileName : fileNames) {
+//            InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, queries);
+//            ArrayList<Gene> inputList = inputProcessor.getGenes();
+//            if (inputList != null && !inputList.isEmpty()) {
+////            loadedDataModel = new GeneDataModel(inputProcessor);
+//                for (Gene gene : inputList) {
+//                    if (queries.contains(gene.getGeneId()) || queries.contains(gene.getContig().getContigId())) {
+//                        loadedGenes.add(gene);
+//                        genesTissuesFPKMsMap.put(gene.getGeneId(), inputProcessor.getGenesTissuesFPKMsMap().get(gene.getGeneId()));
+//                    }
+//                }
+////                cM_filter = inputProcessor.getcM_filter();
+//                fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
+//            }
+//        }
+//        cM_filter = new Location_cMFilter();
+////        loadedDataModel = new LazyGeneDataModel(loadedGenes);
+////        filteredGenes = null;
+//        selectedGenes = null;
+//    }
     public void loadAllContigs() {
 //        String fileName = getInputFilename(chromosomeForNonGeneContigs, false);
 //        InputProcessor inputProcessor = new InputProcessor();
 //        perLocationContigs = inputProcessor.getContigs(fileName);
-        
-        perLocationContigs = new PerLocationContigs(appData.getContigs(chromosomeForNonGeneContigs), chromosomeForNonGeneContigs, appData.getLocationFilter(chromosomeForNonGeneContigs) );
+
+        perLocationContigs = new PerLocationContigs(appData.getContigs(chromosomeForNonGeneContigs), chromosomeForNonGeneContigs, appData.getLocationFilterContigs(chromosomeForNonGeneContigs));
     }
 
     public void restrictContigsWithutGenes() {
@@ -1252,10 +1312,9 @@ public class MainPopsBean implements Serializable {
         return loadedGenes;
     }
 
-    public LazyDataModel<Gene> getLoadedDataModel() {
-        return loadedDataModel;
-    }
-
+//    public LazyDataModel<Gene> getLoadedDataModel() {
+//        return loadedDataModel;
+//    }
     public MapDbFrontBean getMapDbFrontBean() {
         return mapDbFrontBean;
     }

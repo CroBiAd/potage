@@ -70,8 +70,8 @@
 
             <h3>Words of caution</h3>
             <ul> 
-                <li>The FPKM counts are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions.  </li>
-                <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and FPKM values may be quite misleading. </li>
+                <li>The expression values are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions.  </li>
+                <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and expression values may be quite misleading. </li>
             </ul>
 
             <h3> POTAGE functionality depends on:</h3>
@@ -160,7 +160,7 @@
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton  value="Search" id="searchButton" actionListener="#{mainBean.searchAll}" icon="ui-icon-search" update="idInput,searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList" 
-                                          onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()}"/>                        
+                                          onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()} "/>                        
                         <p:commandButton value="Clear" id="clearSearch" icon="ui-icon-cancel" update="idInput,searchMessages,:formCentre:dataTable,:formCentre:chartsGrid" process="@this" actionListener="#{mainBean.setUserQuery('')}" oncomplete="PF('dataTable').filter()"/>
                     </f:facet>
                 </p:toolbar>
@@ -405,7 +405,6 @@
         <h:form id="formCentre" >
 
 
-                         <!--filteredValue="#{mainBean.filteredGenes}"--> 
             <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" 
                          selection="#{mainBean.selectedGenes}"  
                          id="dataTable" widgetVar="dataTable" 
@@ -471,8 +470,10 @@
                         </f:facet>
                         <f:facet name="right">
                             <h:outputText value="Append unanchored genes to the end of the table "/>
-                            <p:selectBooleanButton value="#{mainBean.appendUnordered}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
-                                <p:ajax update="dataTable" listener="#{mainBean.reload()}"  onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();"/>
+                            <p:selectBooleanButton value="#{mainBean.appendUnordered}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" 
+                                                   offIcon="ui-icon-close" style="width:60px" >
+                                <p:ajax update="dataTable" listener="#{mainBean.reload()}"   process="@this"
+                                        onstart="PF('blockUI').show();" oncomplete="PF('dataTable').filter();PF('blockUI').hide();"/>
                             </p:selectBooleanButton>
                         </f:facet>
                     </p:toolbar>
@@ -514,7 +515,7 @@
                     <p:blockUI block="dataTable" widgetVar="blockTable"   />
                     <p:commandButton icon="ui-icon-newwin" id="view" value="View" onstart="PF('blockTable').show();" oncomplete="PF('blockTable').hide()"  
                                      action="#{mainBean.setGeneSelectedForDialogDisplay(gene)}"/>
-                    <p:commandButton icon="ui-icon-arrowthickstop-1-s" title="Add gene to FPKM charts display" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide()" 
+                    <p:commandButton icon="ui-icon-arrowthickstop-1-s" title="Add gene to expression charts display" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide()" 
                                      action="#{mainBean.addGeneToDisplay(gene)}" update=":formCentre:chartsGrid"  />
                 </p:column>
                 <p:column> <h:outputText value="#{gene.getGeneIdHTML('peru')}" escape="false"/></p:column>
@@ -594,7 +595,7 @@
                 <f:facet name="header" >
                     <p:toolbar>
                         <f:facet name="left">
-                            <h:outputText value="FPKM charts for selected genes"  />
+                            <h:outputText value="Expression charts for selected genes"  />
                         </f:facet>
                         <f:facet name="right">
                             <p:commandButton id="clearCharts" widgetVar="clearCharts" value="Clear charts display"  icon="ui-icon-cancel" action="#{mainBean.clearSelectedGenesForChartDisplay()}" 

@@ -38,30 +38,30 @@ import poplogic.Gene;
  */
 public class ComponentGenerator implements Serializable {
 
-    public DefaultMenuModel generateDynamicMenuForOtherContigs() {
-
-        DefaultMenuModel menuModel = new DefaultMenuModel();
-        String genomes[] = {"A", "B", "D"};
-        for (String g : genomes) {
-            DefaultSubMenu submenu = new DefaultSubMenu();
-            submenu.setLabel(g);
-            for (int i = 1; i < 8; i++) {
-                String chrArm = "" + i;
-                String chrArm1 = chrArm + g;
-                DefaultMenuItem item = new DefaultMenuItem();
-                item.setValue(chrArm1);
-                item.setId("_" + chrArm1);
-                item.setUpdate(":formCentre:dataTable");
-                item.setOnstart("PF('blockUI').show()");
-                item.setOncomplete("PF('blockUI').hide()");
-                item.setCommand("#{mainBean.onSelect(\'" + chrArm1 + "\')}");
-//                item.setIcon("/images/chr_logos/" + chrArm1 + ".png"); //would have to be proper icons not png ????
-                submenu.addElement(item);
-            }
-            menuModel.addElement(submenu);
-        }
-        return menuModel;
-    }
+//    public DefaultMenuModel generateDynamicMenuForOtherContigs() {
+//
+//        DefaultMenuModel menuModel = new DefaultMenuModel();
+//        String genomes[] = {"A", "B", "D"};
+//        for (String g : genomes) {
+//            DefaultSubMenu submenu = new DefaultSubMenu();
+//            submenu.setLabel(g);
+//            for (int i = 1; i < 8; i++) {
+//                String chrArm = "" + i;
+//                String chrArm1 = chrArm + g;
+//                DefaultMenuItem item = new DefaultMenuItem();
+//                item.setValue(chrArm1);
+//                item.setId("_" + chrArm1);
+//                item.setUpdate(":formCentre:dataTable");
+//                item.setOnstart("PF('blockUI').show()");
+//                item.setOncomplete("PF('blockUI').hide()");
+//                item.setCommand("#{mainBean.onSelect(\'" + chrArm1 + "\')}");
+////                item.setIcon("/images/chr_logos/" + chrArm1 + ".png"); //would have to be proper icons not png ????
+//                submenu.addElement(item);
+//            }
+//            menuModel.addElement(submenu);
+//        }
+//        return menuModel;
+//    }
 
     /**
      * not used with dock
@@ -139,6 +139,7 @@ public class ComponentGenerator implements Serializable {
                 item.setUpdate(":formCentre:dataTable,:formCentre:chartsGrid");
                 item.setOnstart("PF('blockUI').show()");
 //                item.setOncomplete("PF('blockUI').hide();PF('dataTable').filter()");
+//                item.setOncomplete("PF('dataTable').filter();PF('blockUI').hide();");
                 item.setOncomplete("PF('blockUI').hide();");
                 item.setCommand("#{mainBean.onSelect(\'" + chrArm1 + "\')}");
                 item.setIcon("/images/chr_logos/" + chrArm1 + ".png");
