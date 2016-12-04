@@ -72,6 +72,7 @@ public class AppDataBean {
 
     public SearchResult quickFind(String id) {
         Contig contig;
+        boolean haveGene = false;
         if (traesOnCssMap.containsKey(id)) { //HABEMUS GENE
             contig = contigsMap.get(traesOnCssMap.get(id).split(",")[1]);
         } else {
@@ -84,12 +85,16 @@ public class AppDataBean {
             if (contig.hasGenes()) {
                 ArrayList<Gene> genes = chrToAllGenesMap.get(chromosome);
                 for (int i = 0; i < genes.size(); i++) {
-                    if (genes.get(i).getGeneId().equals(id)) {
-                        Gene gene = genes.get(i);
+                    Gene gene = genes.get(i);
+                    if (gene.getGeneId().equals(id)) {                        
                         System.out.println("Found gene "+gene.getGeneId());
                         return new SearchResult(gene, gene.getContig(), chromosome, i);
+                    } else if(gene.getContig().getId().equals(id)) {
+                        System.out.println("Found contig "+contig.getId());
+                        return new SearchResult(null, contig, chromosome, i);
                     }
                 }
+                
             } else {
                 ArrayList<Contig> contigs = popSeqChromosomeMap1.get(chromosome);
                 for (int i = 0; i < contigs.size(); i++) {
@@ -467,4 +472,8 @@ public class AppDataBean {
         return genesToExpressionMap;
     }
 
+    
+    public static void main(String[] args){
+        new AppDataBean();
+    }
 }

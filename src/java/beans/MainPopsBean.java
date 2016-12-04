@@ -314,18 +314,6 @@ public class MainPopsBean implements Serializable {
         searchAll(userQuery, ":formSearch:searchMessages");
     }
 
-    private HashMap<String, String> generateChromosomeToFileNameMap(boolean onlyDisplayContigsWithGenes) {
-        HashMap<String, String> filenames = new HashMap<>();
-        String genomes[] = {"A", "B", "D"};
-        for (int i = 1; i < 8; i++) {
-            String chromosome = "" + i;
-            for (String g : genomes) {
-                String chromosomeString = chromosome + g;
-                filenames.put(chromosomeString, getInputFilename(chromosomeString, onlyDisplayContigsWithGenes));
-            }
-        }
-        return filenames;
-    }
 
     private void searchAll(String userQuery, String messageComponent) {
         appendUnordered = true;
@@ -334,37 +322,29 @@ public class MainPopsBean implements Serializable {
         if (userQuery == null || userQuery.isEmpty()) {
             growl(FacesMessage.SEVERITY_FATAL, "Searching for nothing?!", "Consider inputting an identifier before clicking 'Search'", messageComponent);
         } else {
-            boolean onlyDisplayContigsWithGenes = true;
-//            HashMap<String, String> fileNames = generateChromosomeToFileNameMap(onlyDisplayContigsWithGenes);
-//            InputProcessor ip = new InputProcessor(TRAES_CSS_MAP);
 //
             String[] queries = userQuery.split(" |,|\n|\t|;");
 //
             if (queries.length < 2) {
                 SearchResult result = appData.quickFind(userQuery.trim());
-
-                StringBuilder sb = new StringBuilder("Q=");
-                sb.append(userQuery).append("\n");
-                if (result != null) {
-                    if (result.getGene() != null) {
-                        sb.append(result.getGene().getGeneId()).append(" <- Gene\n");
-                    }
-                    if (result.getContig() != null) {
-                        sb.append(result.getContig().getId()).append(" <- Contig\n");
-                    }
-                    if (result.getChromosome() != null) {
-                        sb.append(result.getChromosome()).append(" <- Chromosome\n");
-                    }
-                    if (result.getIndex() != null) {
-                        sb.append(result.getIndex()).append(" <- Index\n");
-                    }
-                }
-                System.err.println(sb.toString());
-
                 Gene g = null;
                 Contig c = null;
                 if (result == null || ((g = result.getGene()) == null && (c = result.getContig()) == null)) {
                     growl(FacesMessage.SEVERITY_FATAL, "Search failed.", "Query not found among POPSeq ordered and/or gene containing contigs", messageComponent);
+                } else if(!result.getContig().hasGenes()) {
+                        chromosomeForNonGeneContigs = result.getChromosome();
+                        loadAllContigs();                        
+                        growl(FacesMessage.SEVERITY_INFO, "\"Query found", userQuery + " found on chromosome " + chromosomeForNonGeneContigs + ", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
+                        RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
+//                    perLocationContigs = ip.getContigsWithinRange(foundIn.split("\t")[0], Double.MIN_NORMAL, Double.MIN_NORMAL, Double.MAX_VALUE, Double.MAX_VALUE);
+//                    RequestContext.getCurrentInstance().update(":formSearch3:contigList");
+                        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formSearch3:contigList");
+                        Integer rowIndex = perLocationContigs.getIndexOfContig(userQuery);
+
+                        //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
+                        int rows = d.getRows();
+                        int page = rowIndex / rows;
+                        d.setFirst(rows * page);
                 } else {
                         onSelect(result.getChromosome());
                         final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
