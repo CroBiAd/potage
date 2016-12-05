@@ -634,16 +634,16 @@ public class MainPopsBean implements Serializable {
             fpkmTableHeaders = appData.getFpkmTableHeaders();
             if (appendUnordered) {
                 loadedGenes = appData.getGenesAll(chromosome);
-                System.out.println("Loading all " + loadedGenes.size() + " genes");
+//                System.out.println("Loading all " + loadedGenes.size() + " genes");
             } else {
                 loadedGenes = appData.getGenesBinned(chromosome);
-                System.out.println("Loading binned " + loadedGenes.size() + " genes");
+//                System.out.println("Loading binned " + loadedGenes.size() + " genes");
             }
             genesTissuesFPKMsMap = appData.getGenesToExpressionMap(); //SUPERFLOUS?
             cM_filter = appData.getLocationFilterGenes(chromosome);
             selectedGenes = null;
 
-            System.out.println(loadedGenes.size() + " genes loaded");
+//            System.out.println(loadedGenes.size() + " genes loaded");
 
         } else {
 //            loadedDataModel = null; //putting in a dummy

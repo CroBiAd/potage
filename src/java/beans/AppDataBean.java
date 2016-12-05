@@ -22,6 +22,7 @@ import poplogic.Annotation;
 import poplogic.Contig;
 import poplogic.Gene;
 import reusable.InReader;
+import reusable.Reporter;
 
 /**
  *
@@ -63,16 +64,21 @@ public class AppDataBean {
     private String[] fpkmTableHeaders;
 
     public AppDataBean() {
-        readPopSeq();
-        readMainTableData();
+        String name = "POTAGE."+this.getClass().getSimpleName();
+        Reporter.report("[INFO]", "Reading in POP-Seq data...", name);
+        readPopSeq();        
+        readAnnotationAndExpressionData();
+        Reporter.report("[INFO]", "Cross-referencing genes with contigs...", name);
+        buildCssToTraesAndReverseMaps(TRAES_CSS_MAP);        
+        Reporter.report("[INFO]", "Cross-reference all data...", name);
         integrateGeneWithPopSeqData();
+        Reporter.report("[INFO]", "Finished populating Application-scoped datastore", name);
 //        SearchResult quickFind = quickFind("1BL_3811941");
 //        System.err.println("");
     }
 
     public SearchResult quickFind(String id) {
         Contig contig;
-        boolean haveGene = false;
         if (traesOnCssMap.containsKey(id)) { //HABEMUS GENE
             contig = contigsMap.get(traesOnCssMap.get(id).split(",")[1]);
         } else {
@@ -87,10 +93,10 @@ public class AppDataBean {
                 for (int i = 0; i < genes.size(); i++) {
                     Gene gene = genes.get(i);
                     if (gene.getGeneId().equals(id)) {                        
-                        System.out.println("Found gene "+gene.getGeneId());
+//                        System.out.println("Found gene "+gene.getGeneId());
                         return new SearchResult(gene, gene.getContig(), chromosome, i);
                     } else if(gene.getContig().getId().equals(id)) {
-                        System.out.println("Found contig "+contig.getId());
+//                        System.out.println("Found contig "+contig.getId());
                         return new SearchResult(null, contig, chromosome, i);
                     }
                 }
@@ -109,19 +115,20 @@ public class AppDataBean {
         return null;
     }
 
-    private void readMainTableData() {
+    private void readAnnotationAndExpressionData() {
         if (DEBUG) {
             mipsIdToAnnotationStringToksMap = new HashMap<>();
             mipsIdToRiceAnnotationStringToksMap = new HashMap<>();
             genesToExpressionMap = new HashMap<>();
             genesToExpressionMap = new HashMap<>();
         } else {
+            Reporter.report("[INFO]", "Reading in annotation...", this.getClass().getSimpleName());
             mipsIdToAnnotationStringToksMap = buildAnnotationMap(ANNOTATION, false);
             mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(ANNOTATION_RICE, true);
+            Reporter.report("[INFO]", "Reading in expression data...", this.getClass().getSimpleName());
             genesToExpressionMap = getGenesTissuesFPKMs(FPKMS);
             genesToExpressionMap = getGenesTissuesFPKMs(FPKMS_UNORDERED_GENES);
-        }
-        buildCssToTraesAndReverseMaps(TRAES_CSS_MAP);
+        }        
     }
 
     private void integrateGeneWithPopSeqData() {
