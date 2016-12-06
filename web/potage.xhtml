@@ -43,8 +43,12 @@
 
 
 
-        <p:dialog modal="true" widgetVar="blockUI" draggable="false" closable="false" resizable="false" showHeader="false" 
-                  showEffect="#{effectsBean.effectType}" hideEffect="#{effectsBean.effectType}">
+        <!--        <p:dialog modal="true" widgetVar="blockUI" draggable="false" closable="false" resizable="false" showHeader="false" 
+                          showEffect="#{effectsBean.effectType}" hideEffect="#{effectsBean.effectType}">
+                    <p:ajax update="@this" process="@this" />
+                    <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />  
+                </p:dialog> -->
+        <p:dialog modal="true" widgetVar="blockUI" draggable="false" closable="false" resizable="false" showHeader="false" >
             <p:ajax update="@this" process="@this" />
             <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />  
         </p:dialog> 
@@ -63,7 +67,7 @@
 
             <h2> <u>POTAGE</u> - PopSeq Ordered Triticum Aestivum Gene Expression  </h2>
 
-            <h4> Last updated May 2016 </h4>
+            <h4> Last updated December 2016 </h4>
             <ul> 
                 <li> Please report bugs to  <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
             </ul>
@@ -168,14 +172,11 @@
             </h:form>
         </p:dialog> 
 
-        <h:form id="formUpload">
-            <p:overlayPanel widgetVar="uploadPanel" for=":formSearch2:tabView:uploadButton" hideEffect="fade"  hideEvent="mousedown" showEffect="scale" at="top"                            
-                            showCloseIcon="true" dismissable="true"   >
-                <p:fileUpload widgetVar="fileUpload" fileUploadListener="#{mainBean.handleFileUpload}"  mode="advanced" auto="true" allowTypes="/(\.|\/)(fa|fasta|fas|txt|fst)$/" 
-                              label="Choose a FASTA file to upload" sizeLimit="10485760" invalidSizeMessage="The maximum file size allowed is 10MB!" oncomplete="PF('uploadPanel').hide()"  
-                              invalidFileMessage="Only upload FASTA files!" multiple="false"  update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput"/>
-            </p:overlayPanel>
-        </h:form>          
+        <!--        <h:form id="formUpload">
+                    <p:overlayPanel widgetVar="uploadPanel" for=":formSearch2:tabView:uploadButton" hideEffect="fade"  hideEvent="mousedown" showEffect="scale" at="top"                            
+                                    showCloseIcon="true" dismissable="true"   >
+                    </p:overlayPanel>
+                </h:form>          -->
 
 
         <p:dialog  id="searchSeqDialog" header="Search all chromosomes by aligning a sequence" widgetVar="searchSeqPanel" modal="false" position="80,140" minimizable="true" 
@@ -186,7 +187,10 @@
                     <p:tab title="Input"  >
                         <p:toolbar >
                             <f:facet name="left">
-                                <p:commandButton  id="uploadButton" value="Upload FASTA file..." icon="ui-icon-arrowreturnthick-1-s" onclick="PF('uploadPanel').show();" /> 
+                                <!--<p:commandButton  id="uploadButton" value="Upload FASTA file..." icon="ui-icon-arrowreturnthick-1-s" onclick="PF('uploadPanel').show();" />--> 
+                                <p:fileUpload widgetVar="fileUpload" fileUploadListener="#{mainBean.handleFileUpload}"  mode="advanced" auto="true" allowTypes="/(\.|\/)(fa|fasta|fas|txt|fst)$/" 
+                                              label="Choose (or drag-and-drop) a FASTA file to upload" sizeLimit="2097152" invalidSizeMessage="The maximum file size allowed is 2MB!"                                               
+                                              invalidFileMessage="Only upload FASTA files!" multiple="false"  update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput"/>
                             </f:facet>                                    
                             <f:facet name="right">
                                 <p:commandButton  value="Search" id="searchSeqButton" actionListener="#{mainBean.sequenceSearchEventHandler}" icon="ui-icon-search" 
@@ -367,9 +371,9 @@
                                                  update=":formSearch3:contigList" >                            
                                 </p:commandButton> 
                                 <p:spacer width="15" height="1" />
-                                <p:commandButton value="Save selected contig(s)"  icon="ui-icon-disk" onclick="PF('statusDialog').show();"   
+                                <p:commandButton value="Save selected contig(s)"  icon="ui-icon-disk"  onclick="PF('statusDialog').show();"   
                                                  title="Save the selected IWGSC contig(s) to a FASTA file" disabled="#{!mainBean.perLocationContigs.somethingSelected()}" ajax="false" >                            
-                                    <p:fileDownload value="#{mainBean.perLocationContigs.exportFileWholeIWGSC}"     />                                
+                                    <p:fileDownload value="#{mainBean.perLocationContigs.exportFileWholeIWGSC}"     />                                         
                                 </p:commandButton>
                             </f:facet>
 
@@ -435,8 +439,8 @@
                                             forceSelection="true" size="7" scrollHeight="400" title="Type in the desired cM position (from)"   
                                             completeMethod="#{mainBean.cM_filter.rangePrefix}" >
                                 <p:ajax event="itemSelect" update="dataTable" process="@this"  
-                                            onstart="PF('blockUI').show();" 
-                                            oncomplete="PF('dataTable').filter();PF('blockUI').hide();" />
+                                        onstart="PF('blockUI').show();" 
+                                        oncomplete="PF('dataTable').filter();PF('blockUI').hide();" />
                             </p:autoComplete>
                             <p:spacer height="0" width="35" />
                             <h:outputText value=" and   " />
@@ -444,10 +448,10 @@
                                             forceSelection="true" size="7"   scrollHeight="400" title="Type in the desired cM position (to)"  
                                             completeMethod="#{mainBean.cM_filter.rangePrefix}" >
                                 <p:ajax event="itemSelect" update="dataTable" process="@this"  
-                                            onstart="PF('blockUI').show();" 
-                                            oncomplete="PF('dataTable').filter();PF('blockUI').hide();" />
-                                <!--<p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />-->
-                                <!--<p:ajax event="change" update="dataTable" process="@this" listener="#{mainBean.filterByCm}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />-->
+                                        onstart="PF('blockUI').show();" 
+                                        oncomplete="PF('dataTable').filter();PF('blockUI').hide();" />
+                            <!--<p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />-->
+                            <!--<p:ajax event="change" update="dataTable" process="@this" listener="#{mainBean.filterByCm}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />-->
                             </p:autoComplete>
                             <!--<p:spacer height="0" width="75" />-->
                             <!--                            <h:outputText value="cM (original) between " />
@@ -482,7 +486,7 @@
                 <p:columnGroup type="header" id="headerGroup" >   
                     <p:row > 
                         <p:column rowspan="2" selectionMode="multiple" width="25"  />
-                        <p:column rowspan="2" headerText="Expression" width="105"/>  
+                        <p:column rowspan="2" headerText="Expression" width="135"/>  
                         <p:column rowspan="2" headerText="Gene ID"  filterBy="#{gene.geneId}"  filterFunction="#{mainBean.filterIgnoreCaseContains}" width="140"/>
                         <p:column rowspan="2" headerText="From"   width="30"/>
                         <p:column rowspan="2" headerText="To"   width="30"/>
@@ -517,8 +521,13 @@
                                      action="#{mainBean.setGeneSelectedForDialogDisplay(gene)}"/>
                     <p:commandButton icon="ui-icon-arrowthickstop-1-s" title="Add gene to expression charts display" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide()" 
                                      action="#{mainBean.addGeneToDisplay(gene)}" update=":formCentre:chartsGrid"  />
+
+                    <p:button icon="ui-icon-extlink" target="_blank" 
+                              href="http://wheat.pw.usda.gov/WheatExp/graph_and_table.php?seq_id=#{gene.geneId}.1" 
+                              title="View gene expression on http://wheat.pw.usda.gov/WheatExp/" />
+
                 </p:column>
-                <p:column> <h:outputText value="#{gene.getGeneIdHTML('peru')}" escape="false"/></p:column>
+                <p:column> <h:outputText value="#{gene.getGeneIdHTML('peru','http://plants.ensembl.org/Triticum_aestivum/Gene/Summary?db=core;g=')}" escape="false"/></p:column>
                 <p:column> <h:outputText value="#{gene.from}"/></p:column>
                 <p:column> <h:outputText value="#{gene.to}"/></p:column>
                 <p:column> <h:outputText value="#{gene.strand}"/></p:column>
@@ -555,9 +564,9 @@
                                              update="dataTable,:formCentre:chartsGrid" >                            
                             </p:commandButton> 
                             <p:spacer width="15" height="1" />
-                            <p:commandButton value="Save selected contig(s)"  icon="ui-icon-disk" onclick="PF('statusDialog').show();"   
+                            <p:commandButton value="Save selected contig(s)"  icon="ui-icon-disk" onclick="PrimeFaces.monitorDownload(start, stop);"   
                                              title="Save the selected IWGSC contig(s) to a FASTA file" disabled="#{!mainBean.somethingSelected()}" ajax="false" >                            
-                                <p:fileDownload value="#{mainBean.exportFileWholeIWGSC}"     />                                
+                                <p:fileDownload value="#{mainBean.exportFileWholeIWGSC}"    />                                
                             </p:commandButton> 
                         </f:facet>
                         <f:facet name="right"> 
@@ -592,6 +601,7 @@
                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                         rowsPerPageTemplate="3,6,9" >
                 <p:ajax event="page" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />   
+
                 <f:facet name="header" >
                     <p:toolbar>
                         <f:facet name="left">
@@ -668,11 +678,13 @@
             <a href="http://www.acpfg.com.au/">Australian&nbsp;Centre&nbsp;for&nbsp;Plant&nbsp;Functional&nbsp;Genomics</a></div>
 
     </body>
+
     <script type="text/javascript">
         window.onresize = function (event) {
             updatechartsgrid();
         }
- </script>
+    </script>
+
     <script type="text/javascript">
         function exportChart(xhr, status, args) {
             var gene = args.exportChart;
@@ -683,17 +695,24 @@
             //show the dialog
             PF('exportChart').show();
         }
- </script>
- <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-         })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    </script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-  ga('create', 'UA-84940540-2', 'auto');
-    ga('send', 'pageview');
+        ga('create', 'UA-84940540-2', 'auto');
+        ga('send', 'pageview');
 
- </script>
+    </script>
 </f:view>
 </html>
 

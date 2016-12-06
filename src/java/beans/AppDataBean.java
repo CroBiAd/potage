@@ -32,7 +32,7 @@ import reusable.Reporter;
 @ApplicationScoped
 public class AppDataBean {
 
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
     private final String POPSEQ = "/var/tomcat/persist/potage_data/IWGSC_CSS_POPSEQ_v2.tsv";
     private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
     private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
@@ -64,12 +64,15 @@ public class AppDataBean {
     private String[] fpkmTableHeaders;
 
     public AppDataBean() {
-        String name = "POTAGE."+this.getClass().getSimpleName();
-        Reporter.report("[INFO]", "Reading in POP-Seq data...", name);
-        readPopSeq();        
-        readAnnotationAndExpressionData();
+        String name = "POTAGE." + this.getClass().getSimpleName();
+        Reporter.report("[INFO]", "Reading in Popseq data...", name);
+        readPopSeq();
+        Reporter.report("[INFO]", "Reading in annotation...", name);
+        readAnnotationData();
+        Reporter.report("[INFO]", "Reading in expression data...", name);
+        readExpressionData();
         Reporter.report("[INFO]", "Cross-referencing genes with contigs...", name);
-        buildCssToTraesAndReverseMaps(TRAES_CSS_MAP);        
+        buildCssToTraesAndReverseMaps(TRAES_CSS_MAP);
         Reporter.report("[INFO]", "Cross-reference all data...", name);
         integrateGeneWithPopSeqData();
         Reporter.report("[INFO]", "Finished populating Application-scoped datastore", name);
@@ -92,20 +95,20 @@ public class AppDataBean {
                 ArrayList<Gene> genes = chrToAllGenesMap.get(chromosome);
                 for (int i = 0; i < genes.size(); i++) {
                     Gene gene = genes.get(i);
-                    if (gene.getGeneId().equals(id)) {                        
+                    if (gene.getGeneId().equals(id)) {
 //                        System.out.println("Found gene "+gene.getGeneId());
                         return new SearchResult(gene, gene.getContig(), chromosome, i);
-                    } else if(gene.getContig().getId().equals(id)) {
+                    } else if (gene.getContig().getId().equals(id)) {
 //                        System.out.println("Found contig "+contig.getId());
                         return new SearchResult(null, contig, chromosome, i);
                     }
                 }
-                
+
             } else {
                 ArrayList<Contig> contigs = popSeqChromosomeMap1.get(chromosome);
                 for (int i = 0; i < contigs.size(); i++) {
                     if (contigs.get(i).getContigId().equals(contig.getId())) {
-                        System.out.println("Found contig "+contigs.get(i).getId());
+                        System.out.println("Found contig " + contigs.get(i).getId());
                         return new SearchResult(null, contig, chromosome, i);
                     }
                 }
@@ -115,20 +118,25 @@ public class AppDataBean {
         return null;
     }
 
-    private void readAnnotationAndExpressionData() {
+    private void readAnnotationData() {
         if (DEBUG) {
             mipsIdToAnnotationStringToksMap = new HashMap<>();
             mipsIdToRiceAnnotationStringToksMap = new HashMap<>();
+        } else {
+
+            mipsIdToAnnotationStringToksMap = buildAnnotationMap(ANNOTATION, false);
+            mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(ANNOTATION_RICE, true);
+        }
+    }
+
+    private void readExpressionData() {
+        if (DEBUG) {
             genesToExpressionMap = new HashMap<>();
             genesToExpressionMap = new HashMap<>();
         } else {
-            Reporter.report("[INFO]", "Reading in annotation...", this.getClass().getSimpleName());
-            mipsIdToAnnotationStringToksMap = buildAnnotationMap(ANNOTATION, false);
-            mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(ANNOTATION_RICE, true);
-            Reporter.report("[INFO]", "Reading in expression data...", this.getClass().getSimpleName());
             genesToExpressionMap = getGenesTissuesFPKMs(FPKMS);
             genesToExpressionMap = getGenesTissuesFPKMs(FPKMS_UNORDERED_GENES);
-        }        
+        }
     }
 
     private void integrateGeneWithPopSeqData() {
@@ -228,7 +236,7 @@ public class AppDataBean {
                 if (inputLine.startsWith("contig")) {
                     continue;
                 }
-                if(DEBUG && !inputLine.startsWith("1")) {
+                if (DEBUG && !inputLine.startsWith("1")) {
                     continue;
                 }
                 String[] toks = p.split(inputLine);
@@ -354,15 +362,15 @@ public class AppDataBean {
             myData = new BufferedReader(new FileReader(file));
             Pattern p = Pattern.compile(",");
             while ((inputLine = myData.readLine()) != null) {
-                if(DEBUG && !inputLine.startsWith("Traes_1")) {
+                if (DEBUG && !inputLine.startsWith("Traes_1")) {
                     continue;
                 }
                 String toks[] = p.split(inputLine);
-                if (toks != null && toks.length > 1) {                                        
+                if (toks != null && toks.length > 1) {
                     traesOnCssMap.put(toks[0], inputLine);
                     ArrayList<String> geneIds = cssToTraesIdMap.get(toks[1]);
                     if (geneIds == null) {
-                       geneIds = new ArrayList<>();
+                        geneIds = new ArrayList<>();
                         geneIds.add(toks[0]);
                         cssToTraesIdMap.put(toks[1], geneIds);
                     } else {
@@ -413,7 +421,7 @@ public class AppDataBean {
             fpkmTableHeaders = p.split(readLine);
 
             while ((inputLine = myData.readLine()) != null) {
-                if(DEBUG && !inputLine.startsWith("Traes_1")) {
+                if (DEBUG && !inputLine.startsWith("Traes_1")) {
                     continue;
                 }
                 String toks[] = p.split(inputLine);
@@ -479,8 +487,7 @@ public class AppDataBean {
         return genesToExpressionMap;
     }
 
-    
-    public static void main(String[] args){
+    public static void main(String[] args) {
         new AppDataBean();
     }
 }

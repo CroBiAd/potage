@@ -11,15 +11,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -29,37 +26,25 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
-import org.mapdb.HTreeMap;
 import org.primefaces.component.chart.Chart;
 import org.primefaces.component.datagrid.DataGrid;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.spacer.Spacer;
-import org.primefaces.component.tabview.Tab;
-import org.primefaces.component.tabview.TabView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.ItemSelectEvent;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.data.FilterEvent;
 import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.menu.DefaultMenuModel;
 import poplogic.Contig;
 import poplogic.Gene;
-import poplogic.LazyGeneDataModel;
 import poplogic.PerLocationContigs;
 import reusable.Hit;
 import reusable.HitDataModel;
@@ -80,26 +65,24 @@ import reusable.Sequence;
 public class MainPopsBean implements Serializable {
 
     //MapDB & keys //Keys are used to retrieve a given datastructure from the DB
-    private final String MAIN_MAP_KEY = "mainMap";
-    private final String CONTIG_2_GENES_MAP_KEY = "contig2Genes";
-    private final String EXPRESSION_MAP_KEY = "expressionMap";
-    private final String EXPRESSION_HEADER_KEY = "expressionHeader";
-    private final String SETTINGS_MAP_NAME = "settingsMap";
-
+//    private final String MAIN_MAP_KEY = "mainMap";
+//    private final String CONTIG_2_GENES_MAP_KEY = "contig2Genes";
+//    private final String EXPRESSION_MAP_KEY = "expressionMap";
+//    private final String EXPRESSION_HEADER_KEY = "expressionHeader";
+//    private final String SETTINGS_MAP_NAME = "settingsMap";
 //     @ManagedProperty(value="#{mapDbFrontBean}")
-    private MapDbFrontBean mapDbFrontBean;
-
+//    private MapDbFrontBean mapDbFrontBean;
 //    public final static String BLAST_DB_FOR_FETCHING = "//resources//pops_all_rad.nal";
 //    public final static String BLAST_DB = "//resources//pops_all_rad.nal";
 //    public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/POPSeq_all_blastdb";
     public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/IWGSC_SS";
     private final String PATH = "/var/tomcat/persist/potage_data";
-    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
-    private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
-    private final String TRAES_CSS_MAP = "/var/tomcat/persist/potage_data/Traes_to_CSS.map";
-    private final String FPKMS = "/var/tomcat/persist/potage_data/FPKMs/reordered/popseqed_genes_on_with_header2016.fpkms";
-    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/potage_data/FPKMs/reordered/unordered_genes_with_header2016.fpkms";
-    private final String FPKM_SETTINGS = "/var/tomcat/persist/potage_data/FPKMs/reordered/fpkm_data_settings2016.txt";
+//    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
+//    private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
+//    private final String TRAES_CSS_MAP = "/var/tomcat/persist/potage_data/Traes_to_CSS.map";
+//    private final String FPKMS = "/var/tomcat/persist/potage_data/FPKMs/reordered/popseqed_genes_on_with_header2016.fpkms";
+//    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/potage_data/FPKMs/reordered/unordered_genes_with_header2016.fpkms";
+//    private final String FPKM_SETTINGS = "/var/tomcat/persist/potage_data/FPKMs/reordered/fpkm_data_settings2016.txt";
     public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM,MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
 
     private boolean autoDisplayCharts = true;
@@ -119,7 +102,7 @@ public class MainPopsBean implements Serializable {
     private String userQuerySeq;
     private String globalFilter;
 
-    //cahrt-dialog related
+    //chart-dialog related
     private Gene geneSelectedForDialogDisplay;
     private String[] fpkmTableHeaders;
     private final static String DIALOG_CONTAINERS_PARENT = "formCentre";
@@ -133,7 +116,7 @@ public class MainPopsBean implements Serializable {
     //menu model for selecting chromosome to display 
     private DefaultMenuModel menuModel; //multi level e.g. chromosome 1 -> submenu 1{A,B,D}
     private DefaultMenuModel menuModelSimple; //Single level menu e.g. 1A,1B,1D
-    private DefaultMenuModel menuModelForOtherContigs; //multi level chromosome 1 -> submenu 1{A,B,D} -> range
+//    private DefaultMenuModel menuModelForOtherContigs; //multi level chromosome 1 -> submenu 1{A,B,D} -> range
 
     private static final int BUFFER_SIZE = 6124;
     private String fileContentString;
@@ -174,20 +157,6 @@ public class MainPopsBean implements Serializable {
                 setUserQuery(id);
                 searchAll(id, ":formSearch:searchMessages");
             }
-//            if (parameterMap.containsKey("from")) {
-//                try {
-//                    setFrom(Integer.parseInt(parameterMap.get("from")));
-//                } catch (NumberFormatException e) {
-//
-//                }
-//            }
-//            if (parameterMap.containsKey("to")) {
-//                try {
-//                    setTo(Integer.parseInt(parameterMap.get("to")));
-//                } catch (NumberFormatException e) {
-//
-//                }
-//            }
             RequestContext.getCurrentInstance().update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
         }
 
@@ -208,10 +177,13 @@ public class MainPopsBean implements Serializable {
 
     public void handleFileUpload(FileUploadEvent event) {
         ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
-        File result = new File(extContext.getRealPath("//WEB-INF//uploaded//" + event.getFile().getFileName()));
-        System.out.println(extContext.getRealPath("//WEB-INF//uploaded//" + event.getFile().getFileName()));
+//        System.out.println(event.getFile().getFileName()+" in "+System.getProperty("java.io.tmpdir"));
+        
+//        File result = new File(extContext.getRealPath("//WEB-INF//uploaded//" + event.getFile().getFileName()));
+//        System.out.println(extContext.getRealPath("//WEB-INF//uploaded//" + event.getFile().getFileName()));
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(result);
+            File tempFile = File.createTempFile(event.getFile().getFileName(), ".fa");
+            FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
             byte[] buffer = new byte[BUFFER_SIZE];
             int contentsI;
             InputStream inputStream = event.getFile().getInputstream();
@@ -227,12 +199,8 @@ public class MainPopsBean implements Serializable {
             fileOutputStream.close();
             inputStream.close();
 
-            String fasta = InReader.readInputToString(extContext.getRealPath("//WEB-INF//uploaded//" + event.getFile().getFileName()));
-
-            //remove example XML 
-//            if (uploadedXmlFileName != null && uploadedXmlFileName.equals(extContext.getRealPath("//resources//example.blastn.xml"))) {
-//                clearForm1(null);
-//            }
+            String fasta = InReader.readInputToString(tempFile.toString());
+          
             if (setFileContentStringValidate(fasta)) {
                 growl(FacesMessage.SEVERITY_INFO, "File:", event.getFile().getFileName() + " successfully uploaded.", "searchMessages2");
                 growl(FacesMessage.SEVERITY_INFO, "Size:", reusable.CommonMaths.round((double) event.getFile().getSize() / 1024, 2) + " Kb", "searchMessages2");
@@ -241,6 +209,8 @@ public class MainPopsBean implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
             growl(FacesMessage.SEVERITY_FATAL, "The file was not uploaded!", "", "searchMessages2");
+        } finally {
+//            result.delete();
         }
 
     }
@@ -314,7 +284,6 @@ public class MainPopsBean implements Serializable {
         searchAll(userQuery, ":formSearch:searchMessages");
     }
 
-
     private void searchAll(String userQuery, String messageComponent) {
         appendUnordered = true;
         RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", false);
@@ -327,87 +296,34 @@ public class MainPopsBean implements Serializable {
 //
             if (queries.length < 2) {
                 SearchResult result = appData.quickFind(userQuery.trim());
-                Gene g = null;
-                Contig c = null;
-                if (result == null || ((g = result.getGene()) == null && (c = result.getContig()) == null)) {
+                if (result == null || (result.getGene() == null && result.getContig() == null)) {
                     growl(FacesMessage.SEVERITY_FATAL, "Search failed.", "Query not found among POPSeq ordered and/or gene containing contigs", messageComponent);
-                } else if(!result.getContig().hasGenes()) {
-                        chromosomeForNonGeneContigs = result.getChromosome();
-                        loadAllContigs();                        
-                        growl(FacesMessage.SEVERITY_INFO, "\"Query found", userQuery + " found on chromosome " + chromosomeForNonGeneContigs + ", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
-                        RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
-//                    perLocationContigs = ip.getContigsWithinRange(foundIn.split("\t")[0], Double.MIN_NORMAL, Double.MIN_NORMAL, Double.MAX_VALUE, Double.MAX_VALUE);
-//                    RequestContext.getCurrentInstance().update(":formSearch3:contigList");
-                        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formSearch3:contigList");
-                        Integer rowIndex = perLocationContigs.getIndexOfContig(userQuery);
+                } else if (!result.getContig().hasGenes()) {
+                    chromosomeForNonGeneContigs = result.getChromosome();
+                    loadAllContigs();
+                    growl(FacesMessage.SEVERITY_INFO, "\"Query found", userQuery + " found on chromosome " + chromosomeForNonGeneContigs + ", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
+                    RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
+                    final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formSearch3:contigList");
+                    Integer rowIndex = perLocationContigs.getIndexOfContig(userQuery);
 
-                        //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
-                        int rows = d.getRows();
-                        int page = rowIndex / rows;
-                        d.setFirst(rows * page);
+                    //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
+                    int rows = d.getRows();
+                    int page = rowIndex / rows;
+                    d.setFirst(rows * page);
                 } else {
-                        onSelect(result.getChromosome());
-                        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
-//                        d.reset();
-//                    Integer rowIndex = getIndexOfQuery(userQuery);
-                        Integer rowIndex = result.getIndex();
+                    onSelect(result.getChromosome());
+                    final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
+                    Integer rowIndex = result.getIndex();
 
-                        //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
-                        int rows = d.getRows();
-                        int page = rowIndex / rows;
-                        d.setFirst(rows * page);
+                    //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
+                    int rows = d.getRows();
+                    int page = rowIndex / rows;
+                    d.setFirst(rows * page);
 
-//                setGlobalFilter(userQuery); //not as useful as d.setFirst
-                        growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
-                        RequestContext.getCurrentInstance().update(":formCentre:dataTable");
+                    growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
+                    RequestContext.getCurrentInstance().update(":formCentre:dataTable");
                 }
-//                String foundIn = ip.quickFindQuery(fileNames, userQuery.trim(), TRAES_CSS_MAP);
-//                if (foundIn == null) {
-//                    growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered and gene containing contigs", messageComponent);
-////                growl(FacesMessage.SEVERITY_INFO, "Searching further", "on the remaingng POPSeq ordered contigs...", messageComponent);
-//                    onlyDisplayContigsWithGenes = false; //no search remaing popseqed contigs...
-//                    fileNames = generateChromosomeToFileNameMap(onlyDisplayContigsWithGenes);
-//                    foundIn = ip.quickFindQuery(fileNames, userQuery, TRAES_CSS_MAP);
-//                    if (foundIn == null) {
-//                        growl(FacesMessage.SEVERITY_FATAL, "Bad luck!", "Query not found among POPSeq ordered contigs", messageComponent);
-//                    } else {
-//                        chromosomeForNonGeneContigs = foundIn;
-//                        loadAllContigs();
-//                        growl(FacesMessage.SEVERITY_INFO, "Further search...", "Query found among contigs ordered on " + foundIn + ", unfortunatelly no annotation or expression data is available for this contig.", messageComponent);
-//                        RequestContext.getCurrentInstance().getCallbackParams().put("showContigList", true);
-////                    perLocationContigs = ip.getContigsWithinRange(foundIn.split("\t")[0], Double.MIN_NORMAL, Double.MIN_NORMAL, Double.MAX_VALUE, Double.MAX_VALUE);
-////                    RequestContext.getCurrentInstance().update(":formSearch3:contigList");
-//                        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formSearch3:contigList");
-//                        Integer rowIndex = perLocationContigs.getIndexOfContig(userQuery);
-//
-//                        //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
-//                        int rows = d.getRows();
-//                        int page = rowIndex / rows;
-//                        d.setFirst(rows * page);
-//
-//                    }
-//                } else {
-//                    String fileName = getInputFilename(foundIn, true);
-//                    loadData(fileName);
-//
-//                    final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
-////                Integer rowIndex = loadedDataModel.getRowIndex(userQuery);
-//                    Integer rowIndex = getIndexOfQuery(userQuery);
-//
-//                    //if setFirst is called with an index other than the first row of a page it obscures some of the preceeding rows
-//                    int rows = d.getRows();
-//                    int page = rowIndex / rows;
-//                    d.setFirst(rows * page);
-//
-////                setGlobalFilter(userQuery); //not as useful as d.setFirst
-//                    currentChromosome = fileName.split("_")[2];
-//                    growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
-//                    RequestContext.getCurrentInstance().update(":formCentre:dataTable");
-//                }
             } else {
-////                ArrayList<String> qList = new ArrayList<>(queries.length);
-////                qList.addAll(Arrays.asList(queries));
-////                loadDataMultipleQueries(qList);
                 growl(FacesMessage.SEVERITY_WARN, "Unfortunatelly", "Not able to process multiple queries", messageComponent);
                 RequestContext.getCurrentInstance().update(":formCentre:dataTable");
             }
@@ -472,7 +388,7 @@ public class MainPopsBean implements Serializable {
     private void generateChartDialog() {
         Dialog dlg = geneIdToDialogMap.get(geneSelectedForDialogDisplay.getGeneId());
         if (dlg != null) {
-            growl(FacesMessage.SEVERITY_WARN, "Note!", "FPKM chart already opened for " + geneSelectedForDialogDisplay.getGeneId(), "growl");
+            growl(FacesMessage.SEVERITY_WARN, "Note!", "Expression chart already opened for " + geneSelectedForDialogDisplay.getGeneId(), "growl");
             //for now re-draw
             RequestContext.getCurrentInstance().update(dlg.getParent().getId());
 //            return null;
@@ -499,73 +415,8 @@ public class MainPopsBean implements Serializable {
                 dialog.getChildren().add(s);
             }
 
-//            Chart chart1 = componentGenerator.generateChart(suffix+"1", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(0));
-//            Chart chart3 = componentGenerator.generateChart(suffix+"2", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(1));
-//            CommandButton left = new CommandButton();
-//            left.setIcon("ui-icon-arrowthick-1-w");
-//            CommandButton right = new CommandButton();
-//            right.setIcon("ui-icon-arrowthick-1-e");
-//            right.setUpdate(currentDisplay);
-//            dialog.getChildren().add(left);
-//            dialog.getChildren().add(right);
-//            dialog.getChildren().add(chart3);
-//            TabView tabView = new TabView();
-//            tabView.setId("TabView");
-//            tabView.setWidgetVar("TabViewWV");
-//            
-////            tabView.setScrollable(true);
-//            Tab tab1 = new Tab();
-//            tab1.setTitle("Chinese Spring");            
-////            tab1.setId("tab1"+suffix);
-////            Tab tab2 = new Tab();
-////            tab2.setTitletip("Chinese Spring/Cornerstone");
-////            tab2.setTitle("CS/Cornerstone");
-//            Tab tab3 = new Tab();
-//            tab3.setTitle("Chris");
-////            tab3.setId("tab3"+suffix);
-//            tabView.getChildren().add(tab1);
-////            tabView.getChildren().add(tab2);
-//            tabView.getChildren().add(tab3);
-//            tab1.getChildren().add(componentGenerator.generateChart(suffix+"A", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(0)));
-//            tabView.setActiveIndex(1);
-//            tab3.getChildren().add(componentGenerator.generateChart(suffix+"B", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel(1)));
-//            dialog.getChildren().add(tabView);
-//            tab3.getChildren().add(componentGenerator.generateChart(suffix+"C", DIALOG_WIDTH, DIALOG_HEIGHT, geneSelectedForDialogDisplay.getBarChartModel().get(0)));
-            //Using resizable component as built-in dialog resize currently does not trigger an event
-//            Resizable resizable = new Resizable();
-//            resizable.setId("resizable_"+dialog.getId());
-//            resizable.setFor(dialog.getId());
-////            resizable.setOnResize("PF('statusDialog').show()");
-//            resizable.setOnResize("updateDialogCharts();");
-//            container.getChildren().add(resizable);
             RequestContext.getCurrentInstance().update(currentDisplay);
-//            return currentDisplay;
         }
-    }
-
-    public void updateDialogCharts() {
-        System.err.println("Doing nothing - code commented out");
-
-//        RequestContext currentInstance = RequestContext.getCurrentInstance();
-//        ArrayList<String> toUpdate = new ArrayList<>();
-//        for (Map.Entry<String, Dialog> entry : geneIdToDialogMap.entrySet()) {
-//            String gene = entry.getKey();
-//            Dialog dialog = entry.getValue();
-//            for (UIComponent uic : dialog.getChildren()) {
-//                if(uic instanceof Chart) {
-////                    int dialogWidth = Integer.parseInt(dialog.getWidth().replaceFirst("px", ""));
-////                    int dialogHeight = Integer.parseInt(dialog.getHeight().replaceFirst("px", ""));
-////                    int chartWidth =  dialogWidth - dialogWidth / 20;
-////                    int chartHeight = dialogHeight - dialogHeight / 25;
-//                    Chart c = (Chart) uic;
-////                    c.setStyle("height:" + chartHeight + "px; width: " + chartWidth + "px");
-////                    c.setStyle("width: 95%; height: 100%;");
-//                    c.setStyle("");
-//                    toUpdate.add(uic.getClientId());
-//                }
-//            }
-//        }
-//        currentInstance.update(toUpdate);
     }
 
     public DefaultMenuModel getMenuModelSimple() {
@@ -587,45 +438,8 @@ public class MainPopsBean implements Serializable {
 
     public void updateDisplayedContigs() {
         onSelect(currentChromosome);
-//        if (onlyDisplayContigsWithGenes) {
-//            ArrayList<Gene> records = new ArrayList<>();
-//            if (loadedDataModel != null) {
-//                for (Gene gene : loadedDataModel) {
-//                    if (!gene.isPlaceHolder()) {
-//                        records.add(gene);
-//                    }
-//                }
-//            }
-//            selectedDataModel = new GeneDataModel(loadedDataModel, records);
-//        } else {
-//            selectedDataModel = loadedDataModel;
-//        }
-
     }
 
-    private String getInputFilename(String chrmArm, boolean onlyDisplayContigsWithGenes) {
-        String prefix = chrmArm;
-        StringBuilder fileName = new StringBuilder(PATH);
-        fileName.append("/pop_").append(prefix);
-        if (onlyDisplayContigsWithGenes) {
-            fileName.append("_genes");
-        }
-        fileName.append(".tsv");
-        return fileName.toString();
-    }
-
-//    public void onSelect(String chrmArm) {
-////        ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();//        String path = extContext.getRealPath(PATH);
-//        if (chrmArm != null) {
-//            currentChromosome = chrmArm;
-//            String fileName = getInputFilename(chrmArm, true);
-//            loadData(fileName);
-//        } else {
-////            loadedDataModel = null; //putting in a dummy
-////            selectedDataModel = null;
-//            loadedGenes = null;
-//        }
-//    }
 //    
     public void onSelect(String chromosome) {
 //        ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();//        String path = extContext.getRealPath(PATH);
@@ -644,10 +458,7 @@ public class MainPopsBean implements Serializable {
             selectedGenes = null;
 
 //            System.out.println(loadedGenes.size() + " genes loaded");
-
         } else {
-//            loadedDataModel = null; //putting in a dummy
-//            selectedDataModel = null;
             loadedGenes = null;
         }
         final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
@@ -656,98 +467,10 @@ public class MainPopsBean implements Serializable {
 
     public void reload() {
         if (currentChromosome != null) {
-//            String fileName = getInputFilename(currentChromosome, true);
-//            loadData(fileName);
             onSelect(currentChromosome);
         }
     }
 
-//    private void loadData(String fileName) {
-////            InputProcessor ip = new InputProcessor(fileName, null, Integer.MAX_VALUE, extContext.getRealPath(ANNOTATION));
-//        String unordered = null;
-//        if (appendUnordered) {
-//            unordered = FPKMS_UNORDERED_GENES;
-//        }
-//        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, null);
-//        fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
-//        ArrayList<Gene> inputList = inputProcessor.getGenes();
-//        if (inputList != null && !inputList.isEmpty()) {
-////            loadedDataModel = new GeneDataModel(inputProcessor);
-//            loadedGenes = inputList;
-//            loadedDataModel = new LazyGeneDataModel(inputList);
-//
-//            genesTissuesFPKMsMap = inputProcessor.getGenesTissuesFPKMsMap();
-//            cM_filter = inputProcessor.getcM_filter();
-//            filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
-//            selectedGenes = null;
-//
-////            selectedDataModel = loadedDataModel;
-////                updateDisplayedContigs(); //by default only dispaly contigs with genes not all
-//        }
-//
-//    }
-//    private void loadData(String fileName) {
-////            InputProcessor ip = new InputProcessor(fileName, null, Integer.MAX_VALUE, extContext.getRealPath(ANNOTATION));
-//        String unordered = null;
-//        if (appendUnordered) {
-//
-//            unordered = FPKMS_UNORDERED_GENES;
-//        }
-//        InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, null);
-//
-////        fpkmTableHeaders = mapDbFrontBean.getDbStore().atomicString(EXPRESSION_HEADER_KEY).toString().split("\t");
-//        fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
-////        System.err.println(Arrays.toString(fpkmTableHeaders));
-//
-////        System.err.println(Arrays.toString(fpkmTableHeaders));
-////        HTreeMap<String, ArrayList<String>> dbStoremainMap = dbStore.hashMap(MAIN_MAP_KEY);
-////        loadedDataModel = new LazyGeneDataModel(dbStoremainMap);
-//        ArrayList<Gene> inputList = inputProcessor.getGenes();
-//        if (inputList != null && !inputList.isEmpty()) {
-////            loadedDataModel = new GeneDataModel(inputProcessor);
-//            loadedGenes = inputList;
-////            loadedDataModel = new LazyGeneDataModel(inputList);
-//            genesTissuesFPKMsMap = inputProcessor.getGenesTissuesFPKMsMap();
-//            cM_filter = inputProcessor.getcM_filter();
-////            filteredGenes = null; //prevents errors when trying to use column filters on an empty table (?)
-//            selectedGenes = null;
-//
-////            selectedDataModel = loadedDataModel;
-////                updateDisplayedContigs(); //by default only dispaly contigs with genes not all
-//        }
-//
-//    }
-//    private void loadDataMultipleQueries(ArrayList<String> queries) {
-//        String unordered = null;
-//        if (appendUnordered) {
-//            unordered = FPKMS_UNORDERED_GENES;
-//        }
-//
-//        HashMap<String, String> chromosomeToFileNameMap = generateChromosomeToFileNameMap(true);
-//        Collection<String> fileNames = chromosomeToFileNameMap.values();
-//
-//        genesTissuesFPKMsMap = new HashMap<String, ArrayList<Double>>();
-//        loadedGenes = new ArrayList<>(queries.size());
-//        for (String fileName : fileNames) {
-//            InputProcessor inputProcessor = new InputProcessor(fileName, null, Integer.MAX_VALUE, ANNOTATION, ANNOTATION_RICE, TRAES_CSS_MAP, FPKMS, unordered, FPKM_SETTINGS, queries);
-//            ArrayList<Gene> inputList = inputProcessor.getGenes();
-//            if (inputList != null && !inputList.isEmpty()) {
-////            loadedDataModel = new GeneDataModel(inputProcessor);
-//                for (Gene gene : inputList) {
-//                    if (queries.contains(gene.getGeneId()) || queries.contains(gene.getContig().getContigId())) {
-//                        loadedGenes.add(gene);
-//                        genesTissuesFPKMsMap.put(gene.getGeneId(), inputProcessor.getGenesTissuesFPKMsMap().get(gene.getGeneId()));
-//                    }
-//                }
-////                cM_filter = inputProcessor.getcM_filter();
-//                fpkmTableHeaders = inputProcessor.getFpkmTableHeaders();
-//            }
-//        }
-//        cM_filter = new Location_cMFilter();
-////        loadedDataModel = new LazyGeneDataModel(loadedGenes);
-////        filteredGenes = null;
-//        selectedGenes = null;
-//    }
     public void loadAllContigs() {
 //        String fileName = getInputFilename(chromosomeForNonGeneContigs, false);
 //        InputProcessor inputProcessor = new InputProcessor();
@@ -760,9 +483,6 @@ public class MainPopsBean implements Serializable {
 
     }
 
-//    public GeneDataModel getSelectedDataModel() {
-//        return selectedDataModel;
-//    }
     public ArrayList<Gene> getSelectedGenes() {
         return selectedGenes;
     }
@@ -776,24 +496,9 @@ public class MainPopsBean implements Serializable {
     }
 
     public void addSelectedGenesToDisplay() {
-//        if (selectedGenes != null) {
-//            if (selectedGenesForChartDisplay == null) {
-//                selectedGenesForChartDisplay = new ArrayList<>(selectedGenes.size());
-//            }
-//            StringBuilder genesAlreadyDisplayed = new StringBuilder();
         for (Gene gene : selectedGenes) {
             addGeneToDisplay(gene);
-//                if (!selectedGenesForChartDisplay.contains(gene)) {
-//                    selectedGenesForChartDisplay.add(gene);
-//                } else {
-//                    genesAlreadyDisplayed.append(gene.getId()).append(" ");
-//                }
         }
-//            String list = genesAlreadyDisplayed.toString();
-//            if (!list.isEmpty()) {
-//                growl(FacesMessage.SEVERITY_WARN, "Chart(s) already displayed for ", list, "growl");
-//            }
-//        }
     }
 
     public void addGeneToDisplay(Gene gene) {
@@ -834,12 +539,6 @@ public class MainPopsBean implements Serializable {
         return selectedGenesForChartDisplay == null || selectedGenesForChartDisplay.isEmpty();
     }
 
-//    public List<Gene> getFilteredGenes() {
-//        return filteredGenes;
-//    }
-//    public void setFilteredGenes(List<Gene> filteredGenes) {
-//        this.filteredGenes = (ArrayList<Gene>) filteredGenes;
-//    }
     public void resetFilter() {
 //        selectedDataModel = loadedDataModel;
         cM_filter.resetFilter();
@@ -861,48 +560,6 @@ public class MainPopsBean implements Serializable {
         return value.toString().toLowerCase().trim().contains(filterText);
     }
 
-//    public void filterByCm(SelectEvent event) {
-//        filterByCm1();
-//    }
-//    public void filterByCm(AjaxBehaviorEvent event) {
-//        filterByCm1();
-//    }
-//    public void filterByCm1() {
-//        if (loadedGenes != null) {
-//            ArrayList<Gene> preFilterGenes = loadedGenes;
-//            ArrayList<Gene> postFilterGenes = new ArrayList<>();
-//            if (filteredGenes == null || filteredGenes.isEmpty()) {
-//                filteredGenes = new ArrayList<>();
-//            } else {
-//                preFilterGenes = filteredGenes;
-//            }
-//
-//            for (Gene gene : preFilterGenes) {
-//                Double cM_corrected = gene.getContig().getcM();
-////                Double cM_original = gene.getContig().getcM_original();
-//                if (cM_filter.isWithinUserCoordinates(cM_corrected)) {
-////                    genesWithinCoordinates.add(gene);
-//                    postFilterGenes.add(gene);
-//                }
-//            }
-//            filteredGenes = postFilterGenes;
-////            selectedDataModel = new GeneDataModel(loadedDataModel, genesWithinCoordinates);
-//
-//            //reset selection to prevent erratic behaviour (e.g. first elem in the table remains selected even though it is a different elem due to cM restriction
-//            selectedGenes = null;
-////            RequestContext requestContext = RequestContext.getCurrentInstance();
-////            requestContext.update("form:dataTable");
-//        }
-//    }
-//    public void filterListener(FilterEvent filterEvent) {
-//        final DataTable d = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:dataTable");
-//        if (userQuery != null && !userQuery.isEmpty()) {
-//            Integer rowIndex = selectedDataModel.getRowIndex(userQuery);
-//            if (rowIndex != null) {
-//                d.setFirst(rowIndex);
-//            }
-//        }
-//    }
     public boolean isDataLoaded() {
 //        if (selectedDataModel != null) {
         if (loadedGenes != null) {
@@ -1090,6 +747,7 @@ public class MainPopsBean implements Serializable {
         return false;
     }
 
+    //BELOW, BLAST-based ALIGNMEN_SEARCH,CODE RECYCLED FROM BWPF by Rad Suchecki
     private ArrayList<HitsForQuery> perQueryResults;
     private HitsForQueryDataModel hitsForQueryDataModel;
     private HitDataModel hitsDataModel;
@@ -1130,11 +788,6 @@ public class MainPopsBean implements Serializable {
         }
     }
 
-//    public void onRowSelect(SelectEvent event) {
-//         if (selectedHit != null) {
-//            searchAll(selectedHit.getHitId(),":formSearch2:searchMessages2");
-//        }
-//    }
     public ArrayList<HitsForQuery> getPerQueryResults() {
         return perQueryResults;
     }
@@ -1180,11 +833,10 @@ public class MainPopsBean implements Serializable {
                 for (HitsForQuery qp : perQueryResults) {
                     for (Hit p : qp.getHits()) {
                         totalRetrieved++;
-//                        System.out.println(p.getQueryId() + ", PROMOTER " + p.getHitId() + ": ");// + p.getPromoterString());
                     }
                 }
-                if (perQueryResults.size() == 1) //result available for one query only so goto the last tab and display
-                {
+                //result available for one query only so goto the last tab and display
+                if (perQueryResults.size() == 1) {
                     setSelectedQuery(hitsForQueryDataModel.getRow(0)); //calls setSeqSearchTabActive("2");
                 } else if (perQueryResults.size() > 1) {
                     setSeqSearchTabActive("1");
@@ -1236,10 +888,10 @@ public class MainPopsBean implements Serializable {
         sb.append("\nJob submitted: ").append(submitTime).append("\n");;
         sb.append("\nJob completed: ").append(new Date()).append("\n");
         sb.append("\nContact radoslaw.suchecki@adelaide.edu.au with questions or comments about the POTAGE application. \n\n"
-            + "ACPFG Bioinformatics Group "
-            //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
-            //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "
-            + "\n");
+                + "ACPFG Bioinformatics Group "
+                //                + "University of Adelaide, School of Agriculture, Food and Wine \n "
+                //                + "Plant Genomics Centre, Waite Campus, SA, Australia. \n "
+                + "\n");
         return sb.toString();
     }
 
@@ -1291,15 +943,11 @@ public class MainPopsBean implements Serializable {
         return loadedGenes;
     }
 
-//    public LazyDataModel<Gene> getLoadedDataModel() {
-//        return loadedDataModel;
+//    public MapDbFrontBean getMapDbFrontBean() {
+//        return mapDbFrontBean;
 //    }
-    public MapDbFrontBean getMapDbFrontBean() {
-        return mapDbFrontBean;
-    }
-
-    public void setMapDbFrontBean(MapDbFrontBean mapDbFrontBean) {
-        this.mapDbFrontBean = mapDbFrontBean;
-    }
-
+//
+//    public void setMapDbFrontBean(MapDbFrontBean mapDbFrontBean) {
+//        this.mapDbFrontBean = mapDbFrontBean;
+//    }
 }

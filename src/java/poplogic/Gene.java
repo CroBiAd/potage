@@ -113,10 +113,12 @@ public class Gene implements Serializable, Comparable<Gene> {
         return geneId;
     }
 
-    public String getGeneIdHTML(String fontColour) {
+    public String getGeneIdHTML(String fontColour, String urlPrefix) {
         StringBuilder html = new StringBuilder();
         if (getGeneId().startsWith("Traes")) {
-            html.append("<a href=\"http://plants.ensembl.org/Triticum_aestivum/Gene/Summary?db=core;g=");
+//            html.append("<a href=\"http://plants.ensembl.org/Triticum_aestivum/Gene/Summary?db=core;g=");
+            html.append("<a href=\"");
+            html.append(urlPrefix);
             html.append(getGeneId());
             html.append("\" target=\"_blank\" style=\"color: ").append(fontColour).append("\">");
             html.append(getGeneId()).append("</a> ");
@@ -124,8 +126,9 @@ public class Gene implements Serializable, Comparable<Gene> {
         } else {
             return getGeneId();
         }
-
     }
+    
+    
 
     public Contig getContig() {
         return contig;
