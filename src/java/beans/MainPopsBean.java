@@ -43,7 +43,9 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.menu.DefaultMenuModel;
+import poplogic.ChartModelWithId;
 import poplogic.Contig;
+import poplogic.ExpressionData;
 import poplogic.Gene;
 import poplogic.PerLocationContigs;
 import reusable.Hit;
@@ -75,16 +77,15 @@ public class MainPopsBean implements Serializable {
 //    public final static String BLAST_DB_FOR_FETCHING = "//resources//pops_all_rad.nal";
 //    public final static String BLAST_DB = "//resources//pops_all_rad.nal";
 //    public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/POPSeq_all_blastdb";
-    public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/IWGSC_SS";
-    private final String PATH = "/var/tomcat/persist/potage_data";
+//    public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/IWGSC_SS";
+//    private final String PATH = "/var/tomcat/persist/potage_data";
 //    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
 //    private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
 //    private final String TRAES_CSS_MAP = "/var/tomcat/persist/potage_data/Traes_to_CSS.map";
 //    private final String FPKMS = "/var/tomcat/persist/potage_data/FPKMs/reordered/popseqed_genes_on_with_header2016.fpkms";
 //    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/potage_data/FPKMs/reordered/unordered_genes_with_header2016.fpkms";
 //    private final String FPKM_SETTINGS = "/var/tomcat/persist/potage_data/FPKMs/reordered/fpkm_data_settings2016.txt";
-    public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM,MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
-
+//    public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM,MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
     private boolean autoDisplayCharts = true;
 
     private String currentChromosome;
@@ -95,7 +96,7 @@ public class MainPopsBean implements Serializable {
     private ArrayList<Gene> selectedGenes;
 //    private ArrayList<Gene> filteredGenes;
     private ArrayList<Gene> selectedGenesForChartDisplay;
-    HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
+//    HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
     private Location_cMFilter cM_filter;
 
     private String userQuery;
@@ -104,7 +105,6 @@ public class MainPopsBean implements Serializable {
 
     //chart-dialog related
     private Gene geneSelectedForDialogDisplay;
-    private String[] fpkmTableHeaders;
     private final static String DIALOG_CONTAINERS_PARENT = "formCentre";
     private final static int DIALOGS_MAX_NUMBER = 15;
     private final static int DIALOG_WIDTH = 480; //450;
@@ -178,7 +178,7 @@ public class MainPopsBean implements Serializable {
     public void handleFileUpload(FileUploadEvent event) {
         ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
 //        System.out.println(event.getFile().getFileName()+" in "+System.getProperty("java.io.tmpdir"));
-        
+
 //        File result = new File(extContext.getRealPath("//WEB-INF//uploaded//" + event.getFile().getFileName()));
 //        System.out.println(extContext.getRealPath("//WEB-INF//uploaded//" + event.getFile().getFileName()));
         try {
@@ -200,7 +200,7 @@ public class MainPopsBean implements Serializable {
             inputStream.close();
 
             String fasta = InReader.readInputToString(tempFile.toString());
-          
+
             if (setFileContentStringValidate(fasta)) {
                 growl(FacesMessage.SEVERITY_INFO, "File:", event.getFile().getFileName() + " successfully uploaded.", "searchMessages2");
                 growl(FacesMessage.SEVERITY_INFO, "Size:", reusable.CommonMaths.round((double) event.getFile().getSize() / 1024, 2) + " Kb", "searchMessages2");
@@ -405,7 +405,7 @@ public class MainPopsBean implements Serializable {
 //            containerId = container.getClientId().split("_")[1];
             String suffix = container.getClientId().split("_")[1]; //for no good reason using the same suffix for component identifiers
 
-            ArrayList<BarChartModel> models = geneSelectedForDialogDisplay.getBarChartModels();
+            ArrayList<ChartModelWithId> models = geneSelectedForDialogDisplay.getBarChartModels();
             for (int i = 0; i < models.size(); i++) {
                 BarChartModel barChartModel = models.get(i);
                 Chart chart = componentGenerator.generateChart(suffix + i, DIALOG_WIDTH, DIALOG_HEIGHT, barChartModel);
@@ -445,7 +445,6 @@ public class MainPopsBean implements Serializable {
 //        ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();//        String path = extContext.getRealPath(PATH);
         if (chromosome != null) {
             currentChromosome = chromosome;
-            fpkmTableHeaders = appData.getFpkmTableHeaders();
             if (appendUnordered) {
                 loadedGenes = appData.getGenesAll(chromosome);
 //                System.out.println("Loading all " + loadedGenes.size() + " genes");
@@ -453,7 +452,7 @@ public class MainPopsBean implements Serializable {
                 loadedGenes = appData.getGenesBinned(chromosome);
 //                System.out.println("Loading binned " + loadedGenes.size() + " genes");
             }
-            genesTissuesFPKMsMap = appData.getGenesToExpressionMap(); //SUPERFLOUS?
+//            genesTissuesFPKMsMap = appData.getGenesToExpressionMap(); //SUPERFLOUS?
             cM_filter = appData.getLocationFilterGenes(chromosome);
             selectedGenes = null;
 
@@ -605,7 +604,7 @@ public class MainPopsBean implements Serializable {
                 sb.append(newline);
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), "/var/tomcat/persist/coching_data/IWGSC_SS").get(0).getSequenceString());
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), extContext.getRealPath(BLAST_DB)).
-                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB).
+                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), appData.getBLAST_DB()).
                         get(0).getSequenceString()
                 );
 //                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
@@ -667,6 +666,7 @@ public class MainPopsBean implements Serializable {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
         rowIterator.next();
+        ArrayList<ExpressionData> expressionDatasets = appData.getExpressionDatasets();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             Iterator<Cell> cellIterator = row.cellIterator();
@@ -687,14 +687,23 @@ public class MainPopsBean implements Serializable {
                 }
 //                System.err.println("["+(j++)+"]"+cell.getStringCellValue());
             }
-            ArrayList<Double> fpkms = genesTissuesFPKMsMap.get(geneId);
-            if (fpkms != null && !fpkms.isEmpty()) {
-                for (int i = 2; i < fpkms.size(); i++) {
-                    Double fpkmDouble = fpkms.get(i);
+//            ArrayList<Double> fpkms = genesTissuesFPKMsMap.get(geneId);
+            for (ExpressionData expressionDataset : expressionDatasets) {
+                ArrayList<Double> expressionValues = expressionDataset.getExpressionValues(geneId);
+                for (int i = 2; i < expressionValues.size(); i++) {
+                    Double fpkmDouble = expressionValues.get(i);
                     Cell createdCell = row.createCell(row.getLastCellNum());
                     createdCell.setCellValue(fpkmDouble);
                 }
             }
+
+//            if (fpkms != null && !fpkms.isEmpty()) {
+//                for (int i = 2; i < fpkms.size(); i++) {
+//                    Double fpkmDouble = fpkms.get(i);
+//                    Cell createdCell = row.createCell(row.getLastCellNum());
+//                    createdCell.setCellValue(fpkmDouble);
+//                }
+//            }
 //            cellIterator = row.cellIterator();
 //            String geneId = cellIterator.next().getStringCellValue();
 //            Gene gene = selectedDataModel.getRowData(geneId);
@@ -706,7 +715,7 @@ public class MainPopsBean implements Serializable {
 
         Row row = sheet.getRow(0);
         Iterator<Cell> cellIterator = row.cellIterator();
-        String headers[] = TABLE_HEADERS.split(",");
+        String headers[] = appData.getTABLE_HEADERS().split(",");
         int p = 0;
         for (String h : headers) {
 //            System.err.println("Adding "+h+" at "+(p++));
@@ -715,9 +724,12 @@ public class MainPopsBean implements Serializable {
         }
 
         //Add headers for FPKM values
-        for (int i = 3; i < fpkmTableHeaders.length; i++) {
-            Cell createdCell = row.createCell(row.getLastCellNum());
-            createdCell.setCellValue(fpkmTableHeaders[i]);
+        for (ExpressionData expressionDataset : expressionDatasets) {
+            for (int i = 3; i < expressionDataset.getHeader().length; i++) {
+                Cell createdCell = row.createCell(row.getLastCellNum());
+                createdCell.setCellValue(expressionDataset.getHeader()[i]);                
+//                createdCell.setCellValue(fpkmTableHeaders[i]);
+            }
         }
     }
 
@@ -825,7 +837,7 @@ public class MainPopsBean implements Serializable {
             try {
 //                ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
 //                String blastdbIWGSC = extContext.getRealPath(BLAST_DB);
-                String blastdbIWGSC = BLAST_DB;
+                String blastdbIWGSC = appData.getBLAST_DB();
                 perQueryResults = finder.findHits(sequences, blastdbIWGSC);      //<------------------------------------------------------------            
 
                 hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults);
@@ -903,13 +915,12 @@ public class MainPopsBean implements Serializable {
         this.autoDisplayCharts = autoDisplayCharts;
     }
 
-    public void chartItemSelect(ItemSelectEvent event) {
-        int i = event.getItemIndex() + 3;
-        if (fpkmTableHeaders != null && i >= 0 && i <= fpkmTableHeaders.length + 1) {
-            growl(FacesMessage.SEVERITY_INFO, "Sample selected", fpkmTableHeaders[i], "growl");
-        }
-    }
-
+//    public void chartItemSelect(ItemSelectEvent event) {
+//        int i = event.getItemIndex() + 3;
+//        if (fpkmTableHeaders != null && i >= 0 && i <= fpkmTableHeaders.length + 1) {
+//            growl(FacesMessage.SEVERITY_INFO, "Sample selected", fpkmTableHeaders[i], "growl");
+//        }
+//    }
     public void poll() {
         final DataGrid d = (DataGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:chartsGrid");
         System.err.println(d.getEmptyMessage());
