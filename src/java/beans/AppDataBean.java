@@ -20,6 +20,7 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import poplogic.Annotation;
 import poplogic.Contig;
+import poplogic.ExpressionData;
 import poplogic.Gene;
 import reusable.InReader;
 import reusable.Reporter;
@@ -33,15 +34,17 @@ import reusable.Reporter;
 public class AppDataBean {
 
     private final boolean DEBUG = true;
-    private final String POPSEQ = "/var/tomcat/persist/potage_data/IWGSC_CSS_POPSEQ_v2.tsv";
-    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
-    private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
-    private final String TRAES_CSS_MAP = "/var/tomcat/persist/potage_data/Traes_to_CSS.map";
-    private final String FPKMS = "/var/tomcat/persist/potage_data/FPKMs/reordered/popseqed_genes_on_with_header2016.fpkms";
-    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/potage_data/FPKMs/reordered/unordered_genes_with_header2016.fpkms";
-    private final String FPKM_SETTINGS = "/var/tomcat/persist/potage_data/FPKMs/reordered/fpkm_data_settings2016.txt";
-    private final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM,MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
+    private final String CONFIG_FILE = "/var/tomcat/persist/potage_data/potage.cfg";
+//    private final String POPSEQ = "/var/tomcat/persist/potage_data/IWGSC_CSS_POPSEQ_v2.tsv";
+//    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
+//    private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
+//    private final String GENE_2_CONTIG_MAP = "/var/tomcat/persist/potage_data/Traes_to_CSS.map";
+//    private final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM,MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
 
+    private String parentPath;
+    private HashMap<String, String> staticFilesMap = new HashMap<>();
+    private ArrayList<String> expressionDataConfigFiles = new ArrayList<>();
+    
     //ALL_POPSEQed CONTIGS
 //    private HashMap<String, HashMap<Double, ArrayList<String>>> popSeqChromosomeMap;
     private HashMap<String, ArrayList<Contig>> popSeqChromosomeMap1;
@@ -60,26 +63,69 @@ public class AppDataBean {
     private HashMap<String, ArrayList<Gene>> chrToAllGenesMap;
     private HashMap<String, Location_cMFilter> chrToGeneLocationFilter;
     //MAIN TABLE DATA -  EXPRESSION
-    private HashMap<String, ArrayList<Double>> genesToExpressionMap;
-    private String[] fpkmTableHeaders;
+//    private HashMap<String, ArrayList<Double>> genesToExpressionMap;
+    private ArrayList<ExpressionData> expressionDatasets;
+    
+//    private String[] fpkmTableHeaders;
 
     public AppDataBean() {
+        readConfigFile();        
         String name = "POTAGE." + this.getClass().getSimpleName();
         Reporter.report("[INFO]", "Reading in Popseq data...", name);
         readPopSeq();
-        Reporter.report("[INFO]", "Reading in annotation...", name);
-        readAnnotationData();
         Reporter.report("[INFO]", "Reading in expression data...", name);
         readExpressionData();
+        Reporter.report("[INFO]", "Reading in annotation...", name);
+        readAnnotationData();
         Reporter.report("[INFO]", "Cross-referencing genes with contigs...", name);
-        buildCssToTraesAndReverseMaps(TRAES_CSS_MAP);
+        buildCssToTraesAndReverseMaps(getGENE_2_CONTIG_MAP());
         Reporter.report("[INFO]", "Cross-reference all data...", name);
         integrateGeneWithPopSeqData();
         Reporter.report("[INFO]", "Finished populating Application-scoped datastore", name);
 //        SearchResult quickFind = quickFind("1BL_3811941");
 //        System.err.println("");
     }
+    
+    public String getBLAST_DB() {
+        return staticFilesMap.get("BLAST_DB");
+    }
+    public String getTABLE_HEADERS() {
+        return staticFilesMap.get("TABLE_HEADERS");
+    }
+    private String getPOPSEQ() {
+        return staticFilesMap.get("POPSEQ");
+    }    
+    private String getANNOTATION() {
+        return staticFilesMap.get("ANNOTATION");
+    }
+    private String getANNOTATION_RICE() {
+        return staticFilesMap.get("ANNOTATION_RICE");
+    }
+    private String getGENE_2_CONTIG_MAP() {
+        return staticFilesMap.get("GENE_2_CONTIG_MAP");
+    }
+    
+    
+    
+    
+    
 
+    private void readConfigFile() {
+        InReader in = new InReader(CONFIG_FILE);
+        parentPath = in.getParentPath();
+        ArrayList<String> input = in.returnInput();
+        for (String line : input) {
+            if(!line.trim().isEmpty() && !line.startsWith("[") && !line.startsWith("#")) {
+                String toks[] = line.split("[ \t]+");
+                if(toks[0].equalsIgnoreCase("include")) {
+                    expressionDataConfigFiles.add(line.replaceFirst("[^ \t]+[ \t]+", ""));
+                } else {
+                    staticFilesMap.put(toks[0], line.replaceFirst("[^ \t]+[ \t]+", "").trim());
+                }
+            }            
+        }
+    }
+    
     public SearchResult quickFind(String id) {
         Contig contig;
         if (traesOnCssMap.containsKey(id)) { //HABEMUS GENE
@@ -123,28 +169,35 @@ public class AppDataBean {
             mipsIdToAnnotationStringToksMap = new HashMap<>();
             mipsIdToRiceAnnotationStringToksMap = new HashMap<>();
         } else {
-
-            mipsIdToAnnotationStringToksMap = buildAnnotationMap(ANNOTATION, false);
-            mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(ANNOTATION_RICE, true);
+            mipsIdToAnnotationStringToksMap = buildAnnotationMap(getANNOTATION(), false);
+            mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(getANNOTATION_RICE(), true);
         }
     }
 
     private void readExpressionData() {
-        if (DEBUG) {
-            genesToExpressionMap = new HashMap<>();
-            genesToExpressionMap = new HashMap<>();
-        } else {
-            genesToExpressionMap = getGenesTissuesFPKMs(FPKMS);
-            genesToExpressionMap = getGenesTissuesFPKMs(FPKMS_UNORDERED_GENES);
-        }
+//        if (DEBUG) {
+////            genesToExpressionMap = new HashMap<>();
+////            genesToExpressionMap = new HashMap<>();
+//        } else {
+            
+            expressionDatasets = new ArrayList<>(expressionDataConfigFiles.size());
+            for (String expressionDataConfigFile : expressionDataConfigFiles) {
+                if(!expressionDataConfigFile.startsWith("/")) {
+                    expressionDataConfigFile = parentPath+"/"+expressionDataConfigFile;
+                }
+                expressionDatasets.add(new ExpressionData(expressionDataConfigFile, DEBUG));
+            }
+//            genesToExpressionMap = getGenesTissuesFPKMs(FPKMS);
+//            genesToExpressionMap = getGenesTissuesFPKMs(FPKMS_UNORDERED_GENES);
+            
+//        }
     }
 
     private void integrateGeneWithPopSeqData() {
 
         //file specifies that first chart takes 15 FPKM cols (CS), next takes 2 cols (Chris Anther, Seedling)...
         //this file could also be used in the future as a more generic settings file
-        InReader ir = new InReader(FPKM_SETTINGS);
-        ArrayList<String> fpkmSettings = ir.returnInput();
+
 
         //GENES ON POPSeq-ed CONTIGS ONLY
         chrToBinnedGenesMap = new HashMap<>();
@@ -174,7 +227,7 @@ public class AppDataBean {
                     for (String geneId : geneIds) {
                         Gene g = new Gene(geneId, contig, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false),
                                 getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true),
-                                genesToExpressionMap.get(geneId), fpkmTableHeaders, traesOnCssMap.get(geneId), fpkmSettings);
+                                expressionDatasets, traesOnCssMap.get(geneId));
                         binnedGenes.add(g);
                         allGenes.add(g);
                         cMFilter.add_cM_valuesToMinMaxAnd_cMRanges(g.getContig().getcM());
@@ -200,7 +253,7 @@ public class AppDataBean {
                 for (String geneId : geneIds) {
                     Gene g = new Gene(geneId, c, getAnnotation(geneId, mipsIdToAnnotationStringToksMap, false),
                             getAnnotation(geneId, mipsIdToRiceAnnotationStringToksMap, true),
-                            genesToExpressionMap.get(geneId), fpkmTableHeaders, traesOnCssMap.get(geneId), fpkmSettings);
+                            expressionDatasets, traesOnCssMap.get(geneId));
                     genes.add(g);
                 }
                 chrToAllGenesMap.put(c.getChromosome(), genes);
@@ -229,7 +282,7 @@ public class AppDataBean {
 
         BufferedReader myData = null;
         try {
-            myData = new BufferedReader(new FileReader(POPSEQ));
+            myData = new BufferedReader(new FileReader(getPOPSEQ()));
             Pattern p = Pattern.compile("\t");
             String inputLine; // = myData.readLine(); //SKIPPING HEADER ROW            
             while ((inputLine = myData.readLine()) != null) {
@@ -405,75 +458,11 @@ public class AppDataBean {
         return cssToTraesIdMap;
     }
 
-    private HashMap<String, ArrayList<Double>> getGenesTissuesFPKMs(String FPKMsFileName) {
-//        HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap = new HashMap<>(100000, 1);
-        if (genesToExpressionMap == null) {
-            genesToExpressionMap = new HashMap<>(100000, 1);
-        }
-        File file = new File(FPKMsFileName);
-        BufferedReader myData = null;
-        try {
-//            int countCasesOfMultipleFpkmValuesPerGenePrediction = 0;
-            String inputLine;
-            myData = new BufferedReader(new FileReader(file));
-            String readLine = myData.readLine();
-            Pattern p = Pattern.compile("\t");
-            fpkmTableHeaders = p.split(readLine);
-
-            while ((inputLine = myData.readLine()) != null) {
-                if (DEBUG && !inputLine.startsWith("Traes_1")) {
-                    continue;
-                }
-                String toks[] = p.split(inputLine);
-                if (toks != null && toks.length > 1 && toks[0].startsWith("Traes")) {
-                    ArrayList<Double> storedGenePerTissueFPKMs = genesToExpressionMap.get(toks[0]);
-                    boolean overwrite = false;
-                    if (storedGenePerTissueFPKMs == null) {
-                        overwrite = true;
-                    } else {
-//                        countCasesOfMultipleFpkmValuesPerGenePrediction++;
-                        double lenStored = storedGenePerTissueFPKMs.get(2) - storedGenePerTissueFPKMs.get(1) + 1;
-                        double lenCurrent = Double.parseDouble(toks[2]) - Double.parseDouble(toks[1]) + 1;
-                        if (lenCurrent > lenStored) {
-                            overwrite = true;
-                        }
-                    }
-                    if (overwrite) { //storing only if empty or if cufflinks reported length is longer for the same gene
-                        storedGenePerTissueFPKMs = new ArrayList<>(18);
-                        for (int i = 1; i < toks.length; i++) { //1 and 2 are coordinates
-                            storedGenePerTissueFPKMs.add(Double.parseDouble(toks[i]));
-                        }
-                        genesToExpressionMap.put(toks[0], storedGenePerTissueFPKMs);
-                    }
-                    ///storedGeneIds.add(toks[0]);
-                }
-            }
-//            System.err.println("not allowing musleFpkmValuesPerGenePrediction = " + countCasesOfMultipleFpkmValuesPerGenePrediction + "  in " + this.toString());
-
-        } catch (FileNotFoundException ex) {
-            System.err.println("File not found exception!\t" + file.getName());
-//            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (myData != null) {
-                    myData.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return genesToExpressionMap;
-    }
 
     private Annotation getAnnotation(String wheatGeneId, HashMap<String, String[]> mipsIdToAnnotationStringToksMap, boolean isRice) {
         return new Annotation(wheatGeneId, mipsIdToAnnotationStringToksMap, isRice);
     }
 
-    public String[] getFpkmTableHeaders() {
-        return fpkmTableHeaders;
-    }
 
     public ArrayList<Gene> getGenesBinned(String chromosome) {
         return chrToBinnedGenesMap.get(chromosome);
@@ -483,11 +472,13 @@ public class AppDataBean {
         return chrToAllGenesMap.get(chromosome);
     }
 
-    public HashMap<String, ArrayList<Double>> getGenesToExpressionMap() {
-        return genesToExpressionMap;
+    public ArrayList<ExpressionData> getExpressionDatasets() {
+        return expressionDatasets;
     }
-
+    
     public static void main(String[] args) {
         new AppDataBean();
     }
+    
+    
 }

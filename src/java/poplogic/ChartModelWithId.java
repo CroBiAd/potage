@@ -11,26 +11,31 @@ import org.primefaces.model.chart.BarChartModel;
  *
  * @author rad
  */
-public class ChartModelWithId {
+public class ChartModelWithId extends BarChartModel{
 
-    private final BarChartModel model;
+    
     private final String chartId;
+    private final String shortTitle;
+    
 
-    public ChartModelWithId(BarChartModel model, String chartId) {
-        this.model = model;
+    public ChartModelWithId( String chartId, String shortTitle) {
+        this.shortTitle = shortTitle;
         this.chartId = chartId;
 //            System.err.println(model+" "+chartId);
     }
 
-    public BarChartModel getModel() {
-        return model;
-    }
 
     public String getChartId() {
         return chartId;
     }
 
-    public String getTitle() {
-        return model.getTitle().split(" in ")[1];
+//    public String getTitle() {
+//        return getTitle().split(" in ")[1];
+//    }
+
+    public String getShortTitle() {
+        return shortTitle;
     }
+    
+    
  }

@@ -15,9 +15,12 @@ import java.util.ArrayList;
 public class InReader  implements Serializable{
 
     private ArrayList<String> inputContents;
+    private String parentPath;
 
     public InReader(String fileName) {
-        readInput(new File(fileName));
+        File file = new File(fileName);
+        parentPath = file.getParent();
+        readInput(file);
     }
 
     public InReader(File directory) {
@@ -32,6 +35,12 @@ public class InReader  implements Serializable{
             }
         }
     }
+
+    public String getParentPath() {
+        return parentPath;
+    }
+
+    
 
     public ArrayList<String> returnInput() {
         return inputContents;

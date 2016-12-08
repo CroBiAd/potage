@@ -31,7 +31,8 @@ public class Gene implements Serializable, Comparable<Gene> {
     private Contig contig;
     private Annotation annotationMips;
     private Annotation annotationRice;
-    private ArrayList<Double> tissuesFPKMs;
+//    private ArrayList<Double> tissuesFPKMs;
+    private ArrayList<ExpressionData> expressionDatasets;
 
     //location on contig
     private Integer from;
@@ -41,29 +42,26 @@ public class Gene implements Serializable, Comparable<Gene> {
     //for FPKM charts:
     private ArrayList<BarChartModel> barChartModel;
 //    private BarChartModel barChartModel;
-    private String[] fpkmTableHeaders;
-    private ArrayList<String> fpkmSettings;
 
     //for charts tabview
     private int currentTabIndex = 0;
     private ArrayList<ChartModelWithId> chartModels;
     private TabView chartsTabView;
-    
+
 //    //place in full chromosome (pops and unanchored)
 //    private int index;
-
     public Gene(String geneId) {
         this.geneId = geneId;
     }
 
-    
-    public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<Double> tissuesFPKMs,
-        String[] fpkmTableHeaders, String traes_to_CSS_entry, ArrayList<String> fpkmSettings) {
+    public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<ExpressionData> expressionDatasets,
+            String traes_to_CSS_entry) {
         this.geneId = geneId;
         this.contig = contig;
         this.annotationMips = annotationMips;
         this.annotationRice = annotationRice;
-        this.tissuesFPKMs = tissuesFPKMs;
+//        this.tissuesFPKMs = tissuesFPKMs;
+        this.expressionDatasets = expressionDatasets;
         if (traes_to_CSS_entry == null) {
             this.from = null;
             this.to = null;
@@ -74,22 +72,19 @@ public class Gene implements Serializable, Comparable<Gene> {
             this.to = Integer.parseInt(toks[3]);
             this.strand = toks[4].substring(0, 1);
         }
-        this.fpkmTableHeaders = fpkmTableHeaders;
-        this.fpkmSettings = fpkmSettings;
     }
 
-    public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<Double> tissuesFPKMs,
-        String[] fpkmTableHeaders, int from, int to, String strand, ArrayList<String> fpkmSettings) {
+    public Gene(String geneId, Contig contig, Annotation annotationMips, Annotation annotationRice, ArrayList<ExpressionData> expressionDatasets,
+            int from, int to, String strand) {
         this.geneId = geneId;
         this.contig = contig;
         this.annotationMips = annotationMips;
         this.annotationRice = annotationRice;
-        this.tissuesFPKMs = tissuesFPKMs;
+//        this.tissuesFPKMs = tissuesFPKMs;
+        this.expressionDatasets = expressionDatasets;
         this.from = from;
         this.to = to;
         this.strand = strand;
-        this.fpkmTableHeaders = fpkmTableHeaders;
-        this.fpkmSettings = fpkmSettings;
     }
 
 //    public Gene(String geneId, ArrayList<String> record, ArrayList<Double> tissuesFPKMs, ArrayList<String> 
@@ -127,8 +122,6 @@ public class Gene implements Serializable, Comparable<Gene> {
             return getGeneId();
         }
     }
-    
-    
 
     public Contig getContig() {
         return contig;
@@ -142,67 +135,55 @@ public class Gene implements Serializable, Comparable<Gene> {
         return annotationRice;
     }
 
-    public ArrayList<Double> getTissuesFPKMs() {
-        return tissuesFPKMs;
-    }
-
+//    public ArrayList<Double> getTissuesFPKMs() {
+//        return tissuesFPKMs;
+//    }
     public BarChartModel getBarChartModel(int i) {
         return getBarChartModels().get(i);
     }
-    
-    
 
-    public ArrayList<BarChartModel> getBarChartModels() {
-        ArrayList<BarChartModel> models = new ArrayList<>();
+    public ArrayList<ChartModelWithId> getBarChartModels() {
+        ArrayList<ChartModelWithId> models = new ArrayList<>();
         int first = 2; //0,1 are start and stop postioins   
-        Iterator<String> it = fpkmSettings.iterator();
+        Iterator<ExpressionData> it = expressionDatasets.iterator();
+        int k = 0;
         while (it.hasNext()) {
-//            if(i<num) {
-//            String numSamples = fpkmSettings.get(k);
-//            first += Integer.parseInt(numSamples);
-//            }
-
-            String line = it.next();
-            if (!line.startsWith("#")) {
-                String[] split = line.split("\t");
-
-                BarChartModel model = new BarChartModel();
-                model.setTitle(getGeneId() + " in " + split[0]);                
-                int last = first + Integer.parseInt(split[1]);
+            ExpressionData expressionData = it.next();
+            ChartModelWithId model = new ChartModelWithId("chart_" + (k++) + "_" + getGeneId(), expressionData.getShortName());
+            model.setTitle(getGeneId() + " in " + expressionData.getLongName());
+            ArrayList<Double> expressionValues = expressionData.getExpressionValues(getGeneId());
+            
 //        System.err.println("Get me the values: "+first+"-"+last);
-                for (int i = first; i < last; i++) {
-                    BarChartSeries series = new BarChartSeries();
-                    for (int j = first; j < last; j++) {
+            for (int i = first; i < expressionValues.size(); i++) {
+                BarChartSeries series = new BarChartSeries();
+                    for (int j = first; j < expressionValues.size(); j++) {
                         if (i == j) {
-                            String seriesName = fpkmTableHeaders[j + 1];
-//                    if(seriesName.length() >= 10) {
-//                        seriesName = seriesName.replaceFirst("_", "\n");
-//                    }
-                            if (tissuesFPKMs == null) {
-                                System.err.println("tissuesFPKMs == null");
-//                            } else {
-//                                System.err.println("tissuesFPKMs.size() = "+tissuesFPKMs.size()+", j="+j);
-                            }
-                            series.set(seriesName, tissuesFPKMs.get(j)); //+1 as headers are geneid, start, stop and then sample ids
+                            String seriesName = expressionData.getHeader()[j + 1];
+                            series.set(seriesName, expressionValues.get(j)); //+1 as headers are geneid, start, stop and then sample ids
                         } else {
-                            series.set(fpkmTableHeaders[j + 1], 0);
+                            series.set(expressionData.getHeader()[j + 1], 0);
                         }
 //                series.setLabel(fpkmTableHeaders[j + 1]);
                     }
                     model.addSeries(series);
-                }
-                model.setStacked(true);
-                model.setZoom(true);
-                //            barModel.setAnimate(true);
-                Axis xAxis = model.getAxis(AxisType.X);
-                //            xAxis.setLabel("Tissue/stage");
-                xAxis.setTickAngle(-40);
-                xAxis.setMin(-0.5);
-                Axis yAxis = model.getAxis(AxisType.Y);
-                yAxis.setLabel("FPKM");
-                models.add(model);
-                first = last;
+                
+                
+                
+                
+                
+                
+                
             }
+            model.setStacked(true);
+            model.setZoom(true);
+            //            barModel.setAnimate(true);
+            Axis xAxis = model.getAxis(AxisType.X);
+            //            xAxis.setLabel("Tissue/stage");
+            xAxis.setTickAngle(-40);
+            xAxis.setMin(-0.5);
+            Axis yAxis = model.getAxis(AxisType.Y);
+            yAxis.setLabel(expressionData.getUnit());
+            models.add(model);            
         }
         return models;
     }
@@ -224,59 +205,57 @@ public class Gene implements Serializable, Comparable<Gene> {
 //        }
 //        return chartsTabView;
 //    }
-    
-    public ArrayList<ChartModelWithId> getChartModels() {
-//        ArrayList<ModelWithId> chartModels = new ArrayList<>();
-        if (chartModels == null) {
-            chartModels = new ArrayList<>();
-            ArrayList<BarChartModel> barChartModels = getBarChartModels();
-            for (int i = 0; i < barChartModels.size(); i++) {
-                BarChartModel barChartModel = barChartModels.get(i);
-                ChartModelWithId modelWithId = new ChartModelWithId(barChartModel, "chart_" + i + "_" + getGeneId());
-                chartModels.add(modelWithId);
-            }
-        }
-        return chartModels;
-    }
-    public ArrayList<BarChartModel> getBarChartModel() {
-        if (barChartModel == null) {
-            barChartModel = new ArrayList<>();
-            
-            int first = 2; //0,1 are start and stop postioins
-            for(String line: fpkmSettings) {
-                BarChartModel model = new BarChartModel();
-                model.setTitle(getGeneId());
-                int last = first + Integer.parseInt(line);            
-                for (int i = first; i < last; i++) { 
-                    BarChartSeries series = new BarChartSeries();
-                    for (int j = 2; j < last; j++) {
-                        if (i == j) {
-                            series.set(fpkmTableHeaders[j + 1], tissuesFPKMs.get(j)); //+1 as headers are geneid, start, stop and then sample ids
-                        } else {
-                            series.set(fpkmTableHeaders[j + 1], 0);
-                        }
-                        series.setLabel(fpkmTableHeaders[i + 1]);
-                    }
-                    model.addSeries(series);
-                }
-                model.setStacked(true);
-                model.setZoom(true);
-    //            barModel.setAnimate(true);
-                Axis xAxis = model.getAxis(AxisType.X);
-    //            xAxis.setLabel("Tissue/stage");
-                xAxis.setTickAngle(-60);
-                xAxis.setMin(-0.5);
-                Axis yAxis = model.getAxis(AxisType.Y);
-                yAxis.setLabel("FPKM");
-                first = last;
-                barChartModel.add(model);
-            }
-        }
-        return barChartModel;
-}
-    public String[] getFpkmTableHeaders() {
-        return fpkmTableHeaders;
-    }
+//    public ArrayList<ChartModelWithId> getChartModels() {
+////        ArrayList<ModelWithId> chartModels = new ArrayList<>();
+//        if (chartModels == null) {
+//            chartModels = new ArrayList<>();
+//            ArrayList<BarChartModel> barChartModels = getBarChartModels();
+//            for (int i = 0; i < barChartModels.size(); i++) {
+//                BarChartModel barChartModel = barChartModels.get(i);
+//                ChartModelWithId modelWithId = new ChartModelWithId(barChartModel, "chart_" + i + "_" + getGeneId());
+//                chartModels.add(modelWithId);
+//            }
+//        }
+//        return chartModels;
+//    }
+
+//    public ArrayList<BarChartModel> getBarChartModel() {
+//        if (barChartModel == null) {
+//            barChartModel = new ArrayList<>();
+//
+//            int first = 2; //0,1 are start and stop postioins
+//            for (String line : fpkmSettings) {
+//                BarChartModel model = new BarChartModel();
+//                model.setTitle(getGeneId());
+//                int last = first + Integer.parseInt(line);
+//                for (int i = first; i < last; i++) {
+//                    BarChartSeries series = new BarChartSeries();
+//                    for (int j = 2; j < last; j++) {
+//                        if (i == j) {
+//                            series.set(fpkmTableHeaders[j + 1], tissuesFPKMs.get(j)); //+1 as headers are geneid, start, stop and then sample ids
+//                        } else {
+//                            series.set(fpkmTableHeaders[j + 1], 0);
+//                        }
+//                        series.setLabel(fpkmTableHeaders[i + 1]);
+//                    }
+//                    model.addSeries(series);
+//                }
+//                model.setStacked(true);
+//                model.setZoom(true);
+//                //            barModel.setAnimate(true);
+//                Axis xAxis = model.getAxis(AxisType.X);
+//                //            xAxis.setLabel("Tissue/stage");
+//                xAxis.setTickAngle(-60);
+//                xAxis.setMin(-0.5);
+//                Axis yAxis = model.getAxis(AxisType.Y);
+//                yAxis.setLabel("FPKM");
+//                first = last;
+//                barChartModel.add(model);
+//            }
+//        }
+//        return barChartModel;
+//    }
+
 
     public Integer getFrom() {
         return from;
@@ -322,7 +301,5 @@ public class Gene implements Serializable, Comparable<Gene> {
 //    public void setIndex(int index) {
 //        this.index = index;
 //    }
-    
-    
 
 }

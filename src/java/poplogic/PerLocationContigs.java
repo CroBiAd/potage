@@ -5,6 +5,7 @@
  */
 package poplogic;
 
+import beans.AppDataBean;
 import beans.Location_cMFilter;
 import beans.MainPopsBean;
 import java.io.ByteArrayInputStream;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
+import javax.faces.bean.ManagedProperty;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -45,6 +47,18 @@ public class PerLocationContigs implements Serializable {
         this.contigs = contigs;
         this.chromosome = chromosome;
         this.cM_filterForNonGeneContigs = cM_filterForNonGeneContigs;
+    }
+    
+    
+    @ManagedProperty(value = "#{appDataBean}")
+    private AppDataBean appData;
+
+    public AppDataBean getAppData() {
+        return appData;
+    }
+
+    public void setAppData(AppDataBean appData) {
+        this.appData = appData;
     }
     
     
@@ -195,7 +209,7 @@ public class PerLocationContigs implements Serializable {
 //                sb.append("-").append(c.getTo());
 //                sb.append(" ").append(c.getFrame());
                 sb.append(newline);
-                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContigId(), MainPopsBean.BLAST_DB).get(0).getSequenceString());
+                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContigId(), appData.getBLAST_DB()).get(0).getSequenceString());
                 sb.append(newline);
             }
             InputStream stream = new ByteArrayInputStream(sb.toString().getBytes());
