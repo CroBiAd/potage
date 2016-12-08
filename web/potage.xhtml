@@ -611,7 +611,7 @@
                         </f:facet>
                         <f:facet name="right">
                             <p:commandButton id="clearCharts" widgetVar="clearCharts" title="Remove all charts from display"  icon="ui-icon-trash" action="#{mainBean.clearSelectedGenesForChartDisplay()}" 
-                                             onstart="PF('blockUI').show();"   oncomplete="PF('blockUI').hide();" title="Clear charts display" 
+                                             onstart="PF('blockUI').show();"   oncomplete="PF('blockUI').hide();" 
                                              disabled="#{mainBean.hasNoGenesSelectedForDisplay()}" update=":formCentre:chartsGrid"/> 
                         </f:facet>
                     </p:toolbar>
