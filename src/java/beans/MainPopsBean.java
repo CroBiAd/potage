@@ -273,7 +273,7 @@ public class MainPopsBean implements Serializable {
         if (currentChromosome == null) {
             return "";
         }
-        return "Displaying POPSEQ-anchored genes/contigs on chromosome " + currentChromosome;
+        return "Genes on POPSEQ-anchored contigs (chromosome " + currentChromosome + ")";
     }
 
     public void setCurrentChromosome(String currentChromosome) {

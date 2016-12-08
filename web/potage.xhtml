@@ -379,12 +379,13 @@
 
                             <f:facet name="right">
 
-                                <h:outputLabel value="Export " escape="false" style="vertical-align: middle;" />
+                                <h:outputLabel value="Download " escape="false" style="vertical-align: middle;" />
                                 <p:selectOneMenu value="#{mainBean.perLocationContigs.toExport}" style="vertical-align: middle; text-align: left; width: 120px" disabled="#{!mainBean.perLocationContigs.dataLoaded}"   >
                                     <f:selectItem itemLabel="current page" itemValue="page" />
                                     <f:selectItem itemLabel="whole table" itemValue="all"/>
                                     <p:ajax update="exportCSV"/>  
                                 </p:selectOneMenu>
+				<h:outputLabel value=" as " escape="false" style="vertical-align: middle;" />
                                 <!--                                    <f:selectItem itemLabel="selected rows" itemValue="selected" />-->
                                 <h:commandLink id="exportCSV" disabled="#{mainBean.perLocationContigs.exportDsiabled()}" onclick="PF('statusDialog').show();">
                                     <p:graphicImage value="/images/csv_text.png" style="vertical-align: middle;" title="Export table to a CSV file." rendered="#{!mainBean.perLocationContigs.exportDsiabled()}"/>
@@ -413,7 +414,7 @@
                          selection="#{mainBean.selectedGenes}"  
                          id="dataTable" widgetVar="dataTable" 
                          rowKey="#{gene.geneId}" 
-                         paginator="true" rows="5" paginatorAlwaysVisible="true" rowsPerPageTemplate="5,10,20,40,80,160" style="text-align: center"
+                         paginator="true" rows="10" paginatorAlwaysVisible="true" rowsPerPageTemplate="5,10,20,40,80,160" style="text-align: center"
                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowStyleClass="#{mainBean.contains(mainBean.userQuery, gene.geneId, gene.contig.contigId) ? 'highlighted' : null}" 
                          reflow="true">
@@ -424,7 +425,7 @@
                             <h:outputText value="#{mainBean.currentChromosome}"  />
                         </f:facet>
                         <f:facet name="right">
-                            <h:outputText value="Global filter (all text fields on current chromosome):" />
+                            <h:outputText value="Filter current chromosome by text field: " />
                             <p:inputText id="globalFilter" widgetVar="globalFilter" onkeyup="PF('dataTable').filter()" style="width:150px; color: #fd3506" 
                                          placeholder="Enter keyword" value="#{mainBean.globalFilter}" onfocus="PF('dataTable').filter()"   />
                             <p:commandButton id="filterbutton" icon="ui-icon-check" update="dataTable,:formCentre:chartsGrid"  onclick="PF('dataTable').filter()" />
@@ -434,7 +435,7 @@
                     </p:toolbar>
                     <p:toolbar>
                         <f:facet name="left" >
-                            <h:outputText value="cM between " />
+                            <h:outputText value="Filter by cM position: " />
                             <p:autoComplete dropdown="true" value="#{mainBean.cM_filter.cM_min_user}"   disabled="#{!mainBean.dataLoaded}" 
                                             forceSelection="true" size="7" scrollHeight="400" title="Type in the desired cM position (from)"   
                                             completeMethod="#{mainBean.cM_filter.rangePrefix}" >
@@ -442,8 +443,7 @@
                                         onstart="PF('blockUI').show();" 
                                         oncomplete="PF('dataTable').filter();PF('blockUI').hide();" />
                             </p:autoComplete>
-                            <p:spacer height="0" width="35" />
-                            <h:outputText value=" and   " />
+                            <h:outputText value=" to " />
                             <p:autoComplete dropdown="true" value="#{mainBean.cM_filter.cM_max_user}"   disabled="#{!mainBean.dataLoaded}"
                                             forceSelection="true" size="7"   scrollHeight="400" title="Type in the desired cM position (to)"  
                                             completeMethod="#{mainBean.cM_filter.rangePrefix}" >
@@ -468,12 +468,12 @@
                                                             <p:ajax event="itemSelect" update="dataTable" process="@this" listener="#{mainBean.filterByCm()}" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />
                                                         </p:autoComplete>-->
                             <p:spacer height="0" width="35" />
-                            <p:commandButton title="Reset cM filtering" value="Reset cM filtering"  icon="ui-icon-cancel" update=":formCentre:dataTable" process="@this" action="#{mainBean.resetFilter()}" 
+                            <p:commandButton value="Reset cM filter"  icon="ui-icon-cancel" update=":formCentre:dataTable" process="@this" action="#{mainBean.resetFilter()}" 
                                              onstart="PF('blockTable').show();" oncomplete="PF('dataTable').filter();PF('blockTable').hide();" disabled="#{!mainBean.cM_filter.isFiltered()}" />
 
                         </f:facet>
                         <f:facet name="right">
-                            <h:outputText value="Append unanchored genes to the end of the table "/>
+                            <h:outputText value="Include genes on unanchored contigs? " title="Added to bottom of the table" />
                             <p:selectBooleanButton value="#{mainBean.appendUnordered}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" 
                                                    offIcon="ui-icon-close" style="width:60px" >
                                 <p:ajax update="dataTable" listener="#{mainBean.reload()}"   process="@this"
@@ -551,7 +551,8 @@
                     <p:toolbar id="exportToolbar"  >
                         <f:facet name="left">
                             <p:blockUI block="dataTable" widgetVar="block2Table"    />
-                            <p:commandButton value="Add selected to charts display"  icon="ui-icon-arrowthickstop-1-s" action="#{mainBean.addSelectedGenesToDisplay()}" 
+			    <h:outputLabel value="Process selection: " escape="false" style="vertical-align: middle;" />
+                            <p:commandButton value="Add to charts display"  icon="ui-icon-arrowthickstop-1-s" action="#{mainBean.addSelectedGenesToDisplay()}" 
                                              onstart="PF('blockUI').show();"   
                                              oncomplete="PF('blockUI').hide();" title="Add selection to charts display" disabled="#{!mainBean.somethingSelected()}" 
                                              update=":formCentre:chartsGrid" >                            
@@ -559,24 +560,25 @@
 
 
                             <p:spacer width="15" height="1" />
-                            <p:commandButton value="Clear selection"  icon="ui-icon-cancel" action="#{mainBean.clearSelectedGenes()}" onstart="PF('block2Table').show();"   
+                            <p:commandButton value="Clear"  icon="ui-icon-cancel" action="#{mainBean.clearSelectedGenes()}" onstart="PF('block2Table').show();"   
                                              oncomplete="PF('block2Table').hide();" title="Clear record selection" disabled="#{!mainBean.somethingSelected()}" 
                                              update="dataTable,:formCentre:chartsGrid" >                            
                             </p:commandButton> 
                             <p:spacer width="15" height="1" />
-                            <p:commandButton value="Save selected contig(s)"  icon="ui-icon-disk" onclick="PrimeFaces.monitorDownload(start, stop);"   
-                                             title="Save the selected IWGSC contig(s) to a FASTA file" disabled="#{!mainBean.somethingSelected()}" ajax="false" >                            
+                            <p:commandButton value="Download contig(s)"  icon="ui-icon-disk" onclick="PrimeFaces.monitorDownload(start, stop);"   
+                                             title="Download IWGSC contig(s) in FASTA format" disabled="#{!mainBean.somethingSelected()}" ajax="false" >                            
                                 <p:fileDownload value="#{mainBean.exportFileWholeIWGSC}"    />                                
                             </p:commandButton> 
                         </f:facet>
                         <f:facet name="right"> 
-                            <h:outputLabel value="Export " escape="false" style="vertical-align: middle;" />
+                            <h:outputLabel value="Download " escape="false" style="vertical-align: middle;" />
                             <p:selectOneMenu value="#{mainBean.toExport}" style="vertical-align: middle; text-align: left; width: 120px" disabled="#{!mainBean.dataLoaded}"   >
                                 <f:selectItem itemLabel="current page" itemValue="page" />
                                 <f:selectItem itemLabel="whole table" itemValue="all"/>
                                 <p:ajax update="exportXLS"/>  
                                 <!--<f:selectItem itemLabel="selected rows" itemValue="selected" />-->
                             </p:selectOneMenu>
+			    <h:outputLabel value=" as " escape="false" style="vertical-align: middle;" />
                             <h:commandLink id="exportXLS" disabled="#{mainBean.exportDsiabled()}" onclick="PF('statusDialog').show();">
                                 <p:graphicImage value="/images/excel3.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{!mainBean.exportDsiabled()}"/>
                                 <p:graphicImage value="/images/excel3grey2.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{mainBean.exportDsiabled()}"/>
@@ -599,17 +601,17 @@
             <p:dataGrid var="gene" value="#{mainBean.selectedGenesForChartDisplay}" columns="3" rows="6" paginator="true" id="chartsGrid" widgetVar="chartsGrid"
                         emptyMessage="No genes selected for display." 
                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                        rowsPerPageTemplate="3,6,9" >
+                        rowsPerPageTemplate="3,6,9,12,15,18,21" >
                 <p:ajax event="page" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />   
 
                 <f:facet name="header" >
                     <p:toolbar>
                         <f:facet name="left">
-                            <h:outputText value="Expression charts for selected genes"  />
+                            <h:outputText value="Expression charts display"  />
                         </f:facet>
                         <f:facet name="right">
-                            <p:commandButton id="clearCharts" widgetVar="clearCharts" value="Clear charts display"  icon="ui-icon-cancel" action="#{mainBean.clearSelectedGenesForChartDisplay()}" 
-                                             onstart="PF('blockUI').show();"   oncomplete="PF('blockUI').hide();" title="Clear charts display" 
+                            <p:commandButton id="clearCharts" widgetVar="clearCharts" title="Remove all charts from display"  icon="ui-icon-trash" action="#{mainBean.clearSelectedGenesForChartDisplay()}" 
+                                             onstart="PF('blockUI').show();"   oncomplete="PF('blockUI').hide();" 
                                              disabled="#{mainBean.hasNoGenesSelectedForDisplay()}" update=":formCentre:chartsGrid"/> 
                         </f:facet>
                     </p:toolbar>
@@ -649,7 +651,7 @@
                                          oncomplete="PF('blockUI').hide();" title="Remove chart" process=":formCentre:chartsGrid" 
                                          update=":formCentre:chartsGrid" styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default"/>   
                         <p:commandButton icon="ui-icon-image" action="#{gene.exportChart(gene)}"    
-                                         oncomplete="exportChart(xhr, status, args);" title="Export chart as image"  
+                                         oncomplete="exportChart(xhr, status, args);" title="Download chart as image"  
                                          styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default"/>   
                     </f:facet>
                 </p:panel>
