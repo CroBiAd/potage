@@ -615,10 +615,10 @@
                     </p:toolbar>
                 </f:facet>
                 <p:panel header="#{gene.geneId}  on  #{gene.contig.contigId}" style="text-align:center;"   >
-                    <p:tabView id="chartsTabView" value="#{gene.chartModels}" var="chartModel"  >
+                    <p:tabView id="chartsTabView" value="#{gene.barChartModels}" var="chartModel"  >
                         <p:ajax event="tabChange" update="chartsTabView" listener="#{gene.onTabChange}"/>
-                        <p:tab title="#{chartModel.getTitle()}">
-                            <p:chart type="bar" model="#{chartModel.model}" widgetVar="#{chartModel.chartId}"   />
+                        <p:tab title="#{chartModel.getShortTitle()}">
+                            <p:chart type="bar" model="#{chartModel}"  widgetVar="#{chartModel.chartId}"   />
                         </p:tab>
                     </p:tabView>
 
