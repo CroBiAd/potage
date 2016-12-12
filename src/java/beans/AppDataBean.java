@@ -120,7 +120,12 @@ public class AppDataBean {
                 if(toks[0].equalsIgnoreCase("include")) {
                     expressionDataConfigFiles.add(line.replaceFirst("[^ \t]+[ \t]+", ""));
                 } else {
-                    staticFilesMap.put(toks[0], line.replaceFirst("[^ \t]+[ \t]+", "").trim());
+                    String fileName = line.replaceFirst("[^ \t]+[ \t]+", "").trim();
+                    if(fileName.startsWith("/")) {
+                        staticFilesMap.put(toks[0], fileName);                        
+                    } else {
+                        staticFilesMap.put(toks[0], parentPath+"/"+fileName);                                                
+                    }
                 }
             }            
         }
