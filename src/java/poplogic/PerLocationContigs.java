@@ -1,28 +1,36 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Copyright 2016 University of Adelaide.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package poplogic;
 
 import beans.AppDataBean;
 import beans.Location_cMFilter;
-import beans.MainPopsBean;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
-import javax.faces.bean.ManagedProperty;
-import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 /**
  *
- * @author rad
+ * @author Radoslaw Suchecki <radoslaw.suchecki@adelaide.edu.au>
  */
+
 public class PerLocationContigs implements Serializable {
 
     private final ArrayList<Contig> contigs;
@@ -50,7 +58,7 @@ public class PerLocationContigs implements Serializable {
     }
     
     
-    @ManagedProperty(value = "#{appDataBean}")
+
     private AppDataBean appData;
 
     public AppDataBean getAppData() {
@@ -60,7 +68,7 @@ public class PerLocationContigs implements Serializable {
     public void setAppData(AppDataBean appData) {
         this.appData = appData;
     }
-    
+
     
 
 //    public PerLocationContigs(String chromosome, double cM_corrected_min, double cM_corrected_max, double cM_original_min, double cM_original_max) {

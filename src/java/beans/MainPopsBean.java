@@ -1,6 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Copyright 2016 University of Adelaide.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package beans;
 
@@ -60,43 +71,18 @@ import reusable.Sequence;
 
 /**
  *
- * @author rad
+ * @author Radoslaw Suchecki <radoslaw.suchecki@adelaide.edu.au>
  */
 @ManagedBean(name = "mainBean")
 @ViewScoped
 public class MainPopsBean implements Serializable {
 
-    //MapDB & keys //Keys are used to retrieve a given datastructure from the DB
-//    private final String MAIN_MAP_KEY = "mainMap";
-//    private final String CONTIG_2_GENES_MAP_KEY = "contig2Genes";
-//    private final String EXPRESSION_MAP_KEY = "expressionMap";
-//    private final String EXPRESSION_HEADER_KEY = "expressionHeader";
-//    private final String SETTINGS_MAP_NAME = "settingsMap";
-//     @ManagedProperty(value="#{mapDbFrontBean}")
-//    private MapDbFrontBean mapDbFrontBean;
-//    public final static String BLAST_DB_FOR_FETCHING = "//resources//pops_all_rad.nal";
-//    public final static String BLAST_DB = "//resources//pops_all_rad.nal";
-//    public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/POPSeq_all_blastdb";
-//    public final static String BLAST_DB = "/var/tomcat/persist/potage_data/blast_db/IWGSC_SS";
-//    private final String PATH = "/var/tomcat/persist/potage_data";
-//    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
-//    private final String ANNOTATION = "/var/tomcat/persist/potage_data/ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt"; //tr -d '()' < ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header.txt > ta_IWGSC_MIPSv2.0_HCS_HUMAN_READABLE_DESCS_2013Nov28_no_header_no_brackets.txt
-//    private final String TRAES_CSS_MAP = "/var/tomcat/persist/potage_data/Traes_to_CSS.map";
-//    private final String FPKMS = "/var/tomcat/persist/potage_data/FPKMs/reordered/popseqed_genes_on_with_header2016.fpkms";
-//    private final String FPKMS_UNORDERED_GENES = "/var/tomcat/persist/potage_data/FPKMs/reordered/unordered_genes_with_header2016.fpkms";
-//    private final String FPKM_SETTINGS = "/var/tomcat/persist/potage_data/FPKMs/reordered/fpkm_data_settings2016.txt";
-//    public final String TABLE_HEADERS = "Gene ID,From,To,Strand,Contig ID,cM,MIPS annotation Hit ID,MIPS annotation Description,MIPS annotation Interpro ID,Rice annotation Hit ID,Rice annotation Description";
     private boolean autoDisplayCharts = true;
 
     private String currentChromosome;
-//    private LazyGeneDataModel selectedDataModel;
-//    private LazyDataModel<Gene> loadedDataModel;
-//    private LazyGeneDataModel filteredDataModel;
     private ArrayList<Gene> loadedGenes;
     private ArrayList<Gene> selectedGenes;
-//    private ArrayList<Gene> filteredGenes;
     private ArrayList<Gene> selectedGenesForChartDisplay;
-//    HashMap<String, ArrayList<Double>> genesTissuesFPKMsMap;
     private Location_cMFilter cM_filter;
 
     private String userQuery;
@@ -142,6 +128,7 @@ public class MainPopsBean implements Serializable {
 
     public void setAppData(AppDataBean appData) {
         this.appData = appData;
+        this.perLocationContigs.setAppData(appData); 
     }
 
     @PostConstruct
@@ -476,6 +463,7 @@ public class MainPopsBean implements Serializable {
 //        perLocationContigs = inputProcessor.getContigs(fileName);
 
         perLocationContigs = new PerLocationContigs(appData.getContigs(chromosomeForNonGeneContigs), chromosomeForNonGeneContigs, appData.getLocationFilterContigs(chromosomeForNonGeneContigs));
+        perLocationContigs.setAppData(appData);
     }
 
     public void restrictContigsWithutGenes() {
@@ -591,34 +579,16 @@ public class MainPopsBean implements Serializable {
             String newline = System.getProperty("line.separator");
             StringBuilder sb = new StringBuilder();
             for (Gene c : selectedGenes) {
-//                System.err.println("Selected: " + c.getGeneId() + " " + c.getContig().getId());
                 sb.append(">");
                 sb.append(c.getContig().getId());
-//                sb.append(" ").append(p.getHit().getHitDef());
-//                sb.append(" predicted POPSEQ location ");
-//                sb.append(barleyChromosome);
-//                sb.append("H:");
-//                sb.append(c.getFrom());
-//                sb.append("-").append(c.getTo());
-//                sb.append(" ").append(c.getFrame());
                 sb.append(newline);
-//                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getContigId(), "/var/tomcat/persist/coching_data/IWGSC_SS").get(0).getSequenceString());
-//                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), extContext.getRealPath(BLAST_DB)).
                 sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), appData.getBLAST_DB()).
                         get(0).getSequenceString()
                 );
-//                sb.append(reusable.BlastOps.getCompleteSubjectSequence(c.getContig().getId(), BLAST_DB_FOR_FETCHING).get(0).getSequenceString());
                 sb.append(newline);
             }
             InputStream stream = new ByteArrayInputStream(sb.toString().getBytes());
             this.exportFileWholeIWGSC = new DefaultStreamedContent(stream, "application/txt", "Selected_IWGSC_contigs_" + reusable.CommonMaths.getRandomString() + ".fasta");
-
-//            FacesContext context = FacesContext.getCurrentInstance();
-//            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,"Saving...",  selectedContigs.size() + " selected contig(s)"));
-//            RequestContext requestContext = RequestContext.getCurrentInstance();
-//            requestContext.update("form:dataTable:saveFastaWhole");
-//            context.addMessage(null, new FacesMessage("Second Message", "Additional Info Here..."));
-//            System.err.println(sb.toString());
         }
     }
 
@@ -954,11 +924,4 @@ public class MainPopsBean implements Serializable {
         return loadedGenes;
     }
 
-//    public MapDbFrontBean getMapDbFrontBean() {
-//        return mapDbFrontBean;
-//    }
-//
-//    public void setMapDbFrontBean(MapDbFrontBean mapDbFrontBean) {
-//        this.mapDbFrontBean = mapDbFrontBean;
-//    }
 }

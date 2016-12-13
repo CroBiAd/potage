@@ -1,6 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Copyright 2016 University of Adelaide.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package poplogic;
 
@@ -22,7 +33,7 @@ import org.primefaces.model.chart.BarChartSeries;
 
 /**
  *
- * @author rad
+ * @author Radoslaw Suchecki <radoslaw.suchecki@adelaide.edu.au>
  */
 public class Gene implements Serializable, Comparable<Gene> {
     //wheat contig info
@@ -152,10 +163,11 @@ public class Gene implements Serializable, Comparable<Gene> {
             ChartModelWithId model = new ChartModelWithId("chart_" + (k++) + "_" + getGeneId(), expressionData.getShortName());
             model.setTitle(getGeneId() + " in " + expressionData.getLongName());
             ArrayList<Double> expressionValues = expressionData.getExpressionValues(getGeneId());
-            
+
 //        System.err.println("Get me the values: "+first+"-"+last);
-            for (int i = first; i < expressionValues.size(); i++) {
-                BarChartSeries series = new BarChartSeries();
+            if (expressionValues != null && expressionValues.size() > first) {
+                for (int i = first; i < expressionValues.size(); i++) {
+                    BarChartSeries series = new BarChartSeries();
                     for (int j = first; j < expressionValues.size(); j++) {
                         if (i == j) {
                             String seriesName = expressionData.getHeader()[j + 1];
@@ -166,13 +178,7 @@ public class Gene implements Serializable, Comparable<Gene> {
 //                series.setLabel(fpkmTableHeaders[j + 1]);
                     }
                     model.addSeries(series);
-                
-                
-                
-                
-                
-                
-                
+                }
             }
             model.setStacked(true);
             model.setZoom(true);
@@ -183,7 +189,7 @@ public class Gene implements Serializable, Comparable<Gene> {
             xAxis.setMin(-0.5);
             Axis yAxis = model.getAxis(AxisType.Y);
             yAxis.setLabel(expressionData.getUnit());
-            models.add(model);            
+            models.add(model);
         }
         return models;
     }
@@ -218,7 +224,6 @@ public class Gene implements Serializable, Comparable<Gene> {
 //        }
 //        return chartModels;
 //    }
-
 //    public ArrayList<BarChartModel> getBarChartModel() {
 //        if (barChartModel == null) {
 //            barChartModel = new ArrayList<>();
@@ -255,8 +260,6 @@ public class Gene implements Serializable, Comparable<Gene> {
 //        }
 //        return barChartModel;
 //    }
-
-
     public Integer getFrom() {
         return from;
     }
