@@ -1,3 +1,9 @@
+# What is POTAGE?
+
+POTAGE (pronounced "[pəʊˈtɑːʒ](http://img2.tfd.com/pron/mp3/en/UK/df/dfskskssdfd5drh7.mp3)") is a web-based tool for integrating genetic map location with gene expression data and inferred functional annotation in wheat.
+
+# POTAGE Web Server
+
 You can access the public [POTAGE web server](http://130.56.251.241/potage) which contains a limited number of published gene
 expression data sets.
 
