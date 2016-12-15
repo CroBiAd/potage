@@ -79,92 +79,114 @@
 
 
         <p:dialog  id="helpDialog" header="Help and information" widgetVar="helpPanel" modal="false"  styleClass="logos" fitViewport="true" 
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="750" height="550">
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="700">
 
+            <p:accordionPanel>
+                <p:tab title="About POTAGE - PopSeq Ordered Triticum Aestivum Gene Expression" >
 
-            <h2> <u>POTAGE</u> - PopSeq Ordered Triticum Aestivum Gene Expression  </h2>
+                    <h4> POTAGE is a web application which integrates map location information with gene expression 
+                        and inferred functional annotation. The functionality of this application depends on several datasets:  </h4>
+                    <p:accordionPanel activeIndex="">
+                        <p:tab title="IWGSC Chromosome Survey Sequences">
+                            <ul> 
+                                <li> ... </li>
+                                <ul>
+                                    <li>...</li>
+                                    <li>...</li>
+                                </ul>
+                            </ul>
+                        </p:tab>
+                        <p:tab title="PopSeq map of Chromososme Survey Sequences">
+                            <ul> 
+                                <li> Utilizes whole genome sequencing for genotyping to establish maker order from sequencing data </li>
+                                <li> 
+                                    Provides the genetic anchoring of the IWGSC survey sequences by population sequencing. For more details, see <a href="http://onlinelibrary.wiley.com/doi/10.1111/tpj.12319/abstract" target="_blank">Anchoring and ordering NGS contig assemblies by population sequencing (POPSEQ), Plant J. 76(4) 718-727</a>  
+                                    Please note that: 
+                                </li>
+                                <ul>
+                                    <li>Number of contigs per cM interval is dependent on recombination frequency </li>
+                                    <li>The resolution of a genetic map is dependent on the population size</li>
+                                </ul>
+                            </ul>
+                        </p:tab>
+                        <p:tab title="High Confidence (HC) wheat gene predictions (a.k.a MIPS gene predictions)">
+                            <ul> 
+                                <li>
+                                    Described in <a href="http://www.sciencemag.org/content/345/6194/1251788.abstract" target="_blank">A chromosome-based draft sequence of the hexaploid bread wheat (Triticum aestivum) genome, Science 18 July 2014, Vol. 345 no. 6194</a>
+                                </li>
+                                <li>
+                                    POTAGE utilizes <a href="ftp://ftpmips.helmholtz-muenchen.de/plants/wheat/IWGSC/genePrediction_v2.1/" target="_blank">version 2.1 </a> 
+                                </li>
+                            </ul>
+                        </p:tab>
+                        <p:tab title="Functional annotation">
+                            <ol> 
+                                <li>MIPS annotation provided with the HC predictions</li>
+                                <li>Rice-derived annotation, obtained by</li>                
+                                <ul>
+                                    <li>
+                                        Aligning HC coding sequences to rice proteins from <a href="http://rapdb.dna.arc.go.jp" target="_blank">International Rice Genome Sequencing Project (2005), </a> 
+                                        <a href="http://www.nature.com/nature/journal/v436/n7052/abs/nature03895.html" target="_blank">The map-based sequence of the rice genome. Nature 436: 793–800</a>
+                                    </li>
+                                    <li>Annotation retrieved from top rice hits if available and if alignment quality thresholds were met.</li>
+                                </ul>
+                            </ol>                                                
+                        </p:tab>
+                        <p:tab title="RNA-Seq data">
+                            <ul> <li>
+                                    <a href="http://wheat-urgi.versailles.inra.fr/Seq-Repository/RNA-Seq" target="_blank"> Chinese Spring (public)</a>.
+                                    Non-oriented library (TruSeq, Illumina) sequenced on Illumina HiSeq2000 2x100bp (PE) for 15 different conditions corresponding to five wheat organs (root, leaf, stem, spike, grain) at three developmental stages each in 2 duplicates
+                                    <table>
+                                        <tr><td></td></tr>
+                                        <tr><td>Stage</td><td>Wheat growth stage</td><td>Feekes scale</td><td>Zadoks scale</td><td>Leaves</td><td>Root</td><td>Stem</td><td>Spike</td><td>Grain</td></tr>
+                                        <tr><td>Seedling</td><td>First leaf through coleoptile</td><td>1</td><td>10</td><td>x</td><td>x</td><td></td><td></td><td></td></tr>
+                                        <tr><td>Three leaves</td><td>3 leaves unfolded</td><td></td><td>13</td><td></td><td>x</td><td></td><td></td><td></td></tr>
+                                        <tr><td>Three tillers</td><td>Main shoot and 3 tillers</td><td></td><td>23</td><td>x</td><td></td><td></td><td></td><td></td></tr>
+                                        <tr><td>Spike at 1 cm</td><td>Pseudostem erection</td><td>5</td><td>30</td><td></td><td></td><td>x</td><td></td><td></td></tr>
+                                        <tr><td>Two nodes</td><td>2nd detectable node</td><td>7</td><td>32</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
+                                        <tr><td>Meiosis</td><td>Flag leaf ligule and collar visible</td><td>9</td><td>39</td><td></td><td>x</td><td></td><td>x</td><td></td></tr>
+                                        <tr><td>Anthesis</td><td>1/2 of flowering complete</td><td></td><td>65</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
+                                        <tr><td>2 DAAs</td></tr>
+                                        <tr><td>(50°C.days)"</td><td>Kernel (caryopsis) watery ripe</td><td></td><td>71</td><td>x</td><td></td><td></td><td></td><td>x</td></tr>
+                                        <tr><td>14 DAAs</td></tr>
+                                        <tr><td>(350°C.days)"</td><td>Medium Milk</td><td></td><td>75</td><td></td><td></td><td></td><td></td><td>x</td></tr>
+                                        <tr><td>30 DAAs</td></tr>
+                                        <tr><td>(700°C.days)"</td><td>Soft dough</td><td></td><td>85</td><td></td><td></td><td></td><td></td><td>x</td></tr>
+                                        <tr><td></td></tr>
+                                    </table>
+                                </li>
+                                <li>Chinese Spring/Cornerstone (ACPFG in-house). Anthers, four developmental stages. Single end reads only.</li>
+                                <li>Chris (ACPFG in-house). Anther, seedling, Illumina 2x100bp (PE)</li>
+                                <li>Drought experiment (ACPFG in-house)</li>
+                                <ul>
+                                    <li>Excalibur and RAC875</li>                    
+                                    <li>3, 5, 9 days after anthesis</li>                    
+                                    <li>Well-watered (WW), Mild-drought(MD), Severe-drought(SD)</li>                    
+                                </ul>
+                            </ul>
+                        </p:tab>
+                    </p:accordionPanel>
+                    <h4> Last updated December 2016 </h4>
+                    <ul> 
+                        <li> Please report bugs and issues to  <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
+                    </ul>
+                </p:tab>
+                <p:tab title="Words of caution">
+                    <ul> 
+                        <li>The expression values are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions.  </li>
+                        <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and expression values may be quite misleading. </li>
+                        <li>TODO: figures illustrating the limitations of PopSeq</li>
+                    </ul>
+                </p:tab>            
+                <p:tab title="Helpsheet 1 - Identifying candidate genes under a QTL"></p:tab>
+                <p:tab title="Helpsheet 2 - Finding genes by gene ID, contig ID "></p:tab>
+                <p:tab title="Helpsheet 3 - Finding genes by sequence alignment (BLASTn)"></p:tab>
+                <p:tab title="Helpsheet 4 - Rules of thumb for interpreting expression values"></p:tab>
+                <p:tab title="Frequently Asked Questions (FAQ)">
 
-            <h4> Last updated December 2016 </h4>
-            <ul> 
-                <li> Please report bugs to  <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
-            </ul>
+                </p:tab>
+            </p:accordionPanel>
 
-            <h3>Words of caution</h3>
-            <ul> 
-                <li>The expression values are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions.  </li>
-                <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and expression values may be quite misleading. </li>
-            </ul>
-
-            <h3> POTAGE functionality depends on:</h3>
-
-            <h4> PopSeq </h4>
-            <ul> 
-                <li> Utilizes whole genome sequencing for genotyping to establish maker order from sequencing data </li>
-                <li> 
-                    Provides the genetic anchoring of the IWGSC survey sequences by population sequencing. For more details, see <a href="http://onlinelibrary.wiley.com/doi/10.1111/tpj.12319/abstract" target="_blank">Anchoring and ordering NGS contig assemblies by population sequencing (POPSEQ), Plant J. 76(4) 718-727</a>  
-                    Please note that: 
-                </li>
-                <ul>
-                    <li>Number of contigs per cM interval is dependent on recombination frequency </li>
-                    <li>The resolution of a genetic map is dependent on the population size</li>
-                </ul>
-            </ul>
-
-            <h4>High Confidence (HC) wheat gene predictions (a.k.a MIPS gene predictions)</h4> 
-            <ul> 
-                <li>
-                    Described in <a href="http://www.sciencemag.org/content/345/6194/1251788.abstract" target="_blank">A chromosome-based draft sequence of the hexaploid bread wheat (Triticum aestivum) genome, Science 18 July 2014, Vol. 345 no. 6194</a>
-                </li>
-                <li>
-                    POTAGE utilizes <a href="ftp://ftpmips.helmholtz-muenchen.de/plants/wheat/IWGSC/genePrediction_v2.1/" target="_blank">version 2.1 </a> 
-                </li>
-            </ul>
-            <h4>Functional annotation</h4> 
-            <ol> 
-                <li>MIPS annotation provided with the HC predictions</li>
-                <li>Rice-derived annotation, obtained by</li>                
-                <ul>
-                    <li>
-                        Aligning HC coding sequences to rice proteins from <a href="http://rapdb.dna.arc.go.jp" target="_blank">International Rice Genome Sequencing Project (2005), </a> 
-                        <a href="http://www.nature.com/nature/journal/v436/n7052/abs/nature03895.html" target="_blank">The map-based sequence of the rice genome. Nature 436: 793–800</a>
-                    </li>
-                    <li>Annotation retrieved from top rice hits if available and if alignment quality thresholds were met.</li>
-                </ul>
-            </ol>
-
-            <h4>RNASeq data </h4> 
-            <ul> 
-                <li>
-                    <a href="http://wheat-urgi.versailles.inra.fr/Seq-Repository/RNA-Seq" target="_blank"> Chinese Spring (public)</a>.
-                    Non-oriented library (TruSeq, Illumina) sequenced on Illumina HiSeq2000 2x100bp (PE) for 15 different conditions corresponding to five wheat organs (root, leaf, stem, spike, grain) at three developmental stages each in 2 duplicates
-                    <table>
-                        <tr><td></td></tr>
-                        <tr><td>Stage</td><td>Wheat growth stage</td><td>Feekes scale</td><td>Zadoks scale</td><td>Leaves</td><td>Root</td><td>Stem</td><td>Spike</td><td>Grain</td></tr>
-                        <tr><td>Seedling</td><td>First leaf through coleoptile</td><td>1</td><td>10</td><td>x</td><td>x</td><td></td><td></td><td></td></tr>
-                        <tr><td>Three leaves</td><td>3 leaves unfolded</td><td></td><td>13</td><td></td><td>x</td><td></td><td></td><td></td></tr>
-                        <tr><td>Three tillers</td><td>Main shoot and 3 tillers</td><td></td><td>23</td><td>x</td><td></td><td></td><td></td><td></td></tr>
-                        <tr><td>Spike at 1 cm</td><td>Pseudostem erection</td><td>5</td><td>30</td><td></td><td></td><td>x</td><td></td><td></td></tr>
-                        <tr><td>Two nodes</td><td>2nd detectable node</td><td>7</td><td>32</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
-                        <tr><td>Meiosis</td><td>Flag leaf ligule and collar visible</td><td>9</td><td>39</td><td></td><td>x</td><td></td><td>x</td><td></td></tr>
-                        <tr><td>Anthesis</td><td>1/2 of flowering complete</td><td></td><td>65</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
-                        <tr><td>2 DAAs</td></tr>
-                        <tr><td>(50°C.days)"</td><td>Kernel (caryopsis) watery ripe</td><td></td><td>71</td><td>x</td><td></td><td></td><td></td><td>x</td></tr>
-                        <tr><td>14 DAAs</td></tr>
-                        <tr><td>(350°C.days)"</td><td>Medium Milk</td><td></td><td>75</td><td></td><td></td><td></td><td></td><td>x</td></tr>
-                        <tr><td>30 DAAs</td></tr>
-                        <tr><td>(700°C.days)"</td><td>Soft dough</td><td></td><td>85</td><td></td><td></td><td></td><td></td><td>x</td></tr>
-                        <tr><td></td></tr>
-                    </table>
-                </li>
-                <li>Chinese Spring/Cornerstone (ACPFG in-house). Anthers, four developmental stages. Single end reads only.</li>
-                <li>Chris (ACPFG in-house). Anther, seedling, Illumina 2x100bp (PE)</li>
-                <li>Drought experiment (ACPFG in-house)</li>
-                <ul>
-                    <li>Excalibur and RAC875</li>                    
-                    <li>3, 5, 9 days after anthesis</li>                    
-                    <li>Well-watered (WW), Mild-drought(MD), Severe-drought(SD)</li>                    
-                </ul>
-            </ul>
 
 
 
@@ -178,6 +200,10 @@
                     <f:facet name="left">
                         <p:inputText id="idInput" widgetVar="idInput" style="width:300px" placeholder="Enter IWGSC SS identifier or a MIPS gene ID" 
                                      value="#{mainBean.userQuery}"  />
+                        <p:spacer height="0" width="10" />
+                        <p:commandLink update="idInput" actionListener="#{mainBean.setUserQuery('Traes_2AS_C3EF3A27F')}">
+                            <h:outputText value="example" />
+                        </p:commandLink>
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton  value="Search" id="searchButton" actionListener="#{mainBean.searchAll}" icon="ui-icon-search" update="idInput,searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList" 
@@ -208,6 +234,9 @@
                                 <p:fileUpload widgetVar="fileUpload" fileUploadListener="#{mainBean.handleFileUpload}"  mode="advanced" auto="true" allowTypes="/(\.|\/)(fa|fasta|fas|txt|fst)$/" 
                                               label="Choose (or drag-and-drop) a FASTA file to upload" sizeLimit="2097152" invalidSizeMessage="The maximum file size allowed is 2MB!"                                               
                                               invalidFileMessage="Only upload FASTA files!" multiple="false"  update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput"/>
+                                <p:commandLink update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput" actionListener="#{mainBean.loadExampleFasta}">
+                                    <h:outputText value="Load example FASTA input" />
+                                </p:commandLink>
                             </f:facet>                                    
                             <f:facet name="right">
                                 <p:commandButton  value="Search" id="searchSeqButton" actionListener="#{mainBean.sequenceSearchEventHandler}" icon="ui-icon-search" 
@@ -402,7 +431,7 @@
                                     <f:selectItem itemLabel="whole table" itemValue="all"/>
                                     <p:ajax update="exportCSV"/>  
                                 </p:selectOneMenu>
-				<h:outputLabel value=" as " escape="false" style="vertical-align: middle;" />
+                                <h:outputLabel value=" as " escape="false" style="vertical-align: middle;" />
                                 <!--                                    <f:selectItem itemLabel="selected rows" itemValue="selected" />-->
                                 <h:commandLink id="exportCSV" disabled="#{mainBean.perLocationContigs.exportDsiabled()}" onclick="PF('statusDialog').show();">
                                     <p:graphicImage value="/images/csv_text.png" style="vertical-align: middle;" title="Export table to a CSV file." rendered="#{!mainBean.perLocationContigs.exportDsiabled()}"/>
@@ -423,6 +452,24 @@
 <!--<p:slideMenu model="#{mainBean.menuModel}" style="width: 110pt" />-->
         <!--<p:commandButton type="button" onclick="jQuery('.ui-row-toggler').click()" value="Expand/collapse gene annotation"  />-->
 
+        <!--        <p:dialog widgetVar="helpDialog1" modal="false" showEffect="puff" hideEffect="clip" resizable="true"  closeOnEscape="true" header="CoChing help"  >  
+                                <p:graphicImage value="/images/CoChing_help1.png" /> 
+                            </p:dialog> -->
+        <p:dialog widgetVar="helpDialogForMainTable" modal="false" 
+                  showEffect="slide" hideEffect="drop" resizable="true" closeOnEscape="true" header="POTAGE help: main table explained" >  
+            blah
+            <!--                        <p:tabView id="tabView" effect="fade" >
+                                        <p:tab id="tab1" title="The output table (1/3)">
+                                            <p:graphicImage value="/images/CoChing_help2.png" /> 
+                                        </p:tab>
+                                        <p:tab id="tab2" title="The output table (2/3)">
+                                            <p:graphicImage value="/images/CoChing_help3.png" /> 
+                                        </p:tab>
+                                        <p:tab id="tab3" title="The output table (3/3)">
+                                            <p:graphicImage value="/images/CoChing_help4.png" /> 
+                                        </p:tab>
+                                    </p:tabView>-->
+        </p:dialog> 
 
         <h:form id="formCentre" >
 
@@ -439,6 +486,9 @@
                 <f:facet name="header" >
                     <p:toolbar>
                         <f:facet name="left">
+                            <p:commandButton icon="ui-icon ui-icon-info blueIcon" value="Click here for more information about this table" 
+                                             onclick="PF('helpDialogForMainTable').initPosition();PF('helpDialogForMainTable').show();" type="button"/>
+                            <p:spacer height="0" width="35" />
                             <h:outputText value="#{mainBean.currentChromosome}"  />
                         </f:facet>
                         <f:facet name="right">
@@ -568,7 +618,7 @@
                     <p:toolbar id="exportToolbar"  >
                         <f:facet name="left">
                             <p:blockUI block="dataTable" widgetVar="block2Table"    />
-			    <h:outputLabel value="Process selection: " escape="false" style="vertical-align: middle;" />
+                            <h:outputLabel value="Process selection: " escape="false" style="vertical-align: middle;" />
                             <p:commandButton value="Add to charts display"  icon="ui-icon-arrowthickstop-1-s" action="#{mainBean.addSelectedGenesToDisplay()}" 
                                              onstart="PF('blockUI').show();"   
                                              oncomplete="PF('blockUI').hide();" title="Add selection to charts display" disabled="#{!mainBean.somethingSelected()}" 
@@ -595,7 +645,7 @@
                                 <p:ajax update="exportXLS"/>  
                                 <!--<f:selectItem itemLabel="selected rows" itemValue="selected" />-->
                             </p:selectOneMenu>
-			    <h:outputLabel value=" as " escape="false" style="vertical-align: middle;" />
+                            <h:outputLabel value=" as " escape="false" style="vertical-align: middle;" />
                             <h:commandLink id="exportXLS" disabled="#{mainBean.exportDsiabled()}" onclick="PF('statusDialog').show();">
                                 <p:graphicImage value="/images/excel3.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{!mainBean.exportDsiabled()}"/>
                                 <p:graphicImage value="/images/excel3grey2.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{mainBean.exportDsiabled()}"/>

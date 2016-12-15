@@ -190,7 +190,7 @@ public class MainPopsBean implements Serializable {
 
             if (setFileContentStringValidate(fasta)) {
                 growl(FacesMessage.SEVERITY_INFO, "File:", event.getFile().getFileName() + " successfully uploaded.", "searchMessages2");
-                growl(FacesMessage.SEVERITY_INFO, "Size:", reusable.CommonMaths.round((double) event.getFile().getSize() / 1024, 2) + " Kb", "searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Size:", reusable.CommonMaths.round((double) event.getFile().getSize() / 1024, 2) + " kB", "searchMessages2");
                 growl(FacesMessage.SEVERITY_INFO, "Number of sequences:", "" + sequences.size(), "searchMessages2");
             }
         } catch (IOException e) {
@@ -199,8 +199,8 @@ public class MainPopsBean implements Serializable {
         } finally {
 //            result.delete();
         }
-
     }
+    
 
     public boolean setFileContentStringValidate(String fileContentString) {
         if (isValidFasta(fileContentString)) {
@@ -227,7 +227,10 @@ public class MainPopsBean implements Serializable {
     }
 
     public void setFileContentString(String fileContentString) {
-        setFileContentStringValidate(fileContentString);
+        if(fileContentString == null || fileContentString.trim().isEmpty())
+            this.fileContentString = "";
+        else 
+            setFileContentStringValidate(fileContentString);
     }
 
     public String getFileContentString() {
@@ -252,6 +255,7 @@ public class MainPopsBean implements Serializable {
                 valid = true;
             }
         } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return valid;
     }
@@ -322,9 +326,10 @@ public class MainPopsBean implements Serializable {
     }
 
     public void setUserQuery(String userQuery) {
+        System.err.println("Setting user query to "+userQuery);
         if ((userQuery == null || userQuery.isEmpty()) && getGlobalFilter().equals(userQuery)) {
             setGlobalFilter("");
-        }
+        }        
         this.userQuery = userQuery;
     }
 
@@ -503,11 +508,12 @@ public class MainPopsBean implements Serializable {
 
     public void removeFromChartDisplay(Gene gene) {
         if (selectedGenesForChartDisplay != null) {
-            selectedGenesForChartDisplay.remove(gene);
+            selectedGenesForChartDisplay.remove(gene);            
             if (selectedGenesForChartDisplay.isEmpty()) {
                 selectedGenesForChartDisplay = null;
             }
         }
+//        RequestContext.getCurrentInstance().scrollTo(":formCentre:chartsGrid");
     }
 
     public ArrayList<Gene> getSelectedGenesForChartDisplay() {
@@ -861,6 +867,32 @@ public class MainPopsBean implements Serializable {
 
         }
     }
+    
+    public void loadExampleFasta(ActionEvent actionEvent) {                
+        try {
+            ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
+//            uploadedXmlFileName = extContext.getRealPath("//resources//example.blastn.xml");
+//            File f = new File(uploadedXmlFileName);
+//            uploadedXmlFileBaseName = f.getName();
+
+            String fasta = InReader.readInputToString(extContext.getRealPath("//resources//example.fasta"));
+            File f = new File(extContext.getRealPath("//resources//example.fasta"));
+//            String fasta = InReader.readInputToString("/home/rad/NetBeansProjects/potage/web/resources/example.fasta");
+//            File f = new File("/home/rad/NetBeansProjects/potage/web/resources/example.fasta");
+            double size = reusable.CommonMaths.round((double) f.length() / 1024, 2);
+            if (setFileContentStringValidate(fasta)) {
+                growl(FacesMessage.SEVERITY_INFO, "File:", "Example FASTA file successfully uploaded.", "searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Size:",  size + " kB", "searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Number of sequences:", "" + sequences.size(), "searchMessages2");
+            }
+
+//            addMessage("Example files loaded!", "", "intro", FacesMessage.SEVERITY_INFO);
+//            addMessage("Example XML file loaded!", "", "advanced", FacesMessage.SEVERITY_INFO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            growl(FacesMessage.SEVERITY_ERROR, "Error!", "Example file upload failed!", "searchMessages2");
+        }
+    }
 
     private String generateEmailContent(Date submitTime) {
         StringBuilder sb = new StringBuilder("Results summary:\n");
@@ -924,4 +956,9 @@ public class MainPopsBean implements Serializable {
         return loadedGenes;
     }
 
+    
+    public static void main(String[] args) {
+        MainPopsBean mainPopsBean = new MainPopsBean();
+        mainPopsBean.loadExampleFasta(null);
+    }
 }

@@ -76,3 +76,8 @@ html {overflow-y: scroll;}
 .ui-dialog {
     position:absolute;
 }
+
+.ui-icon.blueIcon
+{
+     background-image: url('../images/blueIcons.png'); 
+}

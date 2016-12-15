@@ -20,12 +20,25 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import javafx.print.Collation;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import poplogic.Annotation;
@@ -41,9 +54,10 @@ import reusable.Reporter;
  */
 @ManagedBean(name = "appDataBean")
 @ApplicationScoped
-public class AppDataBean {
+public final class AppDataBean {
 
-    private final boolean DEBUG = false;
+    private boolean DEBUG;
+    private String DEBUG_PREFIX = "Traes_1A";
     private final String CONFIG_FILE = "/var/tomcat/persist/potage_data/potage.cfg";
 //    private final String POPSEQ = "/var/tomcat/persist/potage_data/IWGSC_CSS_POPSEQ_v2.tsv";
 //    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
@@ -54,7 +68,7 @@ public class AppDataBean {
     private String parentPath;
     private HashMap<String, String> staticFilesMap = new HashMap<>();
     private ArrayList<String> expressionDataConfigFiles = new ArrayList<>();
-    
+
     //ALL_POPSEQed CONTIGS
 //    private HashMap<String, HashMap<Double, ArrayList<String>>> popSeqChromosomeMap;
     private HashMap<String, ArrayList<Contig>> popSeqChromosomeMap1;
@@ -75,11 +89,16 @@ public class AppDataBean {
     //MAIN TABLE DATA -  EXPRESSION
 //    private HashMap<String, ArrayList<Double>> genesToExpressionMap;
     private ArrayList<ExpressionData> expressionDatasets;
-    
-//    private String[] fpkmTableHeaders;
 
+//    private String[] fpkmTableHeaders;
     public AppDataBean() {
-        readConfigFile();        
+        String hostname = "";
+        readConfigFile();
+        //if running on development host, don't load all the data
+        String devHostname = getDEV_HOSTNAME();
+        if (devHostname != null) {
+            DEBUG = devHostname.equalsIgnoreCase(getHostname());
+        }
         String name = "POTAGE." + this.getClass().getSimpleName();
         Reporter.report("[INFO]", "Reading in Popseq data...", name);
         readPopSeq();
@@ -95,52 +114,75 @@ public class AppDataBean {
 //        SearchResult quickFind = quickFind("1BL_3811941");
 //        System.err.println("");
     }
-    
+
     public String getBLAST_DB() {
         return staticFilesMap.get("BLAST_DB");
     }
+
+    public String getDEV_HOSTNAME() {
+        return staticFilesMap.get("DEV_HOSTNAME");
+    }
+
     public String getTABLE_HEADERS() {
         return staticFilesMap.get("TABLE_HEADERS");
     }
+
     private String getPOPSEQ() {
         return staticFilesMap.get("POPSEQ");
-    }    
+    }
+
     private String getANNOTATION() {
         return staticFilesMap.get("ANNOTATION");
     }
+
     private String getANNOTATION_RICE() {
         return staticFilesMap.get("ANNOTATION_RICE");
     }
+
     private String getGENE_2_CONTIG_MAP() {
         return staticFilesMap.get("GENE_2_CONTIG_MAP");
     }
-    
-    
-    
-    
-    
 
     private void readConfigFile() {
         InReader in = new InReader(CONFIG_FILE);
         parentPath = in.getParentPath();
         ArrayList<String> input = in.returnInput();
         for (String line : input) {
-            if(!line.trim().isEmpty() && !line.startsWith("[") && !line.startsWith("#")) {
+            if (!line.trim().isEmpty() && !line.startsWith("[") && !line.startsWith("#")) {
                 String toks[] = line.split("[ \t]+");
-                if(toks[0].equalsIgnoreCase("include")) {
-                    expressionDataConfigFiles.add(line.replaceFirst("[^ \t]+[ \t]+", ""));
+                if (toks[0].equalsIgnoreCase("include")) {
+//                    expressionDataConfigFiles.add(line.replaceFirst("[^ \t]+[ \t]+", ""));
+                    String rootPath = line.replaceFirst("[^ \t]+[ \t]+", "");
+                    if(!rootPath.startsWith("/")) {
+                        rootPath = parentPath + "/" + rootPath;
+                    }
+                    getFiles(rootPath, ".cfg");
+
                 } else {
                     String fileName = line.replaceFirst("[^ \t]+[ \t]+", "").trim();
-                    if(fileName.startsWith("/") || toks[0].equalsIgnoreCase("TABLE_HEADERS")) {
-                        staticFilesMap.put(toks[0], fileName);                        
+                    if (fileName.startsWith("/") || toks[0].equalsIgnoreCase("TABLE_HEADERS") || toks[0].equalsIgnoreCase("DEV_HOSTNAME")) {
+                        staticFilesMap.put(toks[0], fileName);
                     } else {
-                        staticFilesMap.put(toks[0], parentPath+"/"+fileName);                                                
+                        staticFilesMap.put(toks[0], parentPath + "/" + fileName);
                     }
                 }
-            }            
+            }
         }
     }
-    
+
+    private  void getFiles(String rootName,  String suffix) {
+        File directory = new File(rootName);
+        File fileList[] = directory.listFiles();
+        Arrays.sort(fileList);
+        for (File file: fileList) {
+            if (file.isFile() && file.getAbsolutePath().endsWith(suffix)) {
+                expressionDataConfigFiles.add(file.getAbsolutePath());
+            } else if (file.isDirectory()) {
+                getFiles(file.getAbsolutePath(), suffix);
+            }
+        }
+    }
+
     public SearchResult quickFind(String id) {
         Contig contig;
         if (traesOnCssMap.containsKey(id)) { //HABEMUS GENE
@@ -180,13 +222,13 @@ public class AppDataBean {
     }
 
     private void readAnnotationData() {
-        if (DEBUG) {
-            mipsIdToAnnotationStringToksMap = new HashMap<>();
-            mipsIdToRiceAnnotationStringToksMap = new HashMap<>();
-        } else {
-            mipsIdToAnnotationStringToksMap = buildAnnotationMap(getANNOTATION(), false);
-            mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(getANNOTATION_RICE(), true);
-        }
+//        if (DEBUG) {
+//            mipsIdToAnnotationStringToksMap = new HashMap<>();
+//            mipsIdToRiceAnnotationStringToksMap = new HashMap<>();
+//        } else {
+        mipsIdToAnnotationStringToksMap = buildAnnotationMap(getANNOTATION(), false);
+        mipsIdToRiceAnnotationStringToksMap = buildAnnotationMap(getANNOTATION_RICE(), true);
+//        }
     }
 
     private void readExpressionData() {
@@ -194,17 +236,17 @@ public class AppDataBean {
 ////            genesToExpressionMap = new HashMap<>();
 ////            genesToExpressionMap = new HashMap<>();
 //        } else {
-            
-            expressionDatasets = new ArrayList<>(expressionDataConfigFiles.size());
-            for (String expressionDataConfigFile : expressionDataConfigFiles) {
-                if(!expressionDataConfigFile.startsWith("/")) {
-                    expressionDataConfigFile = parentPath+"/"+expressionDataConfigFile;
-                }
-                expressionDatasets.add(new ExpressionData(expressionDataConfigFile, DEBUG));
+
+        expressionDatasets = new ArrayList<>(expressionDataConfigFiles.size());
+        for (String expressionDataConfigFile : expressionDataConfigFiles) {
+            if (!expressionDataConfigFile.startsWith("/")) {
+                expressionDataConfigFile = parentPath + "/" + expressionDataConfigFile;
             }
+            expressionDatasets.add(new ExpressionData(expressionDataConfigFile, DEBUG));
+        }
 //            genesToExpressionMap = getGenesTissuesFPKMs(FPKMS);
 //            genesToExpressionMap = getGenesTissuesFPKMs(FPKMS_UNORDERED_GENES);
-            
+
 //        }
     }
 
@@ -212,8 +254,6 @@ public class AppDataBean {
 
         //file specifies that first chart takes 15 FPKM cols (CS), next takes 2 cols (Chris Anther, Seedling)...
         //this file could also be used in the future as a more generic settings file
-
-
         //GENES ON POPSeq-ed CONTIGS ONLY
         chrToBinnedGenesMap = new HashMap<>();
         //ALL GENES
@@ -394,6 +434,9 @@ public class AppDataBean {
             Pattern p = Pattern.compile("\t");
             while ((inputLine = myData.readLine()) != null) {
                 String toks[] = p.split(inputLine);
+                if (DEBUG && !toks[0].startsWith(DEBUG_PREFIX)) {
+                    continue;
+                }
                 if (toks != null && toks.length > 1) {
                     if (isRiceAnnotation) {
                         annotationMap.put(toks[0], toks);
@@ -430,7 +473,7 @@ public class AppDataBean {
             myData = new BufferedReader(new FileReader(file));
             Pattern p = Pattern.compile(",");
             while ((inputLine = myData.readLine()) != null) {
-                if (DEBUG && !inputLine.startsWith("Traes_1")) {
+                if (DEBUG && !inputLine.startsWith(DEBUG_PREFIX)) {
                     continue;
                 }
                 String toks[] = p.split(inputLine);
@@ -473,11 +516,9 @@ public class AppDataBean {
         return cssToTraesIdMap;
     }
 
-
     private Annotation getAnnotation(String wheatGeneId, HashMap<String, String[]> mipsIdToAnnotationStringToksMap, boolean isRice) {
         return new Annotation(wheatGeneId, mipsIdToAnnotationStringToksMap, isRice);
     }
-
 
     public ArrayList<Gene> getGenesBinned(String chromosome) {
         return chrToBinnedGenesMap.get(chromosome);
@@ -490,10 +531,49 @@ public class AppDataBean {
     public ArrayList<ExpressionData> getExpressionDatasets() {
         return expressionDatasets;
     }
-    
+
+    private String getHostname() {
+        Process p;
+        try {
+            ProcessBuilder pb = new ProcessBuilder("hostname");
+            p = pb.start();
+            try {
+                p.waitFor();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(AppDataBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (p.exitValue() == 0) {
+                return inStreamToString(p.getInputStream(), false);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(AppDataBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+
+    private String inStreamToString(InputStream inStream, boolean newlines) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inStream))) {
+            String read;
+            while ((read = br.readLine()) != null) {
+                if (read.startsWith(">lcl|")) {
+                    sb.append(read.replaceFirst("lcl\\|", ""));
+                } else {
+                    sb.append(read);
+                }
+                if (newlines) {
+                    sb.append("<br />");
+                }
+            }
+            br.close();
+            inStream.close();
+        }
+
+        return sb.toString();
+    }
+
     public static void main(String[] args) {
         new AppDataBean();
     }
-    
-    
+
 }
