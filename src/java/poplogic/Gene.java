@@ -15,14 +15,10 @@
  */
 package poplogic;
 
-import beans.MainPopsBean;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import org.primefaces.component.chart.Chart;
-import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.TabChangeEvent;

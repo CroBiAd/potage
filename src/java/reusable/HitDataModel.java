@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package reusable;
-import beans.*;
 import java.io.Serializable;
 import java.util.List;  
 import javax.faces.model.ListDataModel;  
