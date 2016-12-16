@@ -79,7 +79,8 @@
 
 
         <p:dialog  id="helpDialog" header="Help and information" widgetVar="helpPanel" modal="false"  styleClass="logos" fitViewport="true" 
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="800" height="700">
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="true" closeOnEscape="true" 
+                   maximizable="true" width="66%" height="66%" responsive="true">
 
             <p:accordionPanel>
                 <p:tab title="About POTAGE - PopSeq Ordered Triticum Aestivum Gene Expression" >
@@ -89,11 +90,9 @@
                     <p:accordionPanel activeIndex="">
                         <p:tab title="IWGSC Chromosome Survey Sequences">
                             <ul> 
-                                <li> ... </li>
-                                <ul>
-                                    <li>...</li>
-                                    <li>...</li>
-                                </ul>
+                                <li>Consists of individual assemblies of flow-sorted chromosome arms (apart from chromosome 3B assembled as a whole) </li>
+                                <li>Described in <a href="http://www.sciencemag.org/content/345/6194/1251788.abstract" target="_blank">A chromosome-based draft sequence of the hexaploid bread wheat (Triticum aestivum) genome, Science 18 July 2014, Vol. 345 no. 6194</a> </li>
+                                <li>Since cited in <a href="https://www.wheatgenome.org/Projects/IWGSC-Bread-Wheat-Projects/Sequencing/IWGSC-Chromosome-Survey-Sequencing/Citations" target="_blank"> numerous publications </a> </li>
                             </ul>
                         </p:tab>
                         <p:tab title="PopSeq map of Chromososme Survey Sequences">
@@ -133,40 +132,30 @@
                             </ol>                                                
                         </p:tab>
                         <p:tab title="RNA-Seq data">
-                            <ul> <li>
-                                    <a href="http://wheat-urgi.versailles.inra.fr/Seq-Repository/RNA-Seq" target="_blank"> Chinese Spring (public)</a>.
-                                    Non-oriented library (TruSeq, Illumina) sequenced on Illumina HiSeq2000 2x100bp (PE) for 15 different conditions corresponding to five wheat organs (root, leaf, stem, spike, grain) at three developmental stages each in 2 duplicates
-                                    <table>
-                                        <tr><td></td></tr>
-                                        <tr><td>Stage</td><td>Wheat growth stage</td><td>Feekes scale</td><td>Zadoks scale</td><td>Leaves</td><td>Root</td><td>Stem</td><td>Spike</td><td>Grain</td></tr>
-                                        <tr><td>Seedling</td><td>First leaf through coleoptile</td><td>1</td><td>10</td><td>x</td><td>x</td><td></td><td></td><td></td></tr>
-                                        <tr><td>Three leaves</td><td>3 leaves unfolded</td><td></td><td>13</td><td></td><td>x</td><td></td><td></td><td></td></tr>
-                                        <tr><td>Three tillers</td><td>Main shoot and 3 tillers</td><td></td><td>23</td><td>x</td><td></td><td></td><td></td><td></td></tr>
-                                        <tr><td>Spike at 1 cm</td><td>Pseudostem erection</td><td>5</td><td>30</td><td></td><td></td><td>x</td><td></td><td></td></tr>
-                                        <tr><td>Two nodes</td><td>2nd detectable node</td><td>7</td><td>32</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
-                                        <tr><td>Meiosis</td><td>Flag leaf ligule and collar visible</td><td>9</td><td>39</td><td></td><td>x</td><td></td><td>x</td><td></td></tr>
-                                        <tr><td>Anthesis</td><td>1/2 of flowering complete</td><td></td><td>65</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
-                                        <tr><td>2 DAAs</td></tr>
-                                        <tr><td>(50°C.days)"</td><td>Kernel (caryopsis) watery ripe</td><td></td><td>71</td><td>x</td><td></td><td></td><td></td><td>x</td></tr>
-                                        <tr><td>14 DAAs</td></tr>
-                                        <tr><td>(350°C.days)"</td><td>Medium Milk</td><td></td><td>75</td><td></td><td></td><td></td><td></td><td>x</td></tr>
-                                        <tr><td>30 DAAs</td></tr>
-                                        <tr><td>(700°C.days)"</td><td>Soft dough</td><td></td><td>85</td><td></td><td></td><td></td><td></td><td>x</td></tr>
-                                        <tr><td></td></tr>
-                                    </table>
-                                </li>
-                                <li>Chinese Spring/Cornerstone (ACPFG in-house). Anthers, four developmental stages. Single end reads only.</li>
-                                <li>Chris (ACPFG in-house). Anther, seedling, Illumina 2x100bp (PE)</li>
-                                <li>Drought experiment (ACPFG in-house)</li>
-                                <ul>
-                                    <li>Excalibur and RAC875</li>                    
-                                    <li>3, 5, 9 days after anthesis</li>                    
-                                    <li>Well-watered (WW), Mild-drought(MD), Severe-drought(SD)</li>                    
-                                </ul>
-                            </ul>
+                            The primary RNA-Seq dataset included in a public relase of POTAGE is the  
+                            <a href="http://wheat-urgi.versailles.inra.fr/Seq-Repository/RNA-Seq" target="_blank"> Chinese Spring tissue series dataset; </a>.
+                            Non-oriented library (TruSeq, Illumina) sequenced on Illumina HiSeq2000 2x100bp (PE) for 15 different conditions corresponding to five wheat organs (root, leaf, stem, spike, grain) at three developmental stages each in 2 duplicates
+                            <table>
+                                <tr><td></td></tr>
+                                <tr><td>Stage</td><td>Wheat growth stage</td><td>Feekes scale</td><td>Zadoks scale</td><td>Leaves</td><td>Root</td><td>Stem</td><td>Spike</td><td>Grain</td></tr>
+                                <tr><td>Seedling</td><td>First leaf through coleoptile</td><td>1</td><td>10</td><td>x</td><td>x</td><td></td><td></td><td></td></tr>
+                                <tr><td>Three leaves</td><td>3 leaves unfolded</td><td></td><td>13</td><td></td><td>x</td><td></td><td></td><td></td></tr>
+                                <tr><td>Three tillers</td><td>Main shoot and 3 tillers</td><td></td><td>23</td><td>x</td><td></td><td></td><td></td><td></td></tr>
+                                <tr><td>Spike at 1 cm</td><td>Pseudostem erection</td><td>5</td><td>30</td><td></td><td></td><td>x</td><td></td><td></td></tr>
+                                <tr><td>Two nodes</td><td>2nd detectable node</td><td>7</td><td>32</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
+                                <tr><td>Meiosis</td><td>Flag leaf ligule and collar visible</td><td>9</td><td>39</td><td></td><td>x</td><td></td><td>x</td><td></td></tr>
+                                <tr><td>Anthesis</td><td>1/2 of flowering complete</td><td></td><td>65</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
+                                <tr><td>2 DAAs</td></tr>
+                                <tr><td>(50°C.days)"</td><td>Kernel (caryopsis) watery ripe</td><td></td><td>71</td><td>x</td><td></td><td></td><td></td><td>x</td></tr>
+                                <tr><td>14 DAAs</td></tr>
+                                <tr><td>(350°C.days)"</td><td>Medium Milk</td><td></td><td>75</td><td></td><td></td><td></td><td></td><td>x</td></tr>
+                                <tr><td>30 DAAs</td></tr>
+                                <tr><td>(700°C.days)"</td><td>Soft dough</td><td></td><td>85</td><td></td><td></td><td></td><td></td><td>x</td></tr>
+                                <tr><td></td></tr>
+                            </table>
                         </p:tab>
                     </p:accordionPanel>
-                    <h4> Last updated December 2016 </h4>
+                    <h4> POTAGE was last updated in December 2016 </h4>
                     <ul> 
                         <li> Please report bugs and issues to  <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
                     </ul>
@@ -181,7 +170,9 @@
                 <p:tab title="Helpsheet 1 - Identifying candidate genes under a QTL"></p:tab>
                 <p:tab title="Helpsheet 2 - Finding genes by gene ID, contig ID "></p:tab>
                 <p:tab title="Helpsheet 3 - Finding genes by sequence alignment (BLASTn)"></p:tab>
-                <p:tab title="Helpsheet 4 - Rules of thumb for interpreting expression values"></p:tab>
+                <p:tab title="Helpsheet 4 - Rules of thumb for interpreting expression values">                    
+                    <p:graphicImage value="/images/fpkm_interpretation.png" width="100%"/> 
+                </p:tab>
                 <p:tab title="Frequently Asked Questions (FAQ)">
 
                 </p:tab>
