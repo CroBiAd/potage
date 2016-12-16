@@ -79,7 +79,7 @@
 
 
         <p:dialog  id="helpDialog" header="Help and information" widgetVar="helpPanel" modal="false"  styleClass="logos" fitViewport="true" 
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="true" closeOnEscape="true" 
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" 
                    maximizable="true" width="66%" height="66%" responsive="true">
 
             <p:accordionPanel>
@@ -170,8 +170,28 @@
                 <p:tab title="Helpsheet 1 - Identifying candidate genes under a QTL"></p:tab>
                 <p:tab title="Helpsheet 2 - Finding genes by gene ID, contig ID "></p:tab>
                 <p:tab title="Helpsheet 3 - Finding genes by sequence alignment (BLASTn)"></p:tab>
-                <p:tab title="Helpsheet 4 - Rules of thumb for interpreting expression values">                    
-                    <p:graphicImage value="/images/fpkm_interpretation.png" width="100%"/> 
+                <p:tab title="Helpsheet 4 - Rules of thumb for interpreting expression values">                                        
+                    <h:outputText value="Various limitations of the underlying datasets and the ethods used mean that 
+                                  the expression values available in POTAGE should be treated with caution. 
+                                  Here are some examples of how different FPKM values could be interpreted." />
+                    <p:spacer height="10"/>
+                    <p:tabView >
+                        <p:tab title="high">
+                            <p:graphicImage value="/images/help/low_abundant.png"  /> 
+                            <br/>
+                            <h:outputText value="Very abundant transcript (Rubisco small chain)"/>                            
+                        </p:tab>
+                        <p:tab title="medium">
+                            <p:graphicImage value="/images/help/medium_abundant.png" /> 
+                            <br/>
+                            <h:outputText value="Medium abundant transcript (Thioredoxin h)" />                            
+                        </p:tab>
+                        <p:tab title="low">
+                            <p:graphicImage value="/images/help/very_abundant.png" /> 
+                            <br/>
+                            <h:outputText value="Low abundant transcript (Myb TF)" />                            
+                        </p:tab>
+                    </p:tabView>
                 </p:tab>
                 <p:tab title="Frequently Asked Questions (FAQ)">
 

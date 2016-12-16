@@ -167,7 +167,8 @@ public class Gene implements Serializable, Comparable<Gene> {
                     for (int j = first; j < expressionValues.size(); j++) {
                         if (i == j) {
                             String seriesName = expressionData.getHeader()[j + 1];
-                            series.set(seriesName, expressionValues.get(j)); //+1 as headers are geneid, start, stop and then sample ids
+                            series.setLabel(geneId);
+                            series.set(seriesName, expressionValues.get(j)); //+1 as headers are geneid, start, stop and then sample ids                            
                         } else {
                             series.set(expressionData.getHeader()[j + 1], 0);
                         }
