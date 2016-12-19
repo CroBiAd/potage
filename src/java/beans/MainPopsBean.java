@@ -126,7 +126,7 @@ public class MainPopsBean implements Serializable {
 
     public void setAppData(AppDataBean appData) {
         this.appData = appData;
-        this.perLocationContigs.setAppData(appData); 
+        this.perLocationContigs.setAppData(appData);
     }
 
     @PostConstruct
@@ -198,7 +198,6 @@ public class MainPopsBean implements Serializable {
 //            result.delete();
         }
     }
-    
 
     public boolean setFileContentStringValidate(String fileContentString) {
         if (isValidFasta(fileContentString)) {
@@ -225,10 +224,11 @@ public class MainPopsBean implements Serializable {
     }
 
     public void setFileContentString(String fileContentString) {
-        if(fileContentString == null || fileContentString.trim().isEmpty())
+        if (fileContentString == null || fileContentString.trim().isEmpty()) {
             this.fileContentString = "";
-        else 
+        } else {
             setFileContentStringValidate(fileContentString);
+        }
     }
 
     public String getFileContentString() {
@@ -324,10 +324,10 @@ public class MainPopsBean implements Serializable {
     }
 
     public void setUserQuery(String userQuery) {
-        System.err.println("Setting user query to "+userQuery);
+//        System.err.println("Setting user query to "+userQuery);
         if ((userQuery == null || userQuery.isEmpty()) && getGlobalFilter().equals(userQuery)) {
             setGlobalFilter("");
-        }        
+        }
         this.userQuery = userQuery;
     }
 
@@ -506,7 +506,7 @@ public class MainPopsBean implements Serializable {
 
     public void removeFromChartDisplay(Gene gene) {
         if (selectedGenesForChartDisplay != null) {
-            selectedGenesForChartDisplay.remove(gene);            
+            selectedGenesForChartDisplay.remove(gene);
             if (selectedGenesForChartDisplay.isEmpty()) {
                 selectedGenesForChartDisplay = null;
             }
@@ -557,6 +557,12 @@ public class MainPopsBean implements Serializable {
             return true;
         }
         return false;
+    }
+
+    public void cMLoadExample(String chromosome, double from, double to) {
+        onSelect(chromosome);
+        cM_filter.setcM_min_user(from);
+        cM_filter.setcM_max_user(to);
     }
 
     public Location_cMFilter getcM_filter() {
@@ -701,7 +707,7 @@ public class MainPopsBean implements Serializable {
         for (ExpressionData expressionDataset : expressionDatasets) {
             for (int i = 3; i < expressionDataset.getHeader().length; i++) {
                 Cell createdCell = row.createCell(row.getLastCellNum());
-                createdCell.setCellValue(expressionDataset.getHeader()[i]);                
+                createdCell.setCellValue(expressionDataset.getHeader()[i]);
 //                createdCell.setCellValue(fpkmTableHeaders[i]);
             }
         }
@@ -865,8 +871,8 @@ public class MainPopsBean implements Serializable {
 
         }
     }
-    
-    public void loadExampleFasta(ActionEvent actionEvent) {                
+
+    public void loadExampleFasta(ActionEvent actionEvent) {
         try {
             ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
 //            uploadedXmlFileName = extContext.getRealPath("//resources//example.blastn.xml");
@@ -880,7 +886,7 @@ public class MainPopsBean implements Serializable {
             double size = reusable.CommonMaths.round((double) f.length() / 1024, 2);
             if (setFileContentStringValidate(fasta)) {
                 growl(FacesMessage.SEVERITY_INFO, "File:", "Example FASTA file successfully uploaded.", "searchMessages2");
-                growl(FacesMessage.SEVERITY_INFO, "Size:",  size + " kB", "searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Size:", size + " kB", "searchMessages2");
                 growl(FacesMessage.SEVERITY_INFO, "Number of sequences:", "" + sequences.size(), "searchMessages2");
             }
 
@@ -954,7 +960,6 @@ public class MainPopsBean implements Serializable {
         return loadedGenes;
     }
 
-    
     public static void main(String[] args) {
         MainPopsBean mainPopsBean = new MainPopsBean();
         mainPopsBean.loadExampleFasta(null);

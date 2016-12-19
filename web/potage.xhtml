@@ -55,7 +55,7 @@
             <p:dock  id="dock" model="#{mainBean.menuModelSimple}" position="top" itemWidth="38" maxWidth="65" proximity="80"     />                          
         </h:form>
 
-        <p:spacer id="dummyForOverlay" width="100%" height="90"  />
+
 
 
 
@@ -73,147 +73,228 @@
         <p:growl id="growl" showDetail="true" life="9000"  /> 
 
 
+        <p:spacer width="100%" height="30"  />
 
 
 
+        <h:form id="helpForm">
+            <p:panel id="helpPanel" widgetVar="helpPanel" collapsed="true" toggleable="true" toggleSpeed="250" >
+                <f:facet name="header">
+                    <p:commandButton icon="ui-icon ui-icon-info blueIcon" value="Click here for help and information" 
+                                     onclick="PF('helpPanel').toggle();" type="button"/>
+                </f:facet>
+                <p:accordionPanel activeIndex="">
+                    <p:tab title="About POTAGE - PopSeq Ordered Triticum Aestivum Gene Expression" >
 
-
-        <p:dialog  id="helpDialog" header="Help and information" widgetVar="helpPanel" modal="false"  styleClass="logos" fitViewport="true" 
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" 
-                   maximizable="true" width="66%" height="66%" responsive="true">
-
-            <p:accordionPanel>
-                <p:tab title="About POTAGE - PopSeq Ordered Triticum Aestivum Gene Expression" >
-
-                    <h4> POTAGE is a web application which integrates map location information with gene expression 
-                        and inferred functional annotation. The functionality of this application depends on several datasets:  </h4>
-                    <p:accordionPanel activeIndex="">
-                        <p:tab title="IWGSC Chromosome Survey Sequences">
-                            <ul> 
-                                <li>Consists of individual assemblies of flow-sorted chromosome arms (apart from chromosome 3B assembled as a whole) </li>
-                                <li>Described in <a href="http://www.sciencemag.org/content/345/6194/1251788.abstract" target="_blank">A chromosome-based draft sequence of the hexaploid bread wheat (Triticum aestivum) genome, Science 18 July 2014, Vol. 345 no. 6194</a> </li>
-                                <li>Since cited in <a href="https://www.wheatgenome.org/Projects/IWGSC-Bread-Wheat-Projects/Sequencing/IWGSC-Chromosome-Survey-Sequencing/Citations" target="_blank"> numerous publications </a> </li>
-                            </ul>
-                        </p:tab>
-                        <p:tab title="PopSeq map of Chromososme Survey Sequences">
-                            <ul> 
-                                <li> Utilizes whole genome sequencing for genotyping to establish maker order from sequencing data </li>
-                                <li> 
-                                    Provides the genetic anchoring of the IWGSC survey sequences by population sequencing. For more details, see <a href="http://onlinelibrary.wiley.com/doi/10.1111/tpj.12319/abstract" target="_blank">Anchoring and ordering NGS contig assemblies by population sequencing (POPSEQ), Plant J. 76(4) 718-727</a>  
-                                    Please note that: 
-                                </li>
-                                <ul>
-                                    <li>Number of contigs per cM interval is dependent on recombination frequency </li>
-                                    <li>The resolution of a genetic map is dependent on the population size</li>
+                        <h4> POTAGE is a web application which integrates map location information with gene expression 
+                            and inferred functional annotation. The functionality of this application depends on several datasets:  </h4>
+                        <p:accordionPanel activeIndex="">
+                            <p:tab title="IWGSC Chromosome Survey Sequences">
+                                <ul> 
+                                    <li>Consist of individual assemblies of flow-sorted chromosome arms (apart from chromosome 3B assembled as a whole) </li>
+                                    <li>Described in <a href="http://www.sciencemag.org/content/345/6194/1251788.abstract" target="_blank">A chromosome-based draft sequence of the hexaploid bread wheat (Triticum aestivum) genome, Science 18 July 2014, Vol. 345 no. 6194</a> </li>
+                                    <li>Since cited in <a href="https://www.wheatgenome.org/Projects/IWGSC-Bread-Wheat-Projects/Sequencing/IWGSC-Chromosome-Survey-Sequencing/Citations" target="_blank"> numerous publications </a> </li>
                                 </ul>
-                            </ul>
-                        </p:tab>
-                        <p:tab title="High Confidence (HC) wheat gene predictions (a.k.a MIPS gene predictions)">
-                            <ul> 
-                                <li>
-                                    Described in <a href="http://www.sciencemag.org/content/345/6194/1251788.abstract" target="_blank">A chromosome-based draft sequence of the hexaploid bread wheat (Triticum aestivum) genome, Science 18 July 2014, Vol. 345 no. 6194</a>
-                                </li>
-                                <li>
-                                    POTAGE utilizes <a href="ftp://ftpmips.helmholtz-muenchen.de/plants/wheat/IWGSC/genePrediction_v2.1/" target="_blank">version 2.1 </a> 
-                                </li>
-                            </ul>
-                        </p:tab>
-                        <p:tab title="Functional annotation">
-                            <ol> 
-                                <li>MIPS annotation provided with the HC predictions</li>
-                                <li>Rice-derived annotation, obtained by</li>                
-                                <ul>
-                                    <li>
-                                        Aligning HC coding sequences to rice proteins from <a href="http://rapdb.dna.arc.go.jp" target="_blank">International Rice Genome Sequencing Project (2005), </a> 
-                                        <a href="http://www.nature.com/nature/journal/v436/n7052/abs/nature03895.html" target="_blank">The map-based sequence of the rice genome. Nature 436: 793–800</a>
+                            </p:tab>
+                            <p:tab title="PopSeq map of Chromososme Survey Sequences">
+                                <ul> 
+                                    <li> Utilizes whole genome sequencing for genotyping to establish maker order from sequencing data </li>
+                                    <li> 
+                                        Provides the genetic anchoring of the IWGSC survey sequences by population sequencing. For more details, see <a href="http://onlinelibrary.wiley.com/doi/10.1111/tpj.12319/abstract" target="_blank">Anchoring and ordering NGS contig assemblies by population sequencing (POPSEQ), Plant J. 76(4) 718-727</a>  
                                     </li>
-                                    <li>Annotation retrieved from top rice hits if available and if alignment quality thresholds were met.</li>
+                                    <li>
+                                        Please note that: 
+                                    </li>
+                                    <ul>
+                                        <li>Number of contigs per cM interval is dependent on recombination frequency </li>
+                                        <li>The resolution of a genetic map is dependent on the population size</li>
+                                    </ul>
                                 </ul>
-                            </ol>                                                
-                        </p:tab>
-                        <p:tab title="RNA-Seq data">
-                            The primary RNA-Seq dataset included in a public relase of POTAGE is the  
-                            <a href="http://wheat-urgi.versailles.inra.fr/Seq-Repository/RNA-Seq" target="_blank"> Chinese Spring tissue series dataset; </a>.
-                            Non-oriented library (TruSeq, Illumina) sequenced on Illumina HiSeq2000 2x100bp (PE) for 15 different conditions corresponding to five wheat organs (root, leaf, stem, spike, grain) at three developmental stages each in 2 duplicates
-                            <table>
-                                <tr><td></td></tr>
-                                <tr><td>Stage</td><td>Wheat growth stage</td><td>Feekes scale</td><td>Zadoks scale</td><td>Leaves</td><td>Root</td><td>Stem</td><td>Spike</td><td>Grain</td></tr>
-                                <tr><td>Seedling</td><td>First leaf through coleoptile</td><td>1</td><td>10</td><td>x</td><td>x</td><td></td><td></td><td></td></tr>
-                                <tr><td>Three leaves</td><td>3 leaves unfolded</td><td></td><td>13</td><td></td><td>x</td><td></td><td></td><td></td></tr>
-                                <tr><td>Three tillers</td><td>Main shoot and 3 tillers</td><td></td><td>23</td><td>x</td><td></td><td></td><td></td><td></td></tr>
-                                <tr><td>Spike at 1 cm</td><td>Pseudostem erection</td><td>5</td><td>30</td><td></td><td></td><td>x</td><td></td><td></td></tr>
-                                <tr><td>Two nodes</td><td>2nd detectable node</td><td>7</td><td>32</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
-                                <tr><td>Meiosis</td><td>Flag leaf ligule and collar visible</td><td>9</td><td>39</td><td></td><td>x</td><td></td><td>x</td><td></td></tr>
-                                <tr><td>Anthesis</td><td>1/2 of flowering complete</td><td></td><td>65</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
-                                <tr><td>2 DAAs</td></tr>
-                                <tr><td>(50°C.days)"</td><td>Kernel (caryopsis) watery ripe</td><td></td><td>71</td><td>x</td><td></td><td></td><td></td><td>x</td></tr>
-                                <tr><td>14 DAAs</td></tr>
-                                <tr><td>(350°C.days)"</td><td>Medium Milk</td><td></td><td>75</td><td></td><td></td><td></td><td></td><td>x</td></tr>
-                                <tr><td>30 DAAs</td></tr>
-                                <tr><td>(700°C.days)"</td><td>Soft dough</td><td></td><td>85</td><td></td><td></td><td></td><td></td><td>x</td></tr>
-                                <tr><td></td></tr>
-                            </table>
-                        </p:tab>
-                    </p:accordionPanel>
-                    <h4> POTAGE was last updated in December 2016 </h4>
-                    <ul> 
-                        <li> Please report bugs and issues to  <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
-                    </ul>
-                </p:tab>
-                <p:tab title="Words of caution">
-                    <ul> 
-                        <li>The expression values are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions.  </li>
-                        <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and expression values may be quite misleading. </li>
-                        <li>TODO: figures illustrating the limitations of PopSeq</li>
-                    </ul>
-                </p:tab>            
-                <p:tab title="Helpsheet 1 - Identifying candidate genes under a QTL"></p:tab>
-                <p:tab title="Helpsheet 2 - Finding genes by gene ID, contig ID "></p:tab>
-                <p:tab title="Helpsheet 3 - Finding genes by sequence alignment (BLASTn)"></p:tab>
-                <p:tab title="Helpsheet 4 - Rules of thumb for interpreting expression values">                                        
-                    <h:outputText value="Various limitations of the underlying datasets and the ethods used mean that 
-                                  the expression values available in POTAGE should be treated with caution. 
-                                  Here are some examples of how different FPKM values could be interpreted." />
-                    <p:spacer height="10"/>
-                    <p:tabView >
-                        <p:tab title="high">
-                            <p:graphicImage value="/images/help/low_abundant.png"  /> 
-                            <br/>
-                            <h:outputText value="Very abundant transcript (Rubisco small chain)"/>                            
-                        </p:tab>
-                        <p:tab title="medium">
-                            <p:graphicImage value="/images/help/medium_abundant.png" /> 
-                            <br/>
-                            <h:outputText value="Medium abundant transcript (Thioredoxin h)" />                            
-                        </p:tab>
-                        <p:tab title="low">
-                            <p:graphicImage value="/images/help/very_abundant.png" /> 
-                            <br/>
-                            <h:outputText value="Low abundant transcript (Myb TF)" />                            
-                        </p:tab>
-                    </p:tabView>
-                </p:tab>
-                <p:tab title="Frequently Asked Questions (FAQ)">
+                            </p:tab>
+                            <p:tab title="High Confidence (HC) wheat gene predictions (a.k.a MIPS gene predictions)">
+                                <ul> 
+                                    <li>
+                                        Described in <a href="http://www.sciencemag.org/content/345/6194/1251788.abstract" target="_blank">A chromosome-based draft sequence of the hexaploid bread wheat (Triticum aestivum) genome, Science 18 July 2014, Vol. 345 no. 6194</a>
+                                    </li>
+                                    <li>
+                                        POTAGE utilizes <a href="ftp://ftpmips.helmholtz-muenchen.de/plants/wheat/IWGSC/genePrediction_v2.1/" target="_blank">version 2.1 </a> 
+                                    </li>
+                                </ul>
+                            </p:tab>
+                            <p:tab title="Functional annotation">
+                                <ol> 
+                                    <li>MIPS annotation provided with the HC predictions</li>
+                                    <li>Rice-derived annotation, obtained by</li>                
+                                    <ul>
+                                        <li>
+                                            Aligning HC coding sequences to rice proteins from <a href="http://rapdb.dna.arc.go.jp" target="_blank">International Rice Genome Sequencing Project (2005), </a> 
+                                            <a href="http://www.nature.com/nature/journal/v436/n7052/abs/nature03895.html" target="_blank">The map-based sequence of the rice genome. Nature 436: 793–800</a>
+                                        </li>
+                                        <li>Annotation retrieved from top rice hits if available and if alignment quality thresholds were met.</li>
+                                    </ul>
+                                </ol>                                                
+                            </p:tab>
+                            <p:tab title="RNA-Seq data">
+                                The primary RNA-Seq dataset included in the public release of POTAGE is the  
+                                <a href="http://wheat-urgi.versailles.inra.fr/Seq-Repository/RNA-Seq" target="_blank"> Chinese Spring tissue series dataset; </a>
+                                <br/>
+                                Non-oriented library (TruSeq, Illumina) sequenced on Illumina HiSeq2000 2x100bp (PE) for 15 different conditions corresponding to five wheat organs (root, leaf, stem, spike, grain) at three developmental stages each in 2 duplicates
+                                <table>
+                                    <tr><td></td></tr>
+                                    <tr><td>Stage</td><td>Wheat growth stage</td><td>Feekes scale</td><td>Zadoks scale</td><td>Leaves</td><td>Root</td><td>Stem</td><td>Spike</td><td>Grain</td></tr>
+                                    <tr><td>Seedling</td><td>First leaf through coleoptile</td><td>1</td><td>10</td><td>x</td><td>x</td><td></td><td></td><td></td></tr>
+                                    <tr><td>Three leaves</td><td>3 leaves unfolded</td><td></td><td>13</td><td></td><td>x</td><td></td><td></td><td></td></tr>
+                                    <tr><td>Three tillers</td><td>Main shoot and 3 tillers</td><td></td><td>23</td><td>x</td><td></td><td></td><td></td><td></td></tr>
+                                    <tr><td>Spike at 1 cm</td><td>Pseudostem erection</td><td>5</td><td>30</td><td></td><td></td><td>x</td><td></td><td></td></tr>
+                                    <tr><td>Two nodes</td><td>2nd detectable node</td><td>7</td><td>32</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
+                                    <tr><td>Meiosis</td><td>Flag leaf ligule and collar visible</td><td>9</td><td>39</td><td></td><td>x</td><td></td><td>x</td><td></td></tr>
+                                    <tr><td>Anthesis</td><td>1/2 of flowering complete</td><td></td><td>65</td><td></td><td></td><td>x</td><td>x</td><td></td></tr>
+                                    <tr><td>2 DAAs</td></tr>
+                                    <tr><td>(50°C.days)"</td><td>Kernel (caryopsis) watery ripe</td><td></td><td>71</td><td>x</td><td></td><td></td><td></td><td>x</td></tr>
+                                    <tr><td>14 DAAs</td></tr>
+                                    <tr><td>(350°C.days)"</td><td>Medium Milk</td><td></td><td>75</td><td></td><td></td><td></td><td></td><td>x</td></tr>
+                                    <tr><td>30 DAAs</td></tr>
+                                    <tr><td>(700°C.days)"</td><td>Soft dough</td><td></td><td>85</td><td></td><td></td><td></td><td></td><td>x</td></tr>
+                                    <tr><td></td></tr>
+                                </table>
+                            </p:tab>
+                        </p:accordionPanel>
+                        <h4> POTAGE was last updated in December 2016 </h4>
+                        <ul> 
+                            <li> Please report bugs and issues to  <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
+                        </ul>
+                    </p:tab>
+                    <p:tab title="Words of caution">
+                        <ul> 
+                            <li>The expression values are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions.  </li>
+                            <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and expression values may be quite misleading. </li>
+                            <li>PopSeq map does not anchor all the gene-carrying contigs, also note that </li>
+                            <ul> 
+                                <li>Number of contigs/cM interval dependent on recombination frequency</li>
+                                <li>The resolution of a genetic map is dependent on the population size</li>
+                            </ul>
+                            <p:graphicImage value="/images/help/PopSeq_resolution_3A.png" width="800px"  /> 
+                        </ul>
+                    </p:tab>            
+                    <p:tab title="Helpsheet 1 - Identifying candidate genes under a QTL">
+                        <ol> 
+                            <li> Select your chromosome of interest form the dock-menu at the top of the page
+                            <p:commandLink actionListener="#{mainBean.onSelect('2B')}" update=":formCentre:dataTable,:formCentre:chartsGrid"
+                                           onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();">
+                                <p:graphicImage value="/images/help/select_2B.png"  /> 
+                            </p:commandLink>                                            
+                            This will populate the main table below, listing HCS gene predictions identified on this chromosome.
+                            </li>
+                            <li>Next, set appropriate cM range at the top of the main table 
+                            <p:commandLink actionListener="#{mainBean.cMLoadExample('2B', 15.931, 15.931)}" 
+                                           update=":formCentre:dataTable"
+                                           onstart="PF('blockUI').show()" oncomplete="PF('dataTable').filter();PF('blockUI').hide();">
+                                <p:graphicImage value="/images/help/select_cM.png"  />                                                                                                 
+                            </p:commandLink>                             
+                            </li>
+                            <li>Depending on the number of gene predictions present in the selected range, you may be able to browse through their 
+                            expression profiles by using one of the buttons present for each gene in the "Expression" column of the main table. 
+                            <ul>
+                                <li>View displays expression chart(s) in a dialog box. </li>
+                                <li><p:button icon="ui-icon-arrowthickstop-1-s" disabled="true" />
+                                Adds the expression chart(s) to the  "Expression charts display" panel
+                                </li>
+                                <li><p:button icon="ui-icon-extlink" disabled="true" />
+                                Redirects you to view the expression values for the relevant gene on on <a href="http://wheat.pw.usda.gov/WheatExp/" target="_blank">WheatExp: An Expression Database for Polyploid Wheat </a>
+                                </li>                                                                    
+                            </ul>
+                            You can also select one or more genes and collectively add those to the "Expression charts display" by clicking 
+                            <p:button value="Add to charts display"  icon="ui-icon-arrowthickstop-1-s" title="Add gene to expression charts display" disabled="true" /> in the bottom left corner of the main table 
+                            </li>
+                        </ol>                        
 
-                </p:tab>
-            </p:accordionPanel>
+                        <br />
 
 
+                    </p:tab>                    
+                    <p:tab title="Helpsheet 2 - Finding genes by gene ID, contig ID ">
+                        <ol> 
+                            <li>
+                                Click on "Search by identifier" icon in the dock-menu at the top of the page
+                            <p:commandLink onclick="PF('searchDialog').show()">
+                                <p:graphicImage value="/images/search5.png"  /> 
+                            </p:commandLink>                
+                            </li>
+                            <li>Paste or type in your identifier </li>
+                            <li>POTAGE recognizes two types of identifiers
+                                <ol> 
+                                    <li>
+                                        MIPS HCS gene predictions' identifiers, e.g. 
+                                    <p:commandLink update=":formSearch:idInput" actionListener="#{mainBean.setUserQuery('Traes_2AS_C3EF3A27F')}"  oncomplete="PF('searchDialog').show()">
+                                        <h:outputText value="Traes_2AS_C3EF3A27F" />
+                                    </p:commandLink>                            
+                            </li>                                                
+                            <li>
+                                IWGSC CSS identifiers, e.g. 
+                            <p:commandLink update=":formSearch:idInput" actionListener="#{mainBean.setUserQuery('5BS_1598873')}" oncomplete="PF('searchDialog').show()">
+                                <h:outputText value="5BS_1598873" />
+                            </p:commandLink>
+                            </li>
+                        </ol>
+                        </li>
+                        <li>Click 'Search' </li>
+                        If found, your gene/contig will be shown and hilighted in one of the two available output tables. 
+                        <br />
+                        Please note that if a CSS contig carries more than one HCS gene prediction it will be present in the 
+                        the main output table multiple times on consecutive positions.
+                        </ol>
+                    </p:tab>
+                    <p:tab title="Helpsheet 3 - Finding genes by sequence alignment (BLASTn)"></p:tab>
+                    <p:tab title="Helpsheet 4 - Rules of thumb for interpreting expression values">                                        
+                        <h:outputText value="Various limitations of the underlying datasets and the ethods used mean that 
+                                      the expression values available in POTAGE should be treated with caution. 
+                                      Here are some examples of how different FPKM values could be interpreted." />
+                        <p:spacer height="10"/>
+                        <p:tabView style="width: 600px" >
+                            <p:tab title="low">
+                                <p:graphicImage value="/images/help/low_abundant.png"  /> 
+                                <br/>
+                                <h:outputText value="Very abundant transcript (Rubisco small chain)"/>                            
+                            </p:tab>
+                            <p:tab title="medium">
+                                <p:graphicImage value="/images/help/medium_abundant.png" /> 
+                                <br/>
+                                <h:outputText value="Medium abundant transcript (Thioredoxin h)" />                            
+                            </p:tab>
+                            <p:tab title="high">
+                                <p:graphicImage value="/images/help/very_abundant.png" /> 
+                                <br/>
+                                <h:outputText value="Low abundant transcript (Myb TF)" />                            
+                            </p:tab>
+                        </p:tabView>
+                    </p:tab>
+                    <p:tab title="Frequently Asked Questions (FAQ)">
+                        <ul> 
+                            <li>My gene identifier indicates chromosome XXX but the gene is found on chromosome YYY, why is that?</li>
+                            <li>The contig/gene of interest does not have a cM value </li>
+                        </ul>
+                    </p:tab>
+                </p:accordionPanel>
+            </p:panel>
+            <!--</p:dialog>-->
+        </h:form>
 
+        <p:spacer id="dummyForOverlay" width="100%" height="20"  />
 
-
-        </p:dialog>
-
-        <p:dialog  id="searchDialog" header="Search for sequence on all chromosomes (by ID)" widgetVar="searchPanel" modal="false" position="left+25%,top+25%" 
+        <p:dialog  id="searchDialog" header="Search for sequence on all chromosomes (by ID)" widgetVar="searchDialog" modal="false" position="left+25%,top+25%" 
                    showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="650" height="160">
             <h:form id="formSearch">
                 <p:toolbar >                        
                     <f:facet name="left">
-                        <p:inputText id="idInput" widgetVar="idInput" style="width:300px" placeholder="Enter IWGSC SS identifier or a MIPS gene ID" 
+                        <p:inputText id="idInput" widgetVar="idInput" style="width:240px" placeholder="Enter IWGSC SS identifier or a MIPS gene ID" 
                                      value="#{mainBean.userQuery}"  />
                         <p:spacer height="0" width="10" />
                         <p:commandLink update="idInput" actionListener="#{mainBean.setUserQuery('Traes_2AS_C3EF3A27F')}">
-                            <h:outputText value="example" />
+                            <h:outputText value="example 1" />
+                        </p:commandLink>
+                        <p:spacer height="0" width="10" />
+                        <p:commandLink update="idInput" actionListener="#{mainBean.setUserQuery('5BS_1598873')}">
+                            <h:outputText value="example 2" />
                         </p:commandLink>
                     </f:facet>
                     <f:facet name="right">
@@ -485,7 +566,7 @@
         <h:form id="formCentre" >
 
 
-            <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable" 
+            <p:dataTable var="gene" value="#{mainBean.loadedGenes}" styleClass="myTable"
                          selection="#{mainBean.selectedGenes}"  
                          id="dataTable" widgetVar="dataTable" 
                          rowKey="#{gene.geneId}" 
@@ -746,8 +827,11 @@
 
 
             <p:remoteCommand name="updatechartsgrid"  update=":formCentre:chartsGrid" action="#{randomBean.getRandom(1)}" process=":formCentre:chartsGrid" />
+<!--            <p:remoteCommand name="updatehelpdialog"  update=":helpForm:helpDialog" action="#{randomBean.getRandom(1)}" process=":helpForm:helpDialog" 
+                             onstart="PF('helpDialog').hide();" oncomplete="PF('helpDialog').show();"/>-->
 
         </h:form>
+
 
         <p:dialog widgetVar="exportChart" showEffect="fade" modal="true" header="Right-click on the chart to copy/save it as image." resizable="false"  >
             <p:outputPanel id="outputChart" layout="block"/>
@@ -762,6 +846,7 @@
     <script type="text/javascript">
         window.onresize = function (event) {
             updatechartsgrid();
+//            updatehelpdialog();
         }
     </script>
 

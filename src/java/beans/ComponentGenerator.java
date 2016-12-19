@@ -105,7 +105,7 @@ public class ComponentGenerator implements Serializable {
         helpMenuItem.setId("helpIcon");
         helpMenuItem.setIcon("/images/help1.png");
         helpMenuItem.setValue("Help");
-        helpMenuItem.setOnclick("PF('helpPanel').show()");
+        helpMenuItem.setOnclick("PF('helpPanel').toggle();");
         menuModelSimple.addElement(helpMenuItem);
 
         //add search button-icon
@@ -113,7 +113,7 @@ public class ComponentGenerator implements Serializable {
         searchMenuItem.setId("searchAllIcon");
         searchMenuItem.setIcon("/images/search5.png");
         searchMenuItem.setValue("Search by identifier");
-        searchMenuItem.setOnclick("PF('searchPanel').show()");
+        searchMenuItem.setOnclick("PF('searchDialog').show()");
 //        elem.setId("_searchButton");
         menuModelSimple.addElement(searchMenuItem);
 

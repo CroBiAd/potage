@@ -47,7 +47,7 @@ import reusable.Reporter;
 public final class AppDataBean {
 
     private boolean DEBUG;
-    private String DEBUG_PREFIX = "Traes_1A";
+    private final String DEBUG_PREFIX = "Traes_2B";
     private final String CONFIG_FILE = "/var/tomcat/persist/potage_data/potage.cfg";
 //    private final String POPSEQ = "/var/tomcat/persist/potage_data/IWGSC_CSS_POPSEQ_v2.tsv";
 //    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
@@ -82,7 +82,6 @@ public final class AppDataBean {
 
 //    private String[] fpkmTableHeaders;
     public AppDataBean() {
-        String hostname = "";
         readConfigFile();
         //if running on development host, don't load all the data
         String devHostname = getDEV_HOSTNAME();
@@ -329,12 +328,13 @@ public final class AppDataBean {
         try {
             myData = new BufferedReader(new FileReader(getPOPSEQ()));
             Pattern p = Pattern.compile("\t");
+            Pattern p1 = Pattern.compile("_");
             String inputLine; // = myData.readLine(); //SKIPPING HEADER ROW            
             while ((inputLine = myData.readLine()) != null) {
                 if (inputLine.startsWith("contig")) {
                     continue;
                 }
-                if (DEBUG && !inputLine.startsWith("1")) {
+                if (DEBUG && !inputLine.startsWith(p1.split(DEBUG_PREFIX)[1])) {
                     continue;
                 }
                 String[] toks = p.split(inputLine);
@@ -462,6 +462,7 @@ public final class AppDataBean {
             String inputLine;
             myData = new BufferedReader(new FileReader(file));
             Pattern p = Pattern.compile(",");
+            Pattern p1 = Pattern.compile("_");
             while ((inputLine = myData.readLine()) != null) {
                 if (DEBUG && !inputLine.startsWith(DEBUG_PREFIX)) {
                     continue;
