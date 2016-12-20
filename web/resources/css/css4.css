@@ -10,10 +10,10 @@ body{
     /*    padding-top: 80px;*/
     height: 100%;
     background-position: right;
-    background-image: url('../images/Picture14.gif');
+    background-image: url('../../images/Picture14.gif');
     background-repeat: no-repeat;
     background-attachment: fixed;
-    /*  background-image: url('../images/headerbg-orig.gif');
+    /*  background-image: url('../../images/headerbg-orig.gif');
         background-repeat: repeat-x;
         background-position: top right;*/
 }
@@ -43,7 +43,7 @@ html {overflow-y: scroll;}
 
 
 .img-button-help { 
-    background-image: url('../images/help2.png') !important; 
+    background-image: url('../../images/help2.png') !important; 
 /*    width: 78px;
     height: 48px; 
     left: 1%;
@@ -91,5 +91,5 @@ html {overflow-y: scroll;}
 
 .ui-icon.blueIcon
 {
-    background-image: url('../images/blueIcons.png'); 
+    background-image: url('../../images/blueIcons.png'); 
 }

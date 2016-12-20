@@ -30,7 +30,7 @@
 
             <f:facet name="first">
                 <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
-                <title>POTAGE - PopSeq Ordered Triticum Aestivum Gene Expression</title>
+                <title>POTAGE - Popseq Ordered Triticum Aestivum Gene Expression</title>
             </f:facet>
 
 
@@ -38,7 +38,7 @@
                 <p:ajax event="idle" listener="#{loginController.timeout()}"/>
             </p:idleMonitor>
         </h:head>
-        <h:outputStylesheet  library="css" name="css2.css"/>
+        <h:outputStylesheet  library="css" name="css4.css"/>
         <body  onresize="updatechartpanel">
 
 
@@ -407,6 +407,10 @@
                    showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="550">
 
             <h:form id="formSearch2">
+                <p:blockUI block="tabView" widgetVar="blockBLAST">
+                    <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />
+                    <h:outputLabel value="TODO: place link to BLAST result here" />
+                </p:blockUI>        
                 <p:tabView id="tabView" activeIndex="#{mainBean.seqSearchTabActive}"    >
                     <p:tab title="Input"  >
                         <p:toolbar >
@@ -421,8 +425,8 @@
                             </f:facet>                                    
                             <f:facet name="right">
                                 <p:commandButton  value="Search" id="searchSeqButton" actionListener="#{mainBean.sequenceSearchEventHandler}" icon="ui-icon-search" 
-                                                  onstart="PF('blockUI').show();"  
-                                                  oncomplete="PF('blockUI').hide();"
+                                                  onstart="PF('blockBLAST').show();"  
+                                                  oncomplete="PF('blockBLAST').hide();"
                                                   update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" />                        
                                 <p:commandButton value="Clear" id="clearSeqSearch" icon="ui-icon-cancel" update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" process="@this" actionListener="#{mainBean.clearFileContentString()}" oncomplete="PF('dataTable').filter();" />
                             </f:facet>
