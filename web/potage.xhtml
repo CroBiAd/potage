@@ -30,7 +30,7 @@
 
             <f:facet name="first">
                 <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
-                <title>POTAGE - Popseq Ordered Triticum Aestivum Gene Expression</title>
+                <title>POTAGE - PopSeq Ordered Triticum Aestivum Gene Expression</title>
             </f:facet>
 
 
@@ -73,7 +73,7 @@
         <p:growl id="growl" showDetail="true" life="9000"  /> 
 
 
-        <p:spacer width="100%" height="30"  />
+        <p:spacer width="100%" height="40"  />
 
 
 
@@ -87,7 +87,8 @@
                     <p:tab title="About POTAGE - PopSeq Ordered Triticum Aestivum Gene Expression" >
 
                         <h4> POTAGE is a web application which integrates map location information with gene expression 
-                            and inferred functional annotation. The functionality of this application depends on several datasets:  </h4>
+                            and inferred functional annotation.</h4>                                               
+                        <h4> The functionality of this application depends on several datasets:  </h4>
                         <p:accordionPanel activeIndex="">
                             <p:tab title="IWGSC Chromosome Survey Sequences">
                                 <ul> 
@@ -166,7 +167,7 @@
                     </p:tab>
                     <p:tab title="Words of caution">
                         <ul> 
-                            <li>The expression values are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions.  </li>
+                            <li>The expression values are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions. Some gene predictions are partial due to the underlying assemblies being highly fragmented.</li>
                             <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and expression values may be quite misleading. </li>
                             <li>PopSeq map does not anchor all the gene-carrying contigs, also note that </li>
                             <ul> 
@@ -176,35 +177,42 @@
                             <p:graphicImage value="/images/help/PopSeq_resolution_3A.png" width="800px"  /> 
                         </ul>
                     </p:tab>            
-                    <p:tab title="Helpsheet 1 - Identifying candidate genes under a QTL">
+                    <p:tab title="Helpsheet 1 - Identifying candidate genes within a cM range on a chromosome">
                         <ol> 
                             <li> Select your chromosome of interest form the dock-menu at the top of the page
+                                <br/>
                             <p:commandLink actionListener="#{mainBean.onSelect('2B')}" update=":formCentre:dataTable,:formCentre:chartsGrid"
                                            onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();">
                                 <p:graphicImage value="/images/help/select_2B.png"  /> 
                             </p:commandLink>                                            
+                            <br/>
                             This will populate the main table below, listing HCS gene predictions identified on this chromosome.
+                            <br/>
                             </li>
                             <li>Next, set appropriate cM range at the top of the main table 
+                                <br/>
                             <p:commandLink actionListener="#{mainBean.cMLoadExample('2B', 15.931, 15.931)}" 
                                            update=":formCentre:dataTable"
                                            onstart="PF('blockUI').show()" oncomplete="PF('dataTable').filter();PF('blockUI').hide();">
                                 <p:graphicImage value="/images/help/select_cM.png"  />                                                                                                 
                             </p:commandLink>                             
+                            <br/>
                             </li>
                             <li>Depending on the number of gene predictions present in the selected range, you may be able to browse through their 
-                            expression profiles by using one of the buttons present for each gene in the "Expression" column of the main table. 
-                            <ul>
-                                <li>View displays expression chart(s) in a dialog box. </li>
-                                <li><p:button icon="ui-icon-arrowthickstop-1-s" disabled="true" />
-                                Adds the expression chart(s) to the  "Expression charts display" panel
-                                </li>
-                                <li><p:button icon="ui-icon-extlink" disabled="true" />
-                                Redirects you to view the expression values for the relevant gene on on <a href="http://wheat.pw.usda.gov/WheatExp/" target="_blank">WheatExp: An Expression Database for Polyploid Wheat </a>
-                                </li>                                                                    
+                                expression profiles by using one of the buttons present for each gene in the "Expression" column of the main table. 
+                                <ul>
+                                    <li>View displays expression chart(s) in a dialog box. </li>
+                                    <li><p:button icon="ui-icon-arrowthickstop-1-s" disabled="true" />
+                                    Adds the expression chart(s) to the  "Expression charts display" panel
+                            </li>
+                            <li><p:button icon="ui-icon-extlink" disabled="true" />
+                            Redirects you to view the expression values for the relevant gene on on <a href="http://wheat.pw.usda.gov/WheatExp/" target="_blank">WheatExp: An Expression Database for Polyploid Wheat </a>
+                            </li>                                                                    
                             </ul>
                             You can also select one or more genes and collectively add those to the "Expression charts display" by clicking 
                             <p:button value="Add to charts display"  icon="ui-icon-arrowthickstop-1-s" title="Add gene to expression charts display" disabled="true" /> in the bottom left corner of the main table 
+                            <br/>
+                            <p:graphicImage value="/images/help/display_2B.png"  /> 
                             </li>
                         </ol>                        
 
@@ -216,12 +224,12 @@
                         <ol> 
                             <li>
                                 Click on "Search by identifier" icon in the dock-menu at the top of the page
+                                <br />
                             <p:commandLink onclick="PF('searchDialog').show()">
                                 <p:graphicImage value="/images/search5.png"  /> 
                             </p:commandLink>                
                             </li>
-                            <li>Paste or type in your identifier </li>
-                            <li>POTAGE recognizes two types of identifiers
+                            <li>Paste or type in your identifier, POTAGE recognizes two types of identifiers
                                 <ol> 
                                     <li>
                                         MIPS HCS gene predictions' identifiers, e.g. 
@@ -238,15 +246,67 @@
                         </ol>
                         </li>
                         <li>Click 'Search' </li>
-                        If found, your gene/contig will be shown and hilighted in one of the two available output tables. 
+                        If found, your gene/contig will be in view and highlighted in one of the two available output tables. 
+                        Otherwise an appropriate message will be displayed.
                         <br />
                         Please note that if a CSS contig carries more than one HCS gene prediction it will be present in the 
-                        the main output table multiple times on consecutive positions.
+                        the main output table multiple times on consecutive positions. 
+                        <br />                        
+                        Consequently, if the gene/contig is the last one 
+                        on a page it is best to investigate the next page as it may contain another gene on the same contig (also highlighted).
+                        <br />
+                        <p:graphicImage value="/images/help/highlighted.png"  /> 
+
                         </ol>
                     </p:tab>
-                    <p:tab title="Helpsheet 3 - Finding genes by sequence alignment (BLASTn)"></p:tab>
+                    <p:tab title="Helpsheet 3 - Finding genes by sequence alignment (BLASTn)">
+                        <ol> 
+                            <li>
+                                Click on "Search by sequence" icon in the dock-menu at the top of the page
+                                <br />
+                            <p:commandLink onclick="PF('searchSeqPanel').show()">
+                                <p:graphicImage value="/images/searchATGC.png"  /> 
+                            </p:commandLink>                
+                            </li>
+                            <li>Upload a FASTA file or paste one or more sequences in FASTA format 
+                                <br />
+                            <p:graphicImage value="/images/help/seqsearch_input.png"  />                                 
+                            <br />
+                            </li>                                                
+                            <li>Once the job has finished you will be redirected to  </li>
+                            <ul>
+                                <li>"Results - per query" tab if you submitted one sequence (skip to 5) </li>
+                                <li>"Results - summary" tab if you submitted more than one sequence</li>
+                            </ul>
+                            <li>In the former case, selecting one of the sequences takes you to the results for that particular query </li>
+                            <br />
+                            <p:graphicImage value="/images/help/seqsearch_results-summary.png"  />                                 
+                            <li>In the "Results - per query" tab each row in the table represents a hit</li>
+                            <br />
+                            <p:graphicImage value="/images/help/seqsearch_results-per-query.png"  />                                 
+                            <br />
+                            <li>When a row (hit) is selected, POTAGE tries to locate the underlying contig. 
+                                If found, the contig will be in view and highlighted in one of the two available output tables.  
+                                Otherwise an appropriate message will be displayed.
+                            <br />
+                            <br />
+                            <p:graphicImage value="/images/help/seqsearch_results-in-table.png"  />                                 
+                            <br />
+                            If, as in this case, the contig holds more than one gene 
+                            you can identify the correct gene by comparing the coordinates of your hit in "Results - per query" table 
+                            with "From" and "To" coordinates of the gene on that contig in the main table.
+                            <br />
+                            Please note that if a CSS contig carries more than one HCS gene prediction it will be present in the 
+                            the main output table multiple times on consecutive positions. 
+                            Consequently, if the gene/contig is the last one 
+                            on a page it is best to investigate the next page as it may contain another gene on the same contig (also highlighted).
+                            <br />
+                            </li>
+                        </ol>
+
+                    </p:tab>
                     <p:tab title="Helpsheet 4 - Rules of thumb for interpreting expression values">                                        
-                        <h:outputText value="Various limitations of the underlying datasets and the ethods used mean that 
+                        <h:outputText value="Various limitations of the underlying datasets and the methods used mean that 
                                       the expression values available in POTAGE should be treated with caution. 
                                       Here are some examples of how different FPKM values could be interpreted." />
                         <p:spacer height="10"/>
@@ -254,24 +314,46 @@
                             <p:tab title="low">
                                 <p:graphicImage value="/images/help/low_abundant.png"  /> 
                                 <br/>
-                                <h:outputText value="Very abundant transcript (Rubisco small chain)"/>                            
+                                <h4>Very abundant transcript (Rubisco small chain)"</h4>                            
                             </p:tab>
                             <p:tab title="medium">
                                 <p:graphicImage value="/images/help/medium_abundant.png" /> 
                                 <br/>
-                                <h:outputText value="Medium abundant transcript (Thioredoxin h)" />                            
+                                <h4> value="Medium abundant transcript (Thioredoxin h)" </h4>                            
                             </p:tab>
                             <p:tab title="high">
                                 <p:graphicImage value="/images/help/very_abundant.png" /> 
                                 <br/>
-                                <h:outputText value="Low abundant transcript (Myb TF)" />                            
+                                <h4> value="Low abundant transcript (Myb TF)" </h4>                            
                             </p:tab>
                         </p:tabView>
                     </p:tab>
                     <p:tab title="Frequently Asked Questions (FAQ)">
                         <ul> 
-                            <li>My gene identifier indicates chromosome XXX but the gene is found on chromosome YYY, why is that?</li>
-                            <li>The contig/gene of interest does not have a cM value </li>
+                            <li>Why is a gene displayed on chromosome 3A even though the identifier indicates it comes from chromosome 1AL?
+                                <ul>
+                                    <li>Both the chromosome survey sequences (CSS) and POPSEQ can allocate a gene/contig incorrectly, 
+                                        for consistency we rely on POPSEQ's allocation of contigs to chromosomes wherever such information is available,
+                                        in the remaining cases we fall back to CSS identifiers.
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>Why is my contig/gene of interest lacking a cM value in the main table?
+                                <ul>
+                                    <li>POPSEQ map does not capture all of the CSS contigs, 
+                                        in fact only about half of contigs for which HC gene predictions are available have been anchored. 
+                                        These genes are appended to the end of the table for their respective chromosome.
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>How were the expression values generated?
+                                <ul>
+                                    <li>The computation of the expression values for the main Chinese Spring dataset available in POTAGE is described in
+                                        <a href="http://jxb.oxfordjournals.org/content/67/9/2847.full" target="_blank">this paper</a>
+                                        starting from the second sentence under "Gene identification and RNA-Seq data" subsection 
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
                     </p:tab>
                 </p:accordionPanel>
@@ -338,7 +420,7 @@
                                 <p:commandButton value="Clear" id="clearSeqSearch" icon="ui-icon-cancel" update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" process="@this" actionListener="#{mainBean.clearFileContentString()}" oncomplete="PF('dataTable').filter();" />
                             </f:facet>
                         </p:toolbar>
-                        <p:inputTextarea id="seqInput" widgetVar="seqInput" style="min-height: 250px;width: 98.5%;alignment-adjust: central; resize: none" autoResize="false" 
+                        <p:inputTextarea id="seqInput" widgetVar="seqInput" style="min-height: 250px;width: 98.5%;alignment-adjust: central; resize: none; font-family: monospace; font-size: larger" autoResize="false" 
                                          placeholder="Enter a FASTA nucleotide sequence"  
                                          value="#{mainBean.fileContentString}" ondblclick="PF('uploadPanel').show()" />                            
                     </p:tab>
@@ -578,8 +660,10 @@
                 <f:facet name="header" >
                     <p:toolbar>
                         <f:facet name="left">
-                            <p:commandButton icon="ui-icon ui-icon-info blueIcon" value="Click here for more information about this table" 
-                                             onclick="PF('helpDialogForMainTable').initPosition();PF('helpDialogForMainTable').show();" type="button"/>
+<!--                            <p:commandButton icon="ui-icon ui-icon-info blueIcon" value="Click here for more information about this table" 
+                                             onclick="PF('helpDialogForMainTable').initPosition();PF('helpDialogForMainTable').show();" type="button"/>-->
+
+                            <h:outputText value="Main output table"  />
                             <p:spacer height="0" width="35" />
                             <h:outputText value="#{mainBean.currentChromosome}"  />
                         </f:facet>

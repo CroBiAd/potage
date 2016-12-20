@@ -47,7 +47,7 @@ import reusable.Reporter;
 public final class AppDataBean {
 
     private boolean DEBUG;
-    private final String DEBUG_PREFIX = "Traes_2B";
+    private final String DEBUG_PREFIX = "Traes_1A";
     private final String CONFIG_FILE = "/var/tomcat/persist/potage_data/potage.cfg";
 //    private final String POPSEQ = "/var/tomcat/persist/potage_data/IWGSC_CSS_POPSEQ_v2.tsv";
 //    private final String ANNOTATION_RICE = "/var/tomcat/persist/potage_data/HCS_2013_annotations_rice.txt";
