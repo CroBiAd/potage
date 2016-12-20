@@ -41,6 +41,18 @@ html {overflow-y: scroll;}
     display:inline-block;
 }
 
+
+.img-button-help { 
+    background-image: url('../images/help2.png') !important; 
+/*    width: 78px;
+    height: 48px; 
+    left: 1%;
+    top: 15%;
+    margin-left:0px;*/
+}
+
+
+
 .highlighted {
     background-color: #eff7b4 !important;
     background: #eff7b4;
@@ -79,5 +91,5 @@ html {overflow-y: scroll;}
 
 .ui-icon.blueIcon
 {
-     background-image: url('../images/blueIcons.png'); 
+    background-image: url('../images/blueIcons.png'); 
 }
