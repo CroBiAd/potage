@@ -80,11 +80,11 @@
         <h:form id="helpForm">
             <p:panel id="helpPanel" widgetVar="helpPanel" collapsed="true" toggleable="true" toggleSpeed="250" >
                 <f:facet name="header">
-                    <p:commandButton icon="ui-icon ui-icon-info blueIcon" value="Click here for help and information" 
+                    <p:commandButton icon="ui-icon ui-icon-help blueIcon" value="Help" 
                                      onclick="PF('helpPanel').toggle();" type="button"/>
                 </f:facet>
                 <p:accordionPanel activeIndex="">
-                    <p:tab title="About POTAGE - PopSeq Ordered Triticum Aestivum Gene Expression" >
+                    <p:tab title="About POTAGE - Popseq Ordered Triticum Aestivum Gene Expression" >
 
                         <h4> POTAGE is a web application which integrates map location information with gene expression 
                             and inferred functional annotation.</h4>                                               
@@ -97,7 +97,7 @@
                                     <li>Since cited in <a href="https://www.wheatgenome.org/Projects/IWGSC-Bread-Wheat-Projects/Sequencing/IWGSC-Chromosome-Survey-Sequencing/Citations" target="_blank"> numerous publications </a> </li>
                                 </ul>
                             </p:tab>
-                            <p:tab title="PopSeq map of Chromososme Survey Sequences">
+                            <p:tab title="POPSEQ map of Chromososme Survey Sequences">
                                 <ul> 
                                     <li> Utilizes whole genome sequencing for genotyping to establish maker order from sequencing data </li>
                                     <li> 
@@ -139,7 +139,9 @@
                                 The primary RNA-Seq dataset included in the public release of POTAGE is the  
                                 <a href="http://wheat-urgi.versailles.inra.fr/Seq-Repository/RNA-Seq" target="_blank"> Chinese Spring tissue series dataset; </a>
                                 <br/>
+                                    
                                 Non-oriented library (TruSeq, Illumina) sequenced on Illumina HiSeq2000 2x100bp (PE) for 15 different conditions corresponding to five wheat organs (root, leaf, stem, spike, grain) at three developmental stages each in 2 duplicates
+                                <font style="font-family: monospace">
                                 <table>
                                     <tr><td></td></tr>
                                     <tr><td>Stage</td><td>Wheat growth stage</td><td>Feekes scale</td><td>Zadoks scale</td><td>Leaves</td><td>Root</td><td>Stem</td><td>Spike</td><td>Grain</td></tr>
@@ -158,6 +160,7 @@
                                     <tr><td>(700°C.days)"</td><td>Soft dough</td><td></td><td>85</td><td></td><td></td><td></td><td></td><td>x</td></tr>
                                     <tr><td></td></tr>
                                 </table>
+                                </font>
                             </p:tab>
                         </p:accordionPanel>
                         <h4> POTAGE was last updated in December 2016 </h4>
@@ -169,58 +172,15 @@
                         <ul> 
                             <li>The expression values are computed per MIPS gene prediction and to a large extent rely on the correctness of the predictions. Some gene predictions are partial due to the underlying assemblies being highly fragmented.</li>
                             <li>Occasionally, two separate genes may fall under one Traes ID and in such cases the associated annotation and expression values may be quite misleading. </li>
-                            <li>PopSeq map does not anchor all the gene-carrying contigs, also note that </li>
+                            <li>POPSEQ map does not anchor all the gene-carrying contigs, also note that </li>
                             <ul> 
                                 <li>Number of contigs/cM interval dependent on recombination frequency</li>
                                 <li>The resolution of a genetic map is dependent on the population size</li>
                             </ul>
                             <p:graphicImage value="/images/help/PopSeq_resolution_3A.png" width="800px"  /> 
                         </ul>
-                    </p:tab>            
-                    <p:tab title="Helpsheet 1 - Identifying candidate genes within a cM range on a chromosome">
-                        <ol> 
-                            <li> Select your chromosome of interest form the dock-menu at the top of the page
-                                <br/>
-                            <p:commandLink actionListener="#{mainBean.onSelect('2B')}" update=":formCentre:dataTable,:formCentre:chartsGrid"
-                                           onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();">
-                                <p:graphicImage value="/images/help/select_2B.png"  /> 
-                            </p:commandLink>                                            
-                            <br/>
-                            This will populate the main table below, listing HCS gene predictions identified on this chromosome.
-                            <br/>
-                            </li>
-                            <li>Next, set appropriate cM range at the top of the main table 
-                                <br/>
-                            <p:commandLink actionListener="#{mainBean.cMLoadExample('2B', 15.931, 15.931)}" 
-                                           update=":formCentre:dataTable"
-                                           onstart="PF('blockUI').show()" oncomplete="PF('dataTable').filter();PF('blockUI').hide();">
-                                <p:graphicImage value="/images/help/select_cM.png"  />                                                                                                 
-                            </p:commandLink>                             
-                            <br/>
-                            </li>
-                            <li>Depending on the number of gene predictions present in the selected range, you may be able to browse through their 
-                                expression profiles by using one of the buttons present for each gene in the "Expression" column of the main table. 
-                                <ul>
-                                    <li>View displays expression chart(s) in a dialog box. </li>
-                                    <li><p:button icon="ui-icon-arrowthickstop-1-s" disabled="true" />
-                                    Adds the expression chart(s) to the  "Expression charts display" panel
-                            </li>
-                            <li><p:button icon="ui-icon-extlink" disabled="true" />
-                            Redirects you to view the expression values for the relevant gene on on <a href="http://wheat.pw.usda.gov/WheatExp/" target="_blank">WheatExp: An Expression Database for Polyploid Wheat </a>
-                            </li>                                                                    
-                            </ul>
-                            You can also select one or more genes and collectively add those to the "Expression charts display" by clicking 
-                            <p:button value="Add to charts display"  icon="ui-icon-arrowthickstop-1-s" title="Add gene to expression charts display" disabled="true" /> in the bottom left corner of the main table 
-                            <br/>
-                            <p:graphicImage value="/images/help/display_2B.png"  /> 
-                            </li>
-                        </ol>                        
-
-                        <br />
-
-
-                    </p:tab>                    
-                    <p:tab title="Helpsheet 2 - Finding genes by gene ID, contig ID ">
+                    </p:tab> 
+                    <p:tab title="Helpsheet 1 - Finding genes by gene ID, contig ID ">
                         <ol> 
                             <li>
                                 Click on "Search by identifier" icon in the dock-menu at the top of the page
@@ -259,7 +219,7 @@
 
                         </ol>
                     </p:tab>
-                    <p:tab title="Helpsheet 3 - Finding genes by sequence alignment (BLASTn)">
+                    <p:tab title="Helpsheet 2 - Finding genes by sequence alignment (BLASTn)">
                         <ol> 
                             <li>
                                 Click on "Search by sequence" icon in the dock-menu at the top of the page
@@ -305,6 +265,50 @@
                         </ol>
 
                     </p:tab>
+                    <p:tab title="Helpsheet 3 - Identifying candidate genes within a cM range on a chromosome">
+                        <ol> 
+                            <li> Select your chromosome of interest form the dock-menu at the top of the page
+                                <br/>
+                            <p:commandLink actionListener="#{mainBean.onSelect('2B')}" update=":formCentre:dataTable,:formCentre:chartsGrid"
+                                           onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();">
+                                <p:graphicImage value="/images/help/select_2B.png"  /> 
+                            </p:commandLink>                                            
+                            <br/>
+                            This will populate the main table below, listing HCS gene predictions identified on this chromosome.
+                            <br/>
+                            </li>
+                            <li>Next, set appropriate cM range at the top of the main table 
+                                <br/>
+                            <p:commandLink actionListener="#{mainBean.cMLoadExample('2B', 15.931, 15.931)}" 
+                                           update=":formCentre:dataTable"
+                                           onstart="PF('blockUI').show()" oncomplete="PF('dataTable').filter();PF('blockUI').hide();">
+                                <p:graphicImage value="/images/help/select_cM.png"  />                                                                                                 
+                            </p:commandLink>                             
+                            <br/>
+                            </li>
+                            <li>Depending on the number of gene predictions present in the selected range, you may be able to browse through their 
+                                expression profiles by using one of the buttons present for each gene in the "Expression" column of the main table. 
+                                <ul>
+                                    <li>View displays expression chart(s) in a dialog box. </li>
+                                    <li><p:button icon="ui-icon-arrowthickstop-1-s" disabled="true" />
+                                    Adds the expression chart(s) to the  "Expression charts display" panel
+                            </li>
+                            <li><p:button icon="ui-icon-extlink" disabled="true" />
+                            Redirects you to view the expression values for the relevant gene on on <a href="http://wheat.pw.usda.gov/WheatExp/" target="_blank">WheatExp: An Expression Database for Polyploid Wheat </a>
+                            </li>                                                                    
+                            </ul>
+                            You can also select one or more genes and collectively add those to the "Expression charts display" by clicking 
+                            <p:button value="Add to charts display"  icon="ui-icon-arrowthickstop-1-s" title="Add gene to expression charts display" disabled="true" /> in the bottom left corner of the main table 
+                            <br/>
+                            <p:graphicImage value="/images/help/display_2B.png"  /> 
+                            </li>
+                        </ol>                        
+
+                        <br />
+
+
+                    </p:tab>                    
+                    
                     <p:tab title="Helpsheet 4 - Rules of thumb for interpreting expression values">                                        
                         <h:outputText value="Various limitations of the underlying datasets and the methods used mean that 
                                       the expression values available in POTAGE should be treated with caution. 
