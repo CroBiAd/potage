@@ -964,4 +964,10 @@ public class MainPopsBean implements Serializable {
         MainPopsBean mainPopsBean = new MainPopsBean();
         mainPopsBean.loadExampleFasta(null);
     }
+
+    public AppDataBean getAppData() {
+        return appData;
+    }
+    
+    
 }

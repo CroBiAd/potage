@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import poplogic.Annotation;
 import poplogic.Contig;
 import poplogic.ExpressionData;
@@ -79,6 +81,9 @@ public final class AppDataBean {
     //MAIN TABLE DATA -  EXPRESSION
 //    private HashMap<String, ArrayList<Double>> genesToExpressionMap;
     private ArrayList<ExpressionData> expressionDatasets;
+
+    private String potageCommitId;
+    private String potageDataCommitId;
 
 //    private String[] fpkmTableHeaders;
     public AppDataBean() {
@@ -142,7 +147,7 @@ public final class AppDataBean {
                 if (toks[0].equalsIgnoreCase("include")) {
 //                    expressionDataConfigFiles.add(line.replaceFirst("[^ \t]+[ \t]+", ""));
                     String rootPath = line.replaceFirst("[^ \t]+[ \t]+", "");
-                    if(!rootPath.startsWith("/")) {
+                    if (!rootPath.startsWith("/")) {
                         rootPath = parentPath + "/" + rootPath;
                     }
                     getFiles(rootPath, ".cfg");
@@ -159,11 +164,11 @@ public final class AppDataBean {
         }
     }
 
-    private  void getFiles(String rootName,  String suffix) {
+    private void getFiles(String rootName, String suffix) {
         File directory = new File(rootName);
         File fileList[] = directory.listFiles();
         Arrays.sort(fileList);
-        for (File file: fileList) {
+        for (File file : fileList) {
             if (file.isFile() && file.getAbsolutePath().endsWith(suffix)) {
                 expressionDataConfigFiles.add(file.getAbsolutePath());
             } else if (file.isDirectory()) {
@@ -565,6 +570,71 @@ public final class AppDataBean {
 
     public static void main(String[] args) {
         new AppDataBean();
+    }
+
+    public String getPotageCommitId() {
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        File file = new File(externalContext.getRealPath("//potage.commit.id"));
+        if (potageCommitId == null) {
+            BufferedReader myData = null;
+            try {
+                String inputLine;
+                myData = new BufferedReader(new FileReader(file));
+                Pattern p = Pattern.compile("\t");
+                while ((inputLine = myData.readLine()) != null) {
+                    setPotageCommitId(inputLine.trim());
+                }
+            } catch (FileNotFoundException ex) {
+                System.err.println("File not found exception!\t" + file.getName());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
+                try {
+                    if (myData != null) {
+                        myData.close();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        return potageCommitId;
+    }
+
+    public void setPotageCommitId(String potageCommitId) {
+        this.potageCommitId = potageCommitId;
+    }
+
+    public String getPotageDataCommitId() {
+        if (potageDataCommitId == null) {
+            File file = new File(parentPath + "/potage_data.commit.id");
+            BufferedReader myData = null;
+            try {
+                String inputLine;
+                myData = new BufferedReader(new FileReader(file));
+                Pattern p = Pattern.compile("\t");
+                while ((inputLine = myData.readLine()) != null) {
+                    setPotageDataCommitId(inputLine.trim());
+                }
+            } catch (FileNotFoundException ex) {
+                System.err.println("File not found exception!\t" + file.getName());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
+                try {
+                    if (myData != null) {
+                        myData.close();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        return potageDataCommitId;
+    }
+
+    public void setPotageDataCommitId(String potageDataCommitId) {
+        this.potageDataCommitId = potageDataCommitId;
     }
 
 }
