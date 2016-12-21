@@ -85,11 +85,12 @@
                     <p:commandButton  onclick="PF('helpPanel').toggle();" icon="img-button-help" title="Help" label="Help" value="Help"/>
                 </f:facet>
                 <p:accordionPanel activeIndex="">
-                    <p:tab title="About POTAGE - Popseq Ordered Triticum Aestivum Gene Expression" >
+                    <p:tab title="About POTAGE" >
+		    	Popseq Ordered Triticum Aestivum Gene Expression (POTAGE, pronouced "<a href="http://img2.tfd.com/pron/mp3/en/UK/df/dfskskssdfd5drh7.mp3" target="_blank">pəʊˈtɑːʒ</a>")
+                        is a web application which integrates map location information with gene expression 
+                        and inferred functional annotation.
 
-                        <h4> POTAGE is a web application which integrates map location information with gene expression 
-                            and inferred functional annotation.</h4>                                               
-                        <h4> The functionality of this application depends on several datasets:  </h4>
+                        <h4> The functionality of POTAGE depends on several datasets: </h4>
                         <p:accordionPanel activeIndex="">
                             <p:tab title="IWGSC Chromosome Survey Sequences">
                                 <ul> 
@@ -165,9 +166,6 @@
                             </p:tab>
                         </p:accordionPanel>
                         <h4> POTAGE was last updated in December 2016 </h4>
-                        <ul> 
-                            <li> Please report bugs and issues to  <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
-                        </ul>
                     </p:tab>
                     <p:tab title="Words of caution">
                         <ul> 
@@ -334,33 +332,35 @@
                         </p:tabView>
                     </p:tab>
                     <p:tab title="Frequently Asked Questions (FAQ)">
-                        <ul> 
-                            <li>Why is a gene displayed on chromosome 3A even though the identifier indicates it comes from chromosome 1AL?
-                                <ul>
-                                    <li>Both the chromosome survey sequences (CSS) and POPSEQ can allocate a gene/contig incorrectly, 
+                        <dl> 
+				<dt>Why is a gene displayed on chromosome 3A even though the identifier indicates it comes from chromosome 1AL?</dt>
+                                <dd>Both the chromosome survey sequences (CSS) and POPSEQ can allocate a gene/contig incorrectly, 
                                         for consistency we rely on POPSEQ's allocation of contigs to chromosomes wherever such information is available,
-                                        in the remaining cases we fall back to CSS identifiers.
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>Why is my contig/gene of interest lacking a cM value in the main table?
-                                <ul>
-                                    <li>POPSEQ map does not capture all of the CSS contigs, 
+                                        in the remaining cases we fall back to CSS identifiers.</dd>
+
+				<dt>Why is my contig/gene of interest lacking a cM value in the main table?</dt>
+                                <dd>POPSEQ map does not capture all of the CSS contigs, 
                                         in fact only about half of contigs for which HC gene predictions are available have been anchored. 
-                                        These genes are appended to the end of the table for their respective chromosome.
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>How were the expression values generated?
-                                <ul>
-                                    <li>The computation of the expression values for the main Chinese Spring dataset available in POTAGE is described in
+					These genes are appended to the end of the table for their respective chromosome.</dd>
+				<dt>How were the expression values generated?</dt>
+                                <dd>The computation of the expression values for the main Chinese Spring dataset available in POTAGE is described in
                                         <a href="http://jxb.oxfordjournals.org/content/67/9/2847.full" target="_blank">this paper</a>
-                                        starting from the second sentence under "Gene identification and RNA-Seq data" subsection 
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
+					starting from the second sentence under "Gene identification and RNA-Seq data" subsection.</dd>
+				<dt>Can I run POTAGE locally on my own hardware?</dt>
+				<dd>Yes, we have developed POTAGE with this in mind. By far the easiest way to do
+					this is to use our Docker image (<a href="https://hub.docker.com/r/crobia/potage" target="_blank">crobia/potage</a>).
+					To get started, you will first need to install the "<a href="https://docs.docker.com/engine/installation/" target="_blank">Docker Engine</a>". Once this is installed, simply following the <a href="https://github.com/CroBiA/docker-potage/blob/master/README.md#quick-start" target="_blank">Quick Start</a> instructions.</dd>
+			</dl>
                     </p:tab>
+
+		    <p:tab title="Contact Us">
+		    	You can contact us in a variety of ways:
+			<ul>
+				<li>For bug reports and feature requests, submit a <a href="https://github.com/CroBiA/potage/issues/new" target="_blank">new issue</a> on GitHub</li>
+				<li>For other things, contact the main POTAGE developer: <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
+			</ul>
+		    </p:tab>
+
                 </p:accordionPanel>
             </p:panel>
             <!--</p:dialog>-->

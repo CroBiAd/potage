@@ -93,3 +93,4 @@ html {overflow-y: scroll;}
 {
     background-image: url('../../images/blueIcons.png'); 
 }
+dt {font-weight: bold;}
