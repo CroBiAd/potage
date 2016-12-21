@@ -933,8 +933,13 @@
         </p:dialog>
 
         <p:spacer />
-        <div class="footer">©&nbsp;Copyright&nbsp;2014-2016&nbsp;
-            <a href="http://www.acpfg.com.au/">Australian&nbsp;Centre&nbsp;for&nbsp;Plant&nbsp;Functional&nbsp;Genomics</a></div>
+        <div class="footer">
+		<h:panelGroup rendered="#{not empty mainBean.appData.potageCommitId and not empty mainBean.appData.potageDataCommitId}">
+			This server is running: POTAGE code commit ID (<a href="https://github.com/CroBiA/potage/tree/#{mainBean.appData.potageCommitId}">#{mainBean.appData.potageCommitId}</a>) with POTAGE data commit ID (<a href="https://github.com/CroBiA/potage_data/tree/#{mainBean.appData.potageDataCommitId}">#{mainBean.appData.potageDataCommitId}</a>)
+			<br />
+		</h:panelGroup>
+		©&nbsp;Copyright&nbsp;2014-2016&nbsp;<a href="http://www.acpfg.com.au/">Australian&nbsp;Centre&nbsp;for&nbsp;Plant&nbsp;Functional&nbsp;Genomics</a>
+	</div>
 
     </body>
 
