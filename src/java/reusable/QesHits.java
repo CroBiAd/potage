@@ -16,10 +16,16 @@
 package reusable;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import reusable.OutWriter;
 
 /**
@@ -28,15 +34,46 @@ import reusable.OutWriter;
  *
  * @author Radoslaw Suchecki <radoslaw.suchecki@adelaide.edu.au>
  */
-public class QesHits implements Serializable{
+public class QesHits implements Serializable {
 
-    private static final boolean DEBUG_MODE = false;
-//    private String databaseIWGSC;//= "/mnt/storage/storage1/BLAST_DBs/seqDataBase/IWGSC/iwgsc_all_rad";
+//    private static final boolean DEBUG_MODE = false;
+    private final String key;
+    private ArrayList<Sequence> retrievedSequences;
+
+    public QesHits() {
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE-HHmmss");
+        Random r = new Random();
+        key = dateFormat.format(date) + "-" + Math.abs(r.nextLong());
+        System.err.println("Created link: "+getResultsLink("red"));
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getResultsLink(String fontColour) {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        StringBuilder link = new StringBuilder();
+        link.append(request.getRequestURL().toString().replaceAll("faces/potage.xhtml", ""));
+        link.append("?blastn=");
+        link.append(getKey());
+        StringBuilder html = new StringBuilder();
+        html.append("<a href=\"");
+        html.append(link);
+        html.append("\" target=\"_blank\" style=\"color: ").append(fontColour).append("\">");
+        html.append(link).append("</a> ");
+        return html.toString(); //request.getRequestURL().toString().replaceAll("faces/potage.xhtml", "")+"?blastn="+getKey();
+    }
+
+    public ArrayList<Sequence> getRetrievedSequences() {
+        return retrievedSequences;
+    }
 
     public ArrayList<HitsForQuery> findHits(ArrayList<Sequence> sequences, String blastdbPathIWGSC) {
         String databaseIWGSC = blastdbPathIWGSC.replace(".nal", "");
-        ArrayList<HitsForQuery>  results = new ArrayList<>();
-        
+        ArrayList<HitsForQuery> results = new ArrayList<>();
+
         HashMap<String, Sequence> hashMapOfSequences = new HashMap<String, Sequence>(sequences.size());
         for (Sequence s : sequences) {
             hashMapOfSequences.put(s.getIdentifierString(), s);
@@ -45,17 +82,17 @@ public class QesHits implements Serializable{
         //EXAMPLE DATA PRECOMPUTED
 //        String infile = "/home/rad/example.fasta";
 //        String blastnFile = "/home/rad/example.blastn.xml";
-        //TODO uncomment this::::
-        String infile = "/tmp/" + this.toString() + Math.random() + ".fasta";
+        String infile = "/tmp/" + getKey() + ".fasta";
         writeToFastaFile(sequences, infile);
-        String blastnFile = "/tmp/" + this.toString() + Math.random() + ".blastn.xml";
+        String blastnFile = "/tmp/" + getKey() + ".blastn.xml";
         String cmd1[] = {"nice", "blastn", "-task", "blastn", "-dust", "no", "-query", infile, "-db", databaseIWGSC, "-evalue", "1e-5", "-out", blastnFile, "-max_target_seqs", "10", "-outfmt", "5", "-num_threads", "2"};
         reusable.ExecProcessor.execute(cmd1);
         linkAlignmentResultsToSequencesInHashMap(hashMapOfSequences, blastnFile);
         for (Sequence s : sequences) {
             ArrayList<Hit> hits = getGoodHitsForQuery(s, databaseIWGSC);
-            if(!hits.isEmpty())
-                results.add(new HitsForQuery(hits,s.getIdentifierString()));
+            if (!hits.isEmpty()) {
+                results.add(new HitsForQuery(hits, s.getIdentifierString()));
+            }
         }
 //TODO uncomment this::::
 //        String cmd2[] = {"rm", infile};
@@ -64,6 +101,27 @@ public class QesHits implements Serializable{
 
     }
 
+    public ArrayList<HitsForQuery> retrieveHits(String key, String blastdbPathIWGSC) {
+        String databaseIWGSC = blastdbPathIWGSC.replace(".nal", "");
+        ArrayList<HitsForQuery> results = new ArrayList<>();
+
+        HashMap<String, Sequence> hashMapOfSequences = new HashMap<String, Sequence>();
+        String infile = "/tmp/" +  key + ".fasta";
+        retrievedSequences = FastaOps.sequencesFromFasta(infile);
+        for (Sequence s : retrievedSequences) {
+            hashMapOfSequences.put(s.getIdentifierString(), s);
+        }
+        String blastnFile = "/tmp/" + key + ".blastn.xml";
+        linkAlignmentResultsToSequencesInHashMap(hashMapOfSequences, blastnFile);
+        for (Sequence s : retrievedSequences) {
+            ArrayList<Hit> hits = getGoodHitsForQuery(s, databaseIWGSC);
+            if (!hits.isEmpty()) {
+                results.add(new HitsForQuery(hits, s.getIdentifierString()));
+            }
+        }
+        return results.isEmpty() ? null : results  ;
+
+    }
 
     /**
      * Given a query sequence object that has been previously provided with
@@ -77,7 +135,7 @@ public class QesHits implements Serializable{
      * @return
      */
     private ArrayList<Hit> getGoodHitsForQuery(Sequence querySequence, String databaseString) {
-        StringBuilder sb = new StringBuilder(); //instead of print statements
+//        StringBuilder sb = new StringBuilder(); 
         boolean capidOnQueryNotSubjectB = true;
         int offset = 0;
         capidOnQueryNotSubjectB = true;
@@ -87,8 +145,8 @@ public class QesHits implements Serializable{
         ArrayList<BlastHit> allBlasNHits = querySequence.getAllBlastNHits();
         ArrayList<Hit> goodHits = new ArrayList<Hit>();
 
-        sb.append("\nQuery :").append(querySequence.getIdentifierString()).append("\n");
-        sb.append(String.format("%10s%10s%10s%20s%10s", "id/qlen", "id/qaln", "qaln/qlen", "accession", "hitlen\n"));
+//        sb.append("\nQuery :").append(querySequence.getIdentifierString()).append("\n");
+//        sb.append(String.format("%10s%10s%10s%20s%10s", "id/qlen", "id/qaln", "qaln/qlen", "accession", "hitlen\n"));
         for (BlastHit hit : allBlasNHits) {
             double caPid = hit.getOverlappingPID(capidOnQueryNotSubjectB);
             double caPidOverQueryLength = reusable.CommonMaths.round(caPid / querySequence.getLength(), 4);
@@ -97,29 +155,26 @@ public class QesHits implements Serializable{
             double percentOfQueryCovered = reusable.CommonMaths.round((double) overlapingQlen / (double) querySequence.getLength(), 4);
             if (percentOfQueryCovered > 0.4) {
                 hit.setSummaryString(String.format("%10.3f%10.3f%10.3f%20s%10d", caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered, hit.getHitAccession(), hit.getHitLen()));
-                sb.append(String.format("%10.3f%10.3f%10.3f%20s%10d", caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered, hit.getHitAccession(), hit.getHitLen()));
+//                sb.append(String.format("%10.3f%10.3f%10.3f%20s%10d", caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered, hit.getHitAccession(), hit.getHitLen()));
 //            System.out.print(caPidOverQueryLength + "(id/qlen), "+ caPidOverAlignedQueryLength+"(id/qaln), "+ percentOfQueryCovered+"(qaln/qlen), "+ hit.getHitAccession() + ", length=" + hit.getHitLen());
 //                if (caPidOverQueryLength >= 0.97 || (caPidOverAlignedQueryLength >= 0.98 && percentOfQueryCovered > 0.6)) { //1. "True" hit(s? - should be one!)
                 if ((caPidOverQueryLength >= 0.97) || (caPidOverAlignedQueryLength >= 0.90 && percentOfQueryCovered > 0.3)) { //2. Homeologs
                     goodHits.add(new Hit(querySequence.getIdentifierString(), hit.getHitId(), hit, caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered));
                 } else { //3. No decent hits                
-                    sb.append(" <- Not a decent hit...\n");
+//                    sb.append(" <- Not a decent hit...\n");
                 }
             }
 
         }
         Collections.sort(goodHits, new BestHitPromoterComparator());
 
-        return goodHits;  
+        return goodHits;
     }
-
 
     private void linkAlignmentResultsToSequencesInHashMap(HashMap<String, Sequence> sequencesMap, String xmlBlastN) {
         boolean blastXnotN = false;
         BlastAlignmentXmlExtractor blastnAlignmentXmlExtractor = new BlastAlignmentXmlExtractor(xmlBlastN, sequencesMap, blastXnotN);
     }
-
-
 
     class BestHitComparator implements Comparator<BlastHit> {
 

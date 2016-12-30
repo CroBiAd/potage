@@ -404,12 +404,19 @@
 
 
         <p:dialog  id="searchSeqDialog" header="Search all chromosomes by aligning a sequence" widgetVar="searchSeqPanel" modal="false" position="80,140" minimizable="true" 
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="550">
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="550" visible="#{mainBean.perQueryResults != null}">
 
             <h:form id="formSearch2">
-                <p:blockUI block="tabView" widgetVar="blockBLAST">
+                <p:blockUI id="blockBLAST" block="tabView" widgetVar="blockBLAST" >
                     <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />
-                    <h:outputLabel value="TODO: place link to BLAST result here" />
+                    <br/>
+                    <h:outputText value="BLASTn search running..."  style="font-size: larger"/>
+                    <br/>
+                    <h:outputText value="once finished, results will be displayed and will also become available at " />
+                    <br/>
+                    
+                    <!--<h:outputText id="linkBLAST" value="and will become available #{mainBean.getBLASTnKey()}" escape="false"/>-->
+                    <h:outputText id="linkBLAST" value=" #{mainBean.blastn.getResultsLink('peru')}" escape="false"/>
                 </p:blockUI>        
                 <p:tabView id="tabView" activeIndex="#{mainBean.seqSearchTabActive}"    >
                     <p:tab title="Input"  >
@@ -418,20 +425,27 @@
                                 <!--<p:commandButton  id="uploadButton" value="Upload FASTA file..." icon="ui-icon-arrowreturnthick-1-s" onclick="PF('uploadPanel').show();" />--> 
                                 <p:fileUpload widgetVar="fileUpload" fileUploadListener="#{mainBean.handleFileUpload}"  mode="advanced" auto="true" allowTypes="/(\.|\/)(fa|fasta|fas|txt|fst)$/" 
                                               label="Choose (or drag-and-drop) a FASTA file to upload" sizeLimit="2097152" invalidSizeMessage="The maximum file size allowed is 2MB!"                                               
-                                              invalidFileMessage="Only upload FASTA files!" multiple="false"  update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput"/>
-                                <p:commandLink update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput" actionListener="#{mainBean.loadExampleFasta}">
-                                    <h:outputText value="Load example FASTA input" />
+                                              invalidFileMessage="Only upload FASTA files!" multiple="false"  update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput"/>                                
+                                <h:outputText value="Load: " />
+                                <p:commandLink update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput" actionListener="#{mainBean.loadExampleSequence}">
+                                    <h:outputText value="example nucleotide sequence" />
                                 </p:commandLink>
+                                <h:outputText value=" or " />
+                                <p:commandLink update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput" actionListener="#{mainBean.loadExampleFasta}">
+                                    <h:outputText value="example FASTA input" />
+                                </p:commandLink>
+                                
                             </f:facet>                                    
                             <f:facet name="right">
                                 <p:commandButton  value="Search" id="searchSeqButton" actionListener="#{mainBean.sequenceSearchEventHandler}" icon="ui-icon-search" 
-                                                  onstart="PF('blockBLAST').show();"  
+                                                  onstart="PF('blockBLAST').show();"                                                   
                                                   oncomplete="PF('blockBLAST').hide();"
                                                   update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" />                        
                                 <p:commandButton value="Clear" id="clearSeqSearch" icon="ui-icon-cancel" update="seqInput,:formSearch2:searchMessages2,:formCentre:dataTable,tabView" process="@this" actionListener="#{mainBean.clearFileContentString()}" oncomplete="PF('dataTable').filter();" />
                             </f:facet>
                         </p:toolbar>
-                        <p:inputTextarea id="seqInput" widgetVar="seqInput" style="min-height: 250px;width: 98.5%;alignment-adjust: central; resize: none; font-family: monospace; font-size: larger" autoResize="false" 
+                        <p:inputTextarea id="seqInput" widgetVar="seqInput" style="min-height: 250px;width: 98.5%;alignment-adjust: central; resize: none; font-family: monospace; font-size: larger" 
+                                         autoResize="false" 
                                          placeholder="Enter a FASTA nucleotide sequence"  
                                          value="#{mainBean.fileContentString}" ondblclick="PF('uploadPanel').show()" />                            
                     </p:tab>
@@ -498,6 +512,7 @@
                         </p:dataTable>  
                     </p:tab>
                 </p:tabView>
+                <!--<p:commandButton value="blastlink" update=":formSearch2:searchMessages2" actionListener="#{mainBean.blastnLinkEventHandler}" process="@this"/>-->
                 <p:messages id="searchMessages2" showDetail="true"  closable="true" redisplay="false"     />
             </h:form>
         </p:dialog> 
@@ -921,10 +936,10 @@
 
 
 
+            <!--<p:remoteCommand name="updateblastlink"  update=":formSearch2:blockBLAST:linkBLAST" action="#{randomBean.getRandom(1)}" process=":formSearch2:blockBLAST:linkBLAST" />-->
             <p:remoteCommand name="updatechartsgrid"  update=":formCentre:chartsGrid" action="#{randomBean.getRandom(1)}" process=":formCentre:chartsGrid" />
 <!--            <p:remoteCommand name="updatehelpdialog"  update=":helpForm:helpDialog" action="#{randomBean.getRandom(1)}" process=":helpForm:helpDialog" 
                              onstart="PF('helpDialog').hide();" oncomplete="PF('helpDialog').show();"/>-->
-
         </h:form>
 
 

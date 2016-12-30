@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -115,6 +116,9 @@ public class MainPopsBean implements Serializable {
 
     //display unordered genes
     private boolean appendUnordered;
+    
+    //BLASTn alignment handling and retrieval
+     private QesHits blastn;
 
     @ManagedProperty(value = "#{appDataBean}")
     private AppDataBean appData;
@@ -122,6 +126,7 @@ public class MainPopsBean implements Serializable {
     public MainPopsBean() {
         perLocationContigs = new PerLocationContigs(null, new Location_cMFilter());
         cM_filter = new Location_cMFilter();
+        blastn = new QesHits();
     }
 
     public void setAppData(AppDataBean appData) {
@@ -141,8 +146,16 @@ public class MainPopsBean implements Serializable {
                 String id = parameterMap.get("query").trim().replaceFirst("\\.\\d+$", "");
                 setUserQuery(id);
                 searchAll(id, ":formSearch:searchMessages");
+                RequestContext.getCurrentInstance().update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
             }
-            RequestContext.getCurrentInstance().update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
+            if (parameterMap.containsKey("blastn")) {
+                String key = parameterMap.get("blastn").trim();
+                perQueryResults = blastn.retrieveHits(key, appData.getBLAST_DB());
+                sequences = blastn.getRetrievedSequences();
+                processRetrievedResults();
+//                RequestContext context = RequestContext.getCurrentInstance();
+//                context.execute("PF('searchSeqPanel').show()");
+            }
         }
 
 //        System.err.println("AppData size="+appData.getContigs("1A").size());
@@ -160,6 +173,15 @@ public class MainPopsBean implements Serializable {
         this.chromosomeForNonGeneContigs = chromosomeForNonGeneContigs.toUpperCase();
     }
 
+//    public void updateBLASTn() {
+//        Date date = new Date(System.currentTimeMillis());
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE-HHmmss");
+//        String key = dateFormat.format(date) + "-" + Math.random();
+//        System.err.println("Current key: "+key);
+//        blastn = new QesHits();
+//            updateComponent(":formSearch2:blockBLAST:linkBLAST");
+//    }
+    
     public void handleFileUpload(FileUploadEvent event) {
         ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
 //        System.out.println(event.getFile().getFileName()+" in "+System.getProperty("java.io.tmpdir"));
@@ -199,12 +221,39 @@ public class MainPopsBean implements Serializable {
         }
     }
 
+   
+    
+    public QesHits getBlastn() {
+//        if (blastn == null) {
+//            blastn = new QesHits();
+//        }
+        return blastn;
+    }
+    
+    public String getBLASTnKey() {
+        if(blastn != null) {
+            return blastn.getKey();
+        } 
+        return null;
+    }
+
+    public void setBlastn(QesHits blastn) {
+        this.blastn = blastn;
+    }
+
     public boolean setFileContentStringValidate(String fileContentString) {
         if (isValidFasta(fileContentString)) {
             this.fileContentString = fileContentString;
             if ((fileContentString == null || fileContentString.isEmpty()) && getGlobalFilter().equals(fileContentString)) {
                 setGlobalFilter("");
             }
+//            blastn = new QesHits();
+//            updateComponent(":formSearch2:blockBLAST:linkBLAST");
+            return true;
+        } else if (fileContentString.matches("[ACTGWSMKRYBDHVNactgwsmkrybdhvn\n]+")) {
+            this.fileContentString = ">unlabelled_sequence\n" + fileContentString;
+//            blastn = new QesHits();
+//            updateComponent(":formSearch2:blockBLAST:linkBLAST");
             return true;
         } else {
             this.fileContentString = null;
@@ -232,6 +281,8 @@ public class MainPopsBean implements Serializable {
     }
 
     public String getFileContentString() {
+//        blastn = new QesHits();
+//        updateComponent(":formSearch2:blockBLAST:linkBLAST");
         return fileContentString;
     }
 
@@ -807,18 +858,26 @@ public class MainPopsBean implements Serializable {
         }
     }
 
+//    public void blastnLinkEventHandler(ActionEvent actionEvent) {       
+//        System.err.println("key "+blastn.getKey());
+//        growl(FacesMessage.SEVERITY_INFO, "TESTINFO", "content", "searchMessages2" );
+//    }
+    
     public void sequenceSearchEventHandler(ActionEvent actionEvent) {
-        Date submitTime = new Date();
+        Date submitTime = new Date();        
         if (sequences != null && !sequences.isEmpty()) {
-
+            QesHits blastn = this.blastn;  //take existing blastn instance
+            this.blastn = new QesHits(); //generate one for the next time
+            RequestContext.getCurrentInstance().getCallbackParams().put("blastkey", blastn.getKey());
             perQueryResults = new ArrayList<>();
-            QesHits finder = new QesHits();
+
             int totalRetrieved = 0;
             try {
 //                ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
 //                String blastdbIWGSC = extContext.getRealPath(BLAST_DB);
                 String blastdbIWGSC = appData.getBLAST_DB();
-                perQueryResults = finder.findHits(sequences, blastdbIWGSC);      //<------------------------------------------------------------            
+                growl(FacesMessage.SEVERITY_INFO, "Results bookmark: ", blastn.getResultsLink("peru"), "searchMessages2");
+                perQueryResults = blastn.findHits(sequences, blastdbIWGSC);      //<------------------------------------------------------------            
 
                 hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults);
 
@@ -845,7 +904,7 @@ public class MainPopsBean implements Serializable {
                 for (StackTraceElement ste : e.getStackTrace()) {
                     s.append("\n").append(ste.toString());
                 }
-                reusable.ExecProcessor.email(s.toString(), "POTAGE FATAL exception!", "radoslaw.suchecki@adelaide.edu.au", "no-reply@hathor.acpfg.local");
+                reusable.ExecProcessor.email(s.toString(), "POTAGE FATAL exception!", "radoslaw.suchecki@adelaide.edu.au", "no-reply@potage.local");
                 growl(FacesMessage.SEVERITY_FATAL, "Fatal error!", "Alignment failed!", ":formSearch2:searchMessages2");
                 setSeqSearchTabActive("0");
             }
@@ -868,7 +927,39 @@ public class MainPopsBean implements Serializable {
         } else {
             growl(FacesMessage.SEVERITY_FATAL, "Error!", "No input sequeces!", "searchMessages");
             setSeqSearchTabActive("0");
+        }
+    }
 
+    private void processRetrievedResults() {
+        hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults);
+        int totalRetrieved = 0;
+        for (HitsForQuery qp : perQueryResults) {
+            for (Hit p : qp.getHits()) {
+                totalRetrieved++;
+            }
+        }
+        //result available for one query only so goto the last tab and display
+        if (perQueryResults.size() == 1) {
+            setSelectedQuery(hitsForQueryDataModel.getRow(0)); //calls setSeqSearchTabActive("2");
+        } else if (perQueryResults.size() > 1) {
+            setSeqSearchTabActive("1");
+        } else {
+            setSeqSearchTabActive("0");
+        }
+        if (perQueryResults.isEmpty() || totalRetrieved == 0) {
+//                //injecting param for js
+//                addMessage("No promoter regions found!", "", "mainpanel", FacesMessage.SEVERITY_FATAL);
+//                RequestContext.getCurrentInstance().getCallbackParams().put("showResults", false); //should not be necessary as is set as false at Submit
+//                RequestContext.getCurrentInstance().getCallbackParams().put("showXML", true); //allows user to save blastn results 
+//                if (!email.isEmpty()) {
+//                    StringBuilder sb1 = new StringBuilder();
+//                    reusable.ExecProcessor.email("No promoter regions were retrieved", "PromoterFinder notification: job failed.", email, "no-reply@hathor.acpfg.local");
+//                }
+            growl(FacesMessage.SEVERITY_WARN, "Bad luck!", "No matches found!", "searchMessages");
+            setSeqSearchTabActive("0");
+
+        } else {
+            growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successfull", ":formSearch2:searchMessages2");
         }
     }
 
@@ -895,6 +986,23 @@ public class MainPopsBean implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
             growl(FacesMessage.SEVERITY_ERROR, "Error!", "Example file upload failed!", "searchMessages2");
+        }
+    }
+
+    public void loadExampleSequence(ActionEvent actionEvent) {
+        try {
+            ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
+            String fasta = InReader.readInputToString(extContext.getRealPath("//resources//example.seq"));
+            File f = new File(extContext.getRealPath("//resources//example.seq"));
+            double size = reusable.CommonMaths.round((double) f.length() / 1024, 2);
+            if (setFileContentStringValidate(fasta)) {
+                growl(FacesMessage.SEVERITY_INFO, "File:", "Example sequence loaded.", "searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Size:", size + " kB", "searchMessages2");
+                growl(FacesMessage.SEVERITY_WARN, "FASTA ID", "FASTA identifier line added", "searchMessages2");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            growl(FacesMessage.SEVERITY_ERROR, "Error!", "Failed to load the example sequence!", "searchMessages2");
         }
     }
 
@@ -968,6 +1076,5 @@ public class MainPopsBean implements Serializable {
     public AppDataBean getAppData() {
         return appData;
     }
-    
-    
+
 }
