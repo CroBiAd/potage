@@ -23,10 +23,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import reusable.OutWriter;
 
 /**
  *
@@ -45,7 +43,7 @@ public class QesHits implements Serializable {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE-HHmmss");
         Random r = new Random();
         key = dateFormat.format(date) + "-" + Math.abs(r.nextLong());
-        System.err.println("Created link: "+getResultsLink("red"));
+//        System.err.println("Created link: "+getResultsLink("red"));
     }
 
     public String getKey() {
