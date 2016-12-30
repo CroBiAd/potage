@@ -67,6 +67,16 @@
             <p:ajax update="@this" process="@this" />
             <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />  
         </p:dialog> 
+        <p:dialog id="blockBLAST" modal="true" widgetVar="blockBLAST" draggable="false" closable="false" resizable="false" showHeader="false" style="text-align: center" >
+            <p:ajax update="@this" process="@this" />
+            <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />
+            <br/>
+            <h:outputText value="BLASTn search running..."  style="font-size: larger"/>
+            <br/>
+            <h:outputText value="once finished, results will be displayed and will also become available at " />
+            <br/>
+            <h:outputText id="linkBLAST" value=" #{mainBean.blastn.getResultsLink('peru')}" escape="false"/>
+        </p:dialog> 
 
         <p:growl id="growl" showDetail="true" life="9000"  /> 
 
@@ -86,7 +96,7 @@
                 </f:facet>
                 <p:accordionPanel activeIndex="">
                     <p:tab title="About POTAGE" >
-		    	Popseq Ordered Triticum Aestivum Gene Expression (POTAGE, pronouced "<a href="http://img2.tfd.com/pron/mp3/en/UK/df/dfskskssdfd5drh7.mp3" target="_blank">pəʊˈtɑːʒ</a>")
+                        Popseq Ordered Triticum Aestivum Gene Expression (POTAGE, pronouced "<a href="http://img2.tfd.com/pron/mp3/en/UK/df/dfskskssdfd5drh7.mp3" target="_blank">pəʊˈtɑːʒ</a>")
                         is a web application which integrates map location information with gene expression 
                         and inferred functional annotation.
 
@@ -333,33 +343,33 @@
                     </p:tab>
                     <p:tab title="Frequently Asked Questions (FAQ)">
                         <dl> 
-				<dt>Why is a gene displayed on chromosome 3A even though the identifier indicates it comes from chromosome 1AL?</dt>
-                                <dd>Both the chromosome survey sequences (CSS) and POPSEQ can allocate a gene/contig incorrectly, 
-                                        for consistency we rely on POPSEQ's allocation of contigs to chromosomes wherever such information is available,
-                                        in the remaining cases we fall back to CSS identifiers.</dd>
+                            <dt>Why is a gene displayed on chromosome 3A even though the identifier indicates it comes from chromosome 1AL?</dt>
+                            <dd>Both the chromosome survey sequences (CSS) and POPSEQ can allocate a gene/contig incorrectly, 
+                                for consistency we rely on POPSEQ's allocation of contigs to chromosomes wherever such information is available,
+                                in the remaining cases we fall back to CSS identifiers.</dd>
 
-				<dt>Why is my contig/gene of interest lacking a cM value in the main table?</dt>
-                                <dd>POPSEQ map does not capture all of the CSS contigs, 
-                                        in fact only about half of contigs for which HC gene predictions are available have been anchored. 
-					These genes are appended to the end of the table for their respective chromosome.</dd>
-				<dt>How were the expression values generated?</dt>
-                                <dd>The computation of the expression values for the main Chinese Spring dataset available in POTAGE is described in
-                                        <a href="http://jxb.oxfordjournals.org/content/67/9/2847.full" target="_blank">this paper</a>
-					starting from the second sentence under "Gene identification and RNA-Seq data" subsection.</dd>
-				<dt>Can I run POTAGE locally on my own hardware?</dt>
-				<dd>Yes, we have developed POTAGE with this in mind. By far the easiest way to do
-					this is to use our Docker image (<a href="https://hub.docker.com/r/crobia/potage" target="_blank">crobia/potage</a>).
-					To get started, you will first need to install the "<a href="https://docs.docker.com/engine/installation/" target="_blank">Docker Engine</a>". Once this is installed, simply following the <a href="https://github.com/CroBiA/docker-potage/blob/master/README.md#quick-start" target="_blank">Quick Start</a> instructions.</dd>
-			</dl>
+                            <dt>Why is my contig/gene of interest lacking a cM value in the main table?</dt>
+                            <dd>POPSEQ map does not capture all of the CSS contigs, 
+                                in fact only about half of contigs for which HC gene predictions are available have been anchored. 
+                                These genes are appended to the end of the table for their respective chromosome.</dd>
+                            <dt>How were the expression values generated?</dt>
+                            <dd>The computation of the expression values for the main Chinese Spring dataset available in POTAGE is described in
+                                <a href="http://jxb.oxfordjournals.org/content/67/9/2847.full" target="_blank">this paper</a>
+                                starting from the second sentence under "Gene identification and RNA-Seq data" subsection.</dd>
+                            <dt>Can I run POTAGE locally on my own hardware?</dt>
+                            <dd>Yes, we have developed POTAGE with this in mind. By far the easiest way to do
+                                this is to use our Docker image (<a href="https://hub.docker.com/r/crobia/potage" target="_blank">crobia/potage</a>).
+                                To get started, you will first need to install the "<a href="https://docs.docker.com/engine/installation/" target="_blank">Docker Engine</a>". Once this is installed, simply following the <a href="https://github.com/CroBiA/docker-potage/blob/master/README.md#quick-start" target="_blank">Quick Start</a> instructions.</dd>
+                        </dl>
                     </p:tab>
 
-		    <p:tab title="Contact Us">
-		    	You can contact us in a variety of ways:
-			<ul>
-				<li>For bug reports and feature requests, submit a <a href="https://github.com/CroBiA/potage/issues/new" target="_blank">new issue</a> on GitHub</li>
-				<li>For other things, contact the main POTAGE developer: <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
-			</ul>
-		    </p:tab>
+                    <p:tab title="Contact Us">
+                        You can contact us in a variety of ways:
+                        <ul>
+                            <li>For bug reports and feature requests, submit a <a href="https://github.com/CroBiA/potage/issues/new" target="_blank">new issue</a> on GitHub</li>
+                            <li>For other things, contact the main POTAGE developer: <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
+                        </ul>
+                    </p:tab>
 
                 </p:accordionPanel>
             </p:panel>
@@ -405,17 +415,15 @@
                    showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="550" visible="#{mainBean.perQueryResults != null}">
 
             <h:form id="formSearch2">
-                <p:blockUI id="blockBLAST" block="tabView" widgetVar="blockBLAST" >
-                    <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />
-                    <br/>
-                    <h:outputText value="BLASTn search running..."  style="font-size: larger"/>
-                    <br/>
-                    <h:outputText value="once finished, results will be displayed and will also become available at " />
-                    <br/>
-                    
-                    <!--<h:outputText id="linkBLAST" value="and will become available #{mainBean.getBLASTnKey()}" escape="false"/>-->
-                    <h:outputText id="linkBLAST" value=" #{mainBean.blastn.getResultsLink('peru')}" escape="false"/>
-                </p:blockUI>        
+<!--                <p:blockUI id="blockBLAST" block="tabView" widgetVar="blockBLAST">
+                                    <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />
+                                    <br/>
+                                    <h:outputText value="BLASTn search running..."  style="font-size: larger"/>
+                                    <br/>
+                                    <h:outputText value="once finished, results will be displayed and will also become available at " />
+                                    <br/>
+                                    <h:outputText id="linkBLAST" value=" #{mainBean.blastn.getResultsLink('peru')}" escape="false"/>
+                                </p:blockUI>        -->
                 <p:tabView id="tabView" activeIndex="#{mainBean.seqSearchTabActive}"    >
                     <p:tab title="Input"  >
                         <p:toolbar >
@@ -432,7 +440,7 @@
                                 <p:commandLink update=":formSearch2:searchMessages2,:formSearch2:tabView:seqInput" actionListener="#{mainBean.loadExampleFasta}">
                                     <h:outputText value="example FASTA input" />
                                 </p:commandLink>
-                                
+
                             </f:facet>                                    
                             <f:facet name="right">
                                 <p:commandButton  value="Search" id="searchSeqButton" actionListener="#{mainBean.sequenceSearchEventHandler}" icon="ui-icon-search" 
@@ -510,7 +518,6 @@
                         </p:dataTable>  
                     </p:tab>
                 </p:tabView>
-                <!--<p:commandButton value="blastlink" update=":formSearch2:searchMessages2" actionListener="#{mainBean.blastnLinkEventHandler}" process="@this"/>-->
                 <p:messages id="searchMessages2" showDetail="true"  closable="true" redisplay="false"     />
             </h:form>
         </p:dialog> 
@@ -934,7 +941,6 @@
 
 
 
-            <!--<p:remoteCommand name="updateblastlink"  update=":formSearch2:blockBLAST:linkBLAST" action="#{randomBean.getRandom(1)}" process=":formSearch2:blockBLAST:linkBLAST" />-->
             <p:remoteCommand name="updatechartsgrid"  update=":formCentre:chartsGrid" action="#{randomBean.getRandom(1)}" process=":formCentre:chartsGrid" />
 <!--            <p:remoteCommand name="updatehelpdialog"  update=":helpForm:helpDialog" action="#{randomBean.getRandom(1)}" process=":helpForm:helpDialog" 
                              onstart="PF('helpDialog').hide();" oncomplete="PF('helpDialog').show();"/>-->
@@ -947,12 +953,12 @@
 
         <p:spacer />
         <div class="footer">
-		<h:panelGroup rendered="#{not empty mainBean.appData.potageCommitId and not empty mainBean.appData.potageDataCommitId}">
-			This server is running: POTAGE code commit ID (<a href="https://github.com/CroBiA/potage/tree/#{mainBean.appData.potageCommitId}">#{mainBean.appData.potageCommitId}</a>) with POTAGE data commit ID (<a href="https://github.com/CroBiA/potage_data/tree/#{mainBean.appData.potageDataCommitId}">#{mainBean.appData.potageDataCommitId}</a>)
-			<br />
-		</h:panelGroup>
-		©&nbsp;Copyright&nbsp;2014-2016&nbsp;<a href="http://www.acpfg.com.au/">Australian&nbsp;Centre&nbsp;for&nbsp;Plant&nbsp;Functional&nbsp;Genomics</a>
-	</div>
+            <h:panelGroup rendered="#{not empty mainBean.appData.potageCommitId and not empty mainBean.appData.potageDataCommitId}">
+                This server is running: POTAGE code commit ID (<a href="https://github.com/CroBiA/potage/tree/#{mainBean.appData.potageCommitId}">#{mainBean.appData.potageCommitId}</a>) with POTAGE data commit ID (<a href="https://github.com/CroBiA/potage_data/tree/#{mainBean.appData.potageDataCommitId}">#{mainBean.appData.potageDataCommitId}</a>)
+                <br />
+            </h:panelGroup>
+            ©&nbsp;Copyright&nbsp;2014-2016&nbsp;<a href="http://www.acpfg.com.au/">Australian&nbsp;Centre&nbsp;for&nbsp;Plant&nbsp;Functional&nbsp;Genomics</a>
+        </div>
 
     </body>
 

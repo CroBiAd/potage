@@ -867,7 +867,7 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
         if (sequences != null && !sequences.isEmpty()) {
             QesHits blastn = this.blastn;  //take existing blastn instance
             this.blastn = new QesHits(); //generate one for the next time
-            RequestContext.getCurrentInstance().getCallbackParams().put("blastkey", blastn.getKey());
+//            RequestContext.getCurrentInstance().getCallbackParams().put("blastkey", blastn.getKey());
             perQueryResults = new ArrayList<>();
 
             int totalRetrieved = 0;
@@ -1042,9 +1042,6 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
         System.err.println(d.getEmptyMessage());
     }
 
-    public void updateComponent(String id) {
-        RequestContext.getCurrentInstance().update(id);
-    }
 
     public boolean isAppendUnordered() {
         return appendUnordered;
