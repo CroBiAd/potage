@@ -386,8 +386,7 @@
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton  value="Search" id="searchButton" actionListener="#{mainBean.searchAll}" icon="ui-icon-search" update="idInput,searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList" 
-                                          onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()} else {PrimeFaces.scrollTo('formCentre:dataTable');} 
-                                          "/>                        
+                                          onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()}"/>                        
                         <p:commandButton value="Clear" id="clearSearch" icon="ui-icon-cancel" update="idInput,searchMessages,:formCentre:dataTable,:formCentre:chartsGrid" process="@this" actionListener="#{mainBean.setUserQuery('')}" oncomplete="PF('dataTable').filter()"/>
                     </f:facet>
                 </p:toolbar>
@@ -480,11 +479,11 @@
                             <f:facet name="header">  
                                 <h:outputText value="#{mainBean.selectedQuery.getNumbPromotersB()} hits retrieved for the selected query : #{mainBean.selectedQuery.queryId}" escape="false"/>
                             </f:facet>  
-                            <p:ajax event="rowSelect" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()} else {PrimeFaces.scrollTo('formCentre:dataTable');}"  
+                            <p:ajax event="rowSelect" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()}"  
                                     update=":formCentre:dataTable,:formSearch:idInput,:formSearch2:searchMessages2,:formCentre:chartsGrid,:formSearch3:contigList" />
                             <p:column style="width:7%" >
                                 <p:commandButton id="selectButton3" icon="ui-icon-search" update=":formCentre:dataTable,:formSearch:idInput,:formSearch2:searchMessages2,:formCentre:chartsGrid,:formSearch3:contigList" 
-                                                 onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()} else {PrimeFaces.scrollTo('formCentre:dataTable');}">
+                                                 onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();if(args.showContigList){PF('allContigsDialog').show()}">
                                     <f:setPropertyActionListener value="#{hit}" target="#{mainBean.selectedHit}" />
                                 </p:commandButton>                            
                             </p:column>
