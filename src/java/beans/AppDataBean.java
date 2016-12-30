@@ -571,34 +571,38 @@ public final class AppDataBean {
     public static void main(String[] args) {
 //       String fasta = InReader.readInputToString("/home/rad/example.seq");
 //        System.err.println(fasta.matches("[ACTGWSMKRYBDHVNactgwsmkrybdhvn\n]+"));
-       new AppDataBean();
+        new AppDataBean();
     }
 
     public String getPotageCommitId() {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        File file = new File(externalContext.getRealPath("//potage.commit.id"));
-        if (potageCommitId == null) {
-            BufferedReader myData = null;
-            try {
-                String inputLine;
-                myData = new BufferedReader(new FileReader(file));
-                Pattern p = Pattern.compile("\t");
-                while ((inputLine = myData.readLine()) != null) {
-                    setPotageCommitId(inputLine.trim());
-                }
-            } catch (FileNotFoundException ex) {
-                System.err.println("File not found exception!\t" + file.getName());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } finally {
+        String realPath = externalContext.getRealPath("//potage.commit.id");
+        if (realPath != null) {
+            File file = new File(realPath);
+            if (potageCommitId == null) {
+                BufferedReader myData = null;
                 try {
-                    if (myData != null) {
-                        myData.close();
+                    String inputLine;
+                    myData = new BufferedReader(new FileReader(file));
+                    Pattern p = Pattern.compile("\t");
+                    while ((inputLine = myData.readLine()) != null) {
+                        setPotageCommitId(inputLine.trim());
                     }
+                } catch (FileNotFoundException ex) {
+//                    System.err.println("File not found exception!\t" + file.getName());
+                    potageCommitId = "";
                 } catch (IOException ex) {
                     ex.printStackTrace();
+                } finally {
+                    try {
+                        if (myData != null) {
+                            myData.close();
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
-            }
+            }      
         }
         return potageCommitId;
     }
@@ -619,7 +623,8 @@ public final class AppDataBean {
                     setPotageDataCommitId(inputLine.trim());
                 }
             } catch (FileNotFoundException ex) {
-                System.err.println("File not found exception!\t" + file.getName());
+//                System.err.println("File not found exception!\t" + file.getName());
+                potageDataCommitId = "";
             } catch (IOException ex) {
                 ex.printStackTrace();
             } finally {
@@ -631,6 +636,8 @@ public final class AppDataBean {
                     ex.printStackTrace();
                 }
             }
+        } else if (potageDataCommitId.isEmpty()) {
+            return null;
         }
         return potageDataCommitId;
     }

@@ -116,9 +116,9 @@ public class MainPopsBean implements Serializable {
 
     //display unordered genes
     private boolean appendUnordered;
-    
+
     //BLASTn alignment handling and retrieval
-     private QesHits blastn;
+    private QesHits blastn;
 
     @ManagedProperty(value = "#{appDataBean}")
     private AppDataBean appData;
@@ -146,7 +146,8 @@ public class MainPopsBean implements Serializable {
                 String id = parameterMap.get("query").trim().replaceFirst("\\.\\d+$", "");
                 setUserQuery(id);
                 searchAll(id, ":formSearch:searchMessages");
-                RequestContext.getCurrentInstance().update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
+                RequestContext context = RequestContext.getCurrentInstance(); 
+context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
             }
             if (parameterMap.containsKey("blastn")) {
                 String key = parameterMap.get("blastn").trim();
@@ -181,7 +182,6 @@ public class MainPopsBean implements Serializable {
 //        blastn = new QesHits();
 //            updateComponent(":formSearch2:blockBLAST:linkBLAST");
 //    }
-    
     public void handleFileUpload(FileUploadEvent event) {
         ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
 //        System.out.println(event.getFile().getFileName()+" in "+System.getProperty("java.io.tmpdir"));
@@ -221,19 +221,17 @@ public class MainPopsBean implements Serializable {
         }
     }
 
-   
-    
     public QesHits getBlastn() {
 //        if (blastn == null) {
 //            blastn = new QesHits();
 //        }
         return blastn;
     }
-    
+
     public String getBLASTnKey() {
-        if(blastn != null) {
+        if (blastn != null) {
             return blastn.getKey();
-        } 
+        }
         return null;
     }
 
@@ -250,10 +248,9 @@ public class MainPopsBean implements Serializable {
 //            blastn = new QesHits();
 //            updateComponent(":formSearch2:blockBLAST:linkBLAST");
             return true;
-        } else if (fileContentString.matches("[ACTGWSMKRYBDHVNactgwsmkrybdhvn\n]+")) {
+        } else if (fileContentString.matches("[ACTGWSMKRYBDHVNactgwsmkrybdhvn\\r\\n]+")) {
             this.fileContentString = ">unlabelled_sequence\n" + fileContentString;
-//            blastn = new QesHits();
-//            updateComponent(":formSearch2:blockBLAST:linkBLAST");
+             sequences = reusable.FastaOps.sequencesFromFastaString(this.fileContentString, true);
             return true;
         } else {
             this.fileContentString = null;
@@ -362,6 +359,9 @@ public class MainPopsBean implements Serializable {
 
                     growl(FacesMessage.SEVERITY_INFO, "Query found: ", userQuery + " found on chromosome " + currentChromosome, messageComponent);
                     RequestContext.getCurrentInstance().update(":formCentre:dataTable");
+//                    RequestContext context = RequestContext.getCurrentInstance(); 
+//                    context.scrollTo("formCentre:dataTable");
+//                    context.update("formCentre:dataTable");
                 }
             } else {
                 growl(FacesMessage.SEVERITY_WARN, "Unfortunatelly", "Not able to process multiple queries", messageComponent);
@@ -862,9 +862,8 @@ public class MainPopsBean implements Serializable {
 //        System.err.println("key "+blastn.getKey());
 //        growl(FacesMessage.SEVERITY_INFO, "TESTINFO", "content", "searchMessages2" );
 //    }
-    
     public void sequenceSearchEventHandler(ActionEvent actionEvent) {
-        Date submitTime = new Date();        
+        Date submitTime = new Date();
         if (sequences != null && !sequences.isEmpty()) {
             QesHits blastn = this.blastn;  //take existing blastn instance
             this.blastn = new QesHits(); //generate one for the next time
@@ -876,7 +875,6 @@ public class MainPopsBean implements Serializable {
 //                ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
 //                String blastdbIWGSC = extContext.getRealPath(BLAST_DB);
                 String blastdbIWGSC = appData.getBLAST_DB();
-                growl(FacesMessage.SEVERITY_INFO, "Results bookmark: ", blastn.getResultsLink("peru"), "searchMessages2");
                 perQueryResults = blastn.findHits(sequences, blastdbIWGSC);      //<------------------------------------------------------------            
 
                 hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults);
@@ -922,7 +920,7 @@ public class MainPopsBean implements Serializable {
                 setSeqSearchTabActive("0");
 
             } else {
-                growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successfull", ":formSearch2:searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successful", ":formSearch2:searchMessages2");
             }
         } else {
             growl(FacesMessage.SEVERITY_FATAL, "Error!", "No input sequeces!", "searchMessages");
@@ -931,22 +929,25 @@ public class MainPopsBean implements Serializable {
     }
 
     private void processRetrievedResults() {
-        hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults);
-        int totalRetrieved = 0;
-        for (HitsForQuery qp : perQueryResults) {
-            for (Hit p : qp.getHits()) {
-                totalRetrieved++;
-            }
-        }
-        //result available for one query only so goto the last tab and display
-        if (perQueryResults.size() == 1) {
-            setSelectedQuery(hitsForQueryDataModel.getRow(0)); //calls setSeqSearchTabActive("2");
-        } else if (perQueryResults.size() > 1) {
-            setSeqSearchTabActive("1");
+        if (perQueryResults == null) {
+            growl(FacesMessage.SEVERITY_WARN, "Not available: ", "Requested alignment results have not been found", "searchMessages");
         } else {
-            setSeqSearchTabActive("0");
-        }
-        if (perQueryResults.isEmpty() || totalRetrieved == 0) {
+            hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults);
+            int totalRetrieved = 0;
+            for (HitsForQuery qp : perQueryResults) {
+                for (Hit p : qp.getHits()) {
+                    totalRetrieved++;
+                }
+            }
+            //result available for one query only so goto the last tab and display
+            if (perQueryResults.size() == 1) {
+                setSelectedQuery(hitsForQueryDataModel.getRow(0)); //calls setSeqSearchTabActive("2");
+            } else if (perQueryResults.size() > 1) {
+                setSeqSearchTabActive("1");
+            } else {
+                setSeqSearchTabActive("0");
+            }
+            if (perQueryResults.isEmpty() || totalRetrieved == 0) {
 //                //injecting param for js
 //                addMessage("No promoter regions found!", "", "mainpanel", FacesMessage.SEVERITY_FATAL);
 //                RequestContext.getCurrentInstance().getCallbackParams().put("showResults", false); //should not be necessary as is set as false at Submit
@@ -955,11 +956,12 @@ public class MainPopsBean implements Serializable {
 //                    StringBuilder sb1 = new StringBuilder();
 //                    reusable.ExecProcessor.email("No promoter regions were retrieved", "PromoterFinder notification: job failed.", email, "no-reply@hathor.acpfg.local");
 //                }
-            growl(FacesMessage.SEVERITY_WARN, "Bad luck!", "No matches found!", "searchMessages");
-            setSeqSearchTabActive("0");
+                growl(FacesMessage.SEVERITY_WARN, "Bad luck!", "No matches found!", "searchMessages");
+                setSeqSearchTabActive("0");
 
-        } else {
-            growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successfull", ":formSearch2:searchMessages2");
+            } else {
+                growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successful", ":formSearch2:searchMessages2");
+            }
         }
     }
 
