@@ -921,6 +921,8 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
 
             } else {
                 growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successful", ":formSearch2:searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Results", "should remain availabe for a few days at "+blastn.getResultsLink("peru"), ":formSearch2:searchMessages2");
+                
             }
         } else {
             growl(FacesMessage.SEVERITY_FATAL, "Error!", "No input sequeces!", "searchMessages");

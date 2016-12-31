@@ -571,7 +571,8 @@ public final class AppDataBean {
     public static void main(String[] args) {
 //       String fasta = InReader.readInputToString("/home/rad/example.seq");
 //        System.err.println(fasta.matches("[ACTGWSMKRYBDHVNactgwsmkrybdhvn\n]+"));
-        new AppDataBean();
+
+//        new AppDataBean();
     }
 
     public String getPotageCommitId() {

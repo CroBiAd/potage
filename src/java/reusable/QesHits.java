@@ -40,7 +40,7 @@ public class QesHits implements Serializable {
 
     public QesHits() {
         Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE-HHmmss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         Random r = new Random();
         key = dateFormat.format(date) + "-" + Math.abs(r.nextLong());
 //        System.err.println("Created link: "+getResultsLink("red"));
@@ -53,7 +53,10 @@ public class QesHits implements Serializable {
     public String getResultsLink(String fontColour) {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         StringBuilder link = new StringBuilder();
-        link.append(request.getRequestURL().toString().replaceAll("faces/potage.xhtml", ""));
+//        System.err.println(request.getPathInfo());
+//        System.err.println(request.getPathTranslated());
+//        System.err.println(request.getRequestURI());
+        link.append(request.getRequestURL().toString().replaceAll("faces/potage.xhtml", "").replaceAll(";.*", ""));
         link.append("?blastn=");
         link.append(getKey());
         StringBuilder html = new StringBuilder();
