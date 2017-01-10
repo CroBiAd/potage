@@ -22,7 +22,10 @@ package reusable;
 
 
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -68,7 +71,7 @@ public class OutWriter implements Serializable {
                 out.newLine();
             }
         out.close();
-        }catch (IOException e){ System.err.println("\nCANT WRITE\n"); }
+        }catch (IOException e){ System.err.println("\nCAN'T WRITE\n"); }
 //        }catch (IOException e){ System.err.println("\nCANT WRITE\n"); e.printStackTrace(); }
     }
 
@@ -80,7 +83,7 @@ public class OutWriter implements Serializable {
                 out.newLine();
             }
         out.close();
-        }catch (IOException e){ System.err.println("\nCANT WRITE\n"); }
+        }catch (IOException e){ System.err.println("\nCAN'T WRITE\n"); }
 //        }catch (IOException e){ System.err.println("\nCANT WRITE\n"); e.printStackTrace(); }
     }
 
@@ -93,7 +96,7 @@ public class OutWriter implements Serializable {
             out.newLine();
         }
         out.close();
-        }catch (IOException e){ System.err.println("\nCANT WRITE\n"); }
+        }catch (IOException e){ System.err.println("\nCAN'T WRITE\n"); }
 //        }catch (IOException e){ System.err.println("\nCANT WRITE\n"); e.printStackTrace(); }
     }
 
@@ -103,7 +106,7 @@ public class OutWriter implements Serializable {
             out.write(contents);
             out.newLine();
             out.close();
-        }catch (IOException e){ System.err.println("\nCANT WRITE\n"); e.printStackTrace(); }
+        }catch (IOException e){ System.err.println("\nCAN'T WRITE\n"); e.printStackTrace(); }
 //        }catch (IOException e){e.printStackTrace();   }
     }
 

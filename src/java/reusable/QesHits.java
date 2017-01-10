@@ -15,7 +15,11 @@
  */
 package reusable;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,12 +41,12 @@ public class QesHits implements Serializable {
 //    private static final boolean DEBUG_MODE = false;
     private final String key;
     private ArrayList<Sequence> retrievedSequences;
+    private final String RESULTS_PATH;
 
-    public QesHits() {
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        Random r = new Random();
-        key = dateFormat.format(date) + "-" + Math.abs(r.nextLong());
+    public QesHits(String resultsPath) {
+        SecureRandom r = new SecureRandom();
+        key = new SimpleDateFormat("MMddHHmmss").format(new Date(System.currentTimeMillis())) + new BigInteger(130, r).toString(32);
+        RESULTS_PATH = resultsPath.endsWith("/") ? resultsPath : resultsPath + "/";
 //        System.err.println("Created link: "+getResultsLink("red"));
     }
 
@@ -71,7 +75,7 @@ public class QesHits implements Serializable {
         return retrievedSequences;
     }
 
-    public ArrayList<HitsForQuery> findHits(ArrayList<Sequence> sequences, String blastdbPathIWGSC) {
+    public BlastResults findHits(ArrayList<Sequence> sequences, String blastdbPathIWGSC) {
         String databaseIWGSC = blastdbPathIWGSC.replace(".nal", "");
         ArrayList<HitsForQuery> results = new ArrayList<>();
 
@@ -83,11 +87,12 @@ public class QesHits implements Serializable {
         //EXAMPLE DATA PRECOMPUTED
 //        String infile = "/home/rad/example.fasta";
 //        String blastnFile = "/home/rad/example.blastn.xml";
-        String infile = "/tmp/" + getKey() + ".fasta";
+        String infile = RESULTS_PATH + getKey() + ".fasta";
         writeToFastaFile(sequences, infile);
-        String blastnFile = "/tmp/" + getKey() + ".blastn.xml";
+        String blastnFile = RESULTS_PATH + getKey() + ".blastn.xml";
         String cmd1[] = {"nice", "blastn", "-task", "blastn", "-dust", "no", "-query", infile, "-db", databaseIWGSC, "-evalue", "1e-5", "-out", blastnFile, "-max_target_seqs", "10", "-outfmt", "5", "-num_threads", "2"};
-        reusable.ExecProcessor.execute(cmd1);
+        Process executer = reusable.ExecProcessor.execute(cmd1);
+        OutWriter ow = new OutWriter(RESULTS_PATH + getKey() + ".exit", "" + executer.exitValue());
         linkAlignmentResultsToSequencesInHashMap(hashMapOfSequences, blastnFile);
         for (Sequence s : sequences) {
             ArrayList<Hit> hits = getGoodHitsForQuery(s, databaseIWGSC);
@@ -98,21 +103,39 @@ public class QesHits implements Serializable {
 //TODO uncomment this::::
 //        String cmd2[] = {"rm", infile};
 //        reusable.ExecProcessor.execute(cmd2);
-        return results;
+        return new BlastResults(true, results, executer.exitValue());
 
     }
 
-    public ArrayList<HitsForQuery> retrieveHits(String key, String blastdbPathIWGSC) {
-        String databaseIWGSC = blastdbPathIWGSC.replace(".nal", "");
+    public BlastResults retrieveHits(String key, String blastdbPathIWGSC) {
         ArrayList<HitsForQuery> results = new ArrayList<>();
 
         HashMap<String, Sequence> hashMapOfSequences = new HashMap<String, Sequence>();
-        String infile = "/tmp/" +  key + ".fasta";
+        String infile = RESULTS_PATH + key + ".fasta";
+        String exitFile = RESULTS_PATH + key + ".exit";
+        String blastnFile = RESULTS_PATH + key + ".blastn.xml";
+        File in = new File(infile);
+        File exit = new File(exitFile);
+        File out = new File(blastnFile);
+        Integer exitValue = null;
+        if (!in.exists()) {
+            return new BlastResults(false, null, null); //nothing found
+        }
+        if (exit.exists()) {
+            String exitValueString = InReader.readInputToString(exitFile);
+            exitValue = Integer.parseInt(exitValueString.replaceAll("[\\r\\n]+", ""));
+        } else {
+            return new BlastResults(true, null, null); //still running
+        }
+        if (!out.exists()) {
+            return new BlastResults(true, null, exitValue); //no output... failed?
+        }
+
         retrievedSequences = FastaOps.sequencesFromFasta(infile);
         for (Sequence s : retrievedSequences) {
             hashMapOfSequences.put(s.getIdentifierString(), s);
         }
-        String blastnFile = "/tmp/" + key + ".blastn.xml";
+        String databaseIWGSC = blastdbPathIWGSC.replace(".nal", "");
         linkAlignmentResultsToSequencesInHashMap(hashMapOfSequences, blastnFile);
         for (Sequence s : retrievedSequences) {
             ArrayList<Hit> hits = getGoodHitsForQuery(s, databaseIWGSC);
@@ -120,7 +143,8 @@ public class QesHits implements Serializable {
                 results.add(new HitsForQuery(hits, s.getIdentifierString()));
             }
         }
-        return results.isEmpty() ? null : results  ;
+
+        return new BlastResults(true, results, exitValue);
 
     }
 

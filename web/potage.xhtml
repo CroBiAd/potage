@@ -78,7 +78,7 @@
             <h:outputText id="linkBLAST" value=" #{mainBean.blastn.getResultsLink('peru')}" escape="false"/>
         </p:dialog> 
 
-        <p:growl id="growl" showDetail="true" life="9000" escape="false" /> 
+        <p:growl id="growl" showDetail="true" life="50000" escape="false" /> 
 
 
         <p:spacer width="100%" height="40"  />
@@ -412,7 +412,7 @@
 
 
         <p:dialog  id="searchSeqDialog" header="Search all chromosomes by aligning a sequence" widgetVar="searchSeqPanel" modal="false" position="80,140" minimizable="true" 
-                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="550" visible="#{mainBean.perQueryResults != null}">
+                   showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="550" visible="#{mainBean.perQueryResults.hasResults()}">
 
             <h:form id="formSearch2">
 <!--                <p:blockUI id="blockBLAST" block="tabView" widgetVar="blockBLAST">

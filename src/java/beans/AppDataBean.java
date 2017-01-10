@@ -136,6 +136,10 @@ public final class AppDataBean {
     private String getGENE_2_CONTIG_MAP() {
         return staticFilesMap.get("GENE_2_CONTIG_MAP");
     }
+    
+    public String getBLAST_DIR() {
+        return staticFilesMap.get("BLAST_DIR") == null ? "/tmp" : staticFilesMap.get("BLAST_DIR") ;
+    }
 
     private void readConfigFile() {
         InReader in = new InReader(CONFIG_FILE);

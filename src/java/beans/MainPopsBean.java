@@ -58,6 +58,7 @@ import poplogic.ChartModelWithId;
 import poplogic.ExpressionData;
 import poplogic.Gene;
 import poplogic.PerLocationContigs;
+import reusable.BlastResults;
 import reusable.Hit;
 import reusable.HitDataModel;
 import reusable.HitsForQuery;
@@ -126,7 +127,6 @@ public class MainPopsBean implements Serializable {
     public MainPopsBean() {
         perLocationContigs = new PerLocationContigs(null, new Location_cMFilter());
         cM_filter = new Location_cMFilter();
-        blastn = new QesHits();
     }
 
     public void setAppData(AppDataBean appData) {
@@ -136,18 +136,19 @@ public class MainPopsBean implements Serializable {
 
     @PostConstruct
     public void init() {
+        blastn = new QesHits(appData.getBLAST_DIR());
 //        if (!FacesContext.getCurrentInstance().isPostback()) {
 //            RequestContext.getCurrentInstance().execute("alert('This onload script is added from backing bean.')");
 //        }
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+//        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         Map<String, String> parameterMap = (Map<String, String>) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         if (!parameterMap.isEmpty()) {
             if (parameterMap.containsKey("query")) {
                 String id = parameterMap.get("query").trim().replaceFirst("\\.\\d+$", "");
                 setUserQuery(id);
                 searchAll(id, ":formSearch:searchMessages");
-                RequestContext context = RequestContext.getCurrentInstance(); 
-context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
+                RequestContext context = RequestContext.getCurrentInstance();
+                context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
             }
             if (parameterMap.containsKey("blastn")) {
                 String key = parameterMap.get("blastn").trim();
@@ -250,7 +251,7 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
             return true;
         } else if (fileContentString.matches("[ACTGWSMKRYBDHVNactgwsmkrybdhvn\\r\\n]+")) {
             this.fileContentString = ">unlabelled_sequence\n" + fileContentString;
-             sequences = reusable.FastaOps.sequencesFromFastaString(this.fileContentString, true);
+            sequences = reusable.FastaOps.sequencesFromFastaString(this.fileContentString, true);
             return true;
         } else {
             this.fileContentString = null;
@@ -791,7 +792,8 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
     }
 
     //BELOW, BLAST-based ALIGNMEN_SEARCH,CODE RECYCLED FROM BWPF by Rad Suchecki
-    private ArrayList<HitsForQuery> perQueryResults;
+//    private ArrayList<HitsForQuery> perQueryResults;
+    private BlastResults perQueryResults;
     private HitsForQueryDataModel hitsForQueryDataModel;
     private HitDataModel hitsDataModel;
     private HitsForQuery selectedQuery;
@@ -831,7 +833,10 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
         }
     }
 
-    public ArrayList<HitsForQuery> getPerQueryResults() {
+//    public ArrayList<HitsForQuery> getPerQueryResults() {
+//        return perQueryResults;
+//    }
+    public BlastResults getPerQueryResults() {
         return perQueryResults;
     }
 
@@ -866,9 +871,10 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
         Date submitTime = new Date();
         if (sequences != null && !sequences.isEmpty()) {
             QesHits blastn = this.blastn;  //take existing blastn instance
-            this.blastn = new QesHits(); //generate one for the next time
+            this.blastn = new QesHits(appData.getBLAST_DIR()); //generate one for the next time
 //            RequestContext.getCurrentInstance().getCallbackParams().put("blastkey", blastn.getKey());
-            perQueryResults = new ArrayList<>();
+//            perQueryResults = new ArrayList<>();
+            perQueryResults = new BlastResults(true, null, null);
 
             int totalRetrieved = 0;
             try {
@@ -877,9 +883,9 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
                 String blastdbIWGSC = appData.getBLAST_DB();
                 perQueryResults = blastn.findHits(sequences, blastdbIWGSC);      //<------------------------------------------------------------            
 
-                hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults);
+                hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults.getResults());
 
-                for (HitsForQuery qp : perQueryResults) {
+                for (HitsForQuery qp : perQueryResults.getResults()) {
                     for (Hit p : qp.getHits()) {
                         totalRetrieved++;
                     }
@@ -921,8 +927,8 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
 
             } else {
                 growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successful", ":formSearch2:searchMessages2");
-                growl(FacesMessage.SEVERITY_INFO, "Results", "should remain availabe for a few days at "+blastn.getResultsLink("peru"), ":formSearch2:searchMessages2");
-                
+                growl(FacesMessage.SEVERITY_INFO, "Results", "should remain availabe for a few days at " + blastn.getResultsLink("peru"), ":formSearch2:searchMessages2");
+
             }
         } else {
             growl(FacesMessage.SEVERITY_FATAL, "Error!", "No input sequeces!", "searchMessages");
@@ -931,12 +937,25 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
     }
 
     private void processRetrievedResults() {
-        if (perQueryResults == null) {
-            growl(FacesMessage.SEVERITY_WARN, "Not available: ", "Requested alignment results have not been found", "searchMessages");
+        if (!perQueryResults.hasResults()) {
+            if (perQueryResults.hasInput()) {
+                if (perQueryResults.hasExitValue()) {
+                    Integer exitValue = perQueryResults.getExitValue();
+                    if(exitValue==0) {
+                        growl(FacesMessage.SEVERITY_WARN, "Alignment completed", "No hits found", "searchMessages");                        
+                    } else {
+                        growl(FacesMessage.SEVERITY_ERROR, "Alignment failed", "BLAST exit code: "+exitValue, "searchMessages");                                                
+                    }
+                } else {
+                    growl(FacesMessage.SEVERITY_INFO, "Results not available", "BLAST alignment may still be running...", "searchMessages");
+                }
+            } else {
+                growl(FacesMessage.SEVERITY_WARN, "Not available: ", "Requested alignment results have not been found", "searchMessages");                
+            }
         } else {
-            hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults);
+            hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults.getResults());
             int totalRetrieved = 0;
-            for (HitsForQuery qp : perQueryResults) {
+            for (HitsForQuery qp : perQueryResults.getResults()) {
                 for (Hit p : qp.getHits()) {
                     totalRetrieved++;
                 }
@@ -950,19 +969,11 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
                 setSeqSearchTabActive("0");
             }
             if (perQueryResults.isEmpty() || totalRetrieved == 0) {
-//                //injecting param for js
-//                addMessage("No promoter regions found!", "", "mainpanel", FacesMessage.SEVERITY_FATAL);
-//                RequestContext.getCurrentInstance().getCallbackParams().put("showResults", false); //should not be necessary as is set as false at Submit
-//                RequestContext.getCurrentInstance().getCallbackParams().put("showXML", true); //allows user to save blastn results 
-//                if (!email.isEmpty()) {
-//                    StringBuilder sb1 = new StringBuilder();
-//                    reusable.ExecProcessor.email("No promoter regions were retrieved", "PromoterFinder notification: job failed.", email, "no-reply@hathor.acpfg.local");
-//                }
-                growl(FacesMessage.SEVERITY_WARN, "Bad luck!", "No matches found!", "searchMessages");
+                growl(FacesMessage.SEVERITY_WARN, "Alignment unsuccessful", "No matches found!", "searchMessages");
                 setSeqSearchTabActive("0");
 
             } else {
-                growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successful", ":formSearch2:searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Alignment successful", "Hit(s) found!", ":formSearch2:searchMessages2");
             }
         }
     }
@@ -1012,7 +1023,7 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
 
     private String generateEmailContent(Date submitTime) {
         StringBuilder sb = new StringBuilder("Results summary:\n");
-        for (HitsForQuery prs : perQueryResults) {
+        for (HitsForQuery prs : perQueryResults.getResults()) {
             sb.append(prs.getQueryId()).append("\t:\t").append(prs.getHits().size()).append(" hits identified.\n");
         }
         sb.append("\nJob submitted: ").append(submitTime).append("\n");;
@@ -1043,7 +1054,6 @@ context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataT
         final DataGrid d = (DataGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent(":formCentre:chartsGrid");
         System.err.println(d.getEmptyMessage());
     }
-
 
     public boolean isAppendUnordered() {
         return appendUnordered;
