@@ -66,6 +66,7 @@ import reusable.HitsForQueryDataModel;
 import reusable.InReader;
 import reusable.QesHits;
 import reusable.Sequence;
+import reusable.TempFilesCleaner;
 //import org.primefaces.model.DefaultMenuModel;
 //import org.primefaces.model.chart.DonutChartModel;
 
@@ -880,8 +881,9 @@ public class MainPopsBean implements Serializable {
             try {
 //                ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
 //                String blastdbIWGSC = extContext.getRealPath(BLAST_DB);
-                String blastdbIWGSC = appData.getBLAST_DB();
-                perQueryResults = blastn.findHits(sequences, blastdbIWGSC);      //<------------------------------------------------------------            
+                String blastdbIWGSC = appData.getBLAST_DB();                  
+                new TempFilesCleaner(appData.getBLAST_DIR(), appData.getBLAST_CLEANUP_DAYS()).run(); //DELETE BLAST FILES OLDER THAN n DAYS (default==7)
+                perQueryResults = blastn.findHits(sequences, blastdbIWGSC);      
 
                 hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults.getResults());
 
@@ -927,7 +929,7 @@ public class MainPopsBean implements Serializable {
 
             } else {
                 growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successful", ":formSearch2:searchMessages2");
-                growl(FacesMessage.SEVERITY_INFO, "Results", "should remain availabe for a few days at " + blastn.getResultsLink("peru"), ":formSearch2:searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Results", "should remain availabe for up to "+appData.getBLAST_CLEANUP_DAYS()+" days at " + blastn.getResultsLink("peru"), ":formSearch2:searchMessages2");
 
             }
         } else {

@@ -140,6 +140,10 @@ public final class AppDataBean {
     public String getBLAST_DIR() {
         return staticFilesMap.get("BLAST_DIR") == null ? "/tmp" : staticFilesMap.get("BLAST_DIR") ;
     }
+    
+    public int getBLAST_CLEANUP_DAYS() {
+        return staticFilesMap.get("BLAST_CLEANUP_DAYS") == null ? 7 : Integer.parseInt(staticFilesMap.get("BLAST_CLEANUP_DAYS")) ;
+    }
 
     private void readConfigFile() {
         InReader in = new InReader(CONFIG_FILE);
@@ -158,7 +162,7 @@ public final class AppDataBean {
 
                 } else {
                     String fileName = line.replaceFirst("[^ \t]+[ \t]+", "").trim();
-                    if (fileName.startsWith("/") || toks[0].equalsIgnoreCase("TABLE_HEADERS") || toks[0].equalsIgnoreCase("DEV_HOSTNAME")) {
+                    if (fileName.startsWith("/") || toks[0].equalsIgnoreCase("TABLE_HEADERS") || toks[0].equalsIgnoreCase("DEV_HOSTNAME") || toks[0].equalsIgnoreCase("BLAST_CLEANUP_DAYS")) {
                         staticFilesMap.put(toks[0], fileName);
                     } else {
                         staticFilesMap.put(toks[0], parentPath + "/" + fileName);

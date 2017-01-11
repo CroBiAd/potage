@@ -87,7 +87,7 @@ public class QesHits implements Serializable {
         //EXAMPLE DATA PRECOMPUTED
 //        String infile = "/home/rad/example.fasta";
 //        String blastnFile = "/home/rad/example.blastn.xml";
-        String infile = RESULTS_PATH + getKey() + ".fasta";
+        String infile = RESULTS_PATH + getKey() + ".blastn.fasta";
         writeToFastaFile(sequences, infile);
         String blastnFile = RESULTS_PATH + getKey() + ".blastn.xml";
         String cmd1[] = {"nice", "blastn", "-task", "blastn", "-dust", "no", "-query", infile, "-db", databaseIWGSC, "-evalue", "1e-5", "-out", blastnFile, "-max_target_seqs", "10", "-outfmt", "5", "-num_threads", "2"};
@@ -111,8 +111,8 @@ public class QesHits implements Serializable {
         ArrayList<HitsForQuery> results = new ArrayList<>();
 
         HashMap<String, Sequence> hashMapOfSequences = new HashMap<String, Sequence>();
-        String infile = RESULTS_PATH + key + ".fasta";
-        String exitFile = RESULTS_PATH + key + ".exit";
+        String infile = RESULTS_PATH + key + ".blastn.fasta";
+        String exitFile = RESULTS_PATH + key + ".blastn.exit";
         String blastnFile = RESULTS_PATH + key + ".blastn.xml";
         File in = new File(infile);
         File exit = new File(exitFile);
