@@ -95,7 +95,7 @@ public class QesHits implements Serializable {
         String blastnFile = RESULTS_PATH + getKey() + ".blastn.xml";
         String cmd1[] = {"nice", "blastn", "-task", "blastn", "-dust", "no", "-query", infile, "-db", databaseIWGSC, "-evalue", "1e-5", "-out", blastnFile, "-max_target_seqs", "10", "-outfmt", "5", "-num_threads", "2"};
         Process executer = reusable.ExecProcessor.execute(cmd1);
-        OutWriter ow = new OutWriter(RESULTS_PATH + getKey() + "blastn.exit", "" + executer.exitValue());
+        OutWriter ow = new OutWriter(RESULTS_PATH + getKey() + ".blastn.exit", "" + executer.exitValue());
         linkAlignmentResultsToSequencesInHashMap(hashMapOfSequences, blastnFile);
         for (Sequence s : sequences) {
             ArrayList<Hit> hits = getGoodHitsForQuery(s, databaseIWGSC);
