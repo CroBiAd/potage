@@ -848,16 +848,16 @@
                             <h:outputLabel value="Download " escape="false" style="vertical-align: middle;" />
                             <p:selectOneMenu value="#{mainBean.toExport}" style="vertical-align: middle; text-align: left; width: 120px" disabled="#{!mainBean.dataLoaded}"   >
                                 <f:selectItem itemLabel="current page" itemValue="page" />
+                                <f:selectItem itemLabel="selected rows" itemValue="selected" />
                                 <f:selectItem itemLabel="whole table" itemValue="all"/>
                                 <p:ajax update="exportXLS"/>  
-                                <!--<f:selectItem itemLabel="selected rows" itemValue="selected" />-->
                             </p:selectOneMenu>
                             <h:outputLabel value=" as " escape="false" style="vertical-align: middle;" />
                             <h:commandLink id="exportXLS" disabled="#{mainBean.exportDsiabled()}" onclick="PF('statusDialog').show();">
                                 <p:graphicImage value="/images/excel3.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{!mainBean.exportDsiabled()}"/>
                                 <p:graphicImage value="/images/excel3grey2.png" style="vertical-align: middle;" title="Export to MS Excel format" rendered="#{mainBean.exportDsiabled()}"/>
                                 <p:dataExporter type="xls" target="dataTable" fileName="POTAGE_table_#{randomBean.getRandomFilename()}" pageOnly="#{mainBean.exportPageOnly()}"  
-                                                selectionOnly="#{mainBean.exportSelectedOnly()}" postProcessor="#{mainBean.postProcessXLS}"/> 
+                                                selectionOnly="#{mainBean.exportSelectedOnly()}" postProcessor="#{mainBean.postProcessXLS}" /> 
                             </h:commandLink>
                         </f:facet>
                     </p:toolbar>
