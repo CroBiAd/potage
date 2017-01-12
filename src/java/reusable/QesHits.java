@@ -47,14 +47,7 @@ public class QesHits implements Serializable {
         SecureRandom r = new SecureRandom();
         key = new SimpleDateFormat("MMddHHmmss").format(new Date(System.currentTimeMillis())) + new BigInteger(130, r).toString(32);
         RESULTS_PATH = resultsPath.endsWith("/") ? resultsPath : resultsPath + "/";
-        File resultsDir = new File(RESULTS_PATH);
-        if(!resultsDir.exists()) {
-            try {
-                 resultsDir.mkdir();
-            } catch(SecurityException e) {
-                System.err.println("Failed to create dir: "+RESULTS_PATH);
-            }
-        }
+        new File(RESULTS_PATH).mkdir();
         
 //        System.err.println("Created link: "+getResultsLink("red"));
     }
