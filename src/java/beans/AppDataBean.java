@@ -22,6 +22,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ import reusable.Reporter;
  */
 @ManagedBean(name = "appDataBean")
 @ApplicationScoped
-public final class AppDataBean {
+public final class AppDataBean implements Serializable {
 
     private boolean DEBUG;
     private final String DEBUG_PREFIX = "Traes_1A";
