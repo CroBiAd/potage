@@ -78,6 +78,15 @@ public class QesHits implements Serializable {
         return retrievedSequences;
     }
 
+    public String getRetrievedSequencesString() {
+        StringBuilder sb = new StringBuilder();
+        for (Sequence s : getRetrievedSequences()) {
+            sb.append(">").append(s.getIdentifierString()); 
+            sb.append(System.lineSeparator()).append(s.getSequenceString()).append(System.lineSeparator());            
+        }
+        return sb.toString();
+    }
+
     public BlastResults findHits(ArrayList<Sequence> sequences, String blastdbPathIWGSC) {
         String databaseIWGSC = blastdbPathIWGSC.replace(".nal", "");
         ArrayList<HitsForQuery> results = new ArrayList<>();
@@ -165,7 +174,7 @@ public class QesHits implements Serializable {
     private ArrayList<Hit> getGoodHitsForQuery(Sequence querySequence, String databaseString) {
 //        StringBuilder sb = new StringBuilder(); 
         boolean capidOnQueryNotSubjectB = true;
-        int offset = 0;
+//        int offset = 0;
         capidOnQueryNotSubjectB = true;
         //APPLY SOME THRESHOLD(S) FOR BLASTx HITS/HSPs!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -181,12 +190,13 @@ public class QesHits implements Serializable {
             int overlapingQlen = hit.getOverlappingLength(capidOnQueryNotSubjectB);
             double caPidOverAlignedQueryLength = reusable.CommonMaths.round(caPid / overlapingQlen, 4);
             double percentOfQueryCovered = reusable.CommonMaths.round((double) overlapingQlen / (double) querySequence.getLength(), 4);
-            if (percentOfQueryCovered > 0.4) {
+            if (percentOfQueryCovered > 0.3) {
                 hit.setSummaryString(String.format("%10.3f%10.3f%10.3f%20s%10d", caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered, hit.getHitAccession(), hit.getHitLen()));
 //                sb.append(String.format("%10.3f%10.3f%10.3f%20s%10d", caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered, hit.getHitAccession(), hit.getHitLen()));
 //            System.out.print(caPidOverQueryLength + "(id/qlen), "+ caPidOverAlignedQueryLength+"(id/qaln), "+ percentOfQueryCovered+"(qaln/qlen), "+ hit.getHitAccession() + ", length=" + hit.getHitLen());
 //                if (caPidOverQueryLength >= 0.97 || (caPidOverAlignedQueryLength >= 0.98 && percentOfQueryCovered > 0.6)) { //1. "True" hit(s? - should be one!)
-                if ((caPidOverQueryLength >= 0.97) || (caPidOverAlignedQueryLength >= 0.90 && percentOfQueryCovered > 0.3)) { //2. Homeologs
+//                if ((caPidOverQueryLength >= 0.97) || (caPidOverAlignedQueryLength >= 0.90 && percentOfQueryCovered > 0.3)) { //2. Homeologs
+                if ((caPidOverQueryLength >= 0.7) || caPidOverAlignedQueryLength >= 0.8) { //2. Homeologs
                     goodHits.add(new Hit(querySequence.getIdentifierString(), hit.getHitId(), hit, caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered));
                 } else { //3. No decent hits                
 //                    sb.append(" <- Not a decent hit...\n");

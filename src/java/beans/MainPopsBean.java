@@ -144,20 +144,40 @@ public class MainPopsBean implements Serializable {
 //        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         Map<String, String> parameterMap = (Map<String, String>) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         if (!parameterMap.isEmpty()) {
+            RequestContext context = RequestContext.getCurrentInstance();
             if (parameterMap.containsKey("query")) {
                 String id = parameterMap.get("query").trim().replaceFirst("\\.\\d+$", "");
                 setUserQuery(id);
                 searchAll(id, ":formSearch:searchMessages");
-                RequestContext context = RequestContext.getCurrentInstance();
                 context.update(":formSearch:idInput,:formSearch:searchMessages,:formCentre:dataTable,:formCentre:chartsGrid,:formSearch3:contigList");
             }
             if (parameterMap.containsKey("blastn")) {
                 String key = parameterMap.get("blastn").trim();
                 perQueryResults = blastn.retrieveHits(key, appData.getBLAST_DB());
                 sequences = blastn.getRetrievedSequences();
+                fileContentString = blastn.getRetrievedSequencesString();
                 processRetrievedResults();
 //                RequestContext context = RequestContext.getCurrentInstance();
 //                context.execute("PF('searchSeqPanel').show()");
+            }
+            if (parameterMap.containsKey("chromosome")) {
+                String chromosome = parameterMap.get("chromosome").trim();
+
+                if (isChromosomeLabel(chromosome)) {
+                    if (parameterMap.containsKey("cM")) {
+                        String cM = parameterMap.get("cM");
+                        String range[] = cM.trim().split("-");
+                        try {
+                        cMLoadExample(chromosome, Double.parseDouble(range[0]), Double.parseDouble(range[1]));
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException arr) {
+                            growl(FacesMessage.SEVERITY_WARN, "Invalid GET request parameter", cM+ " could not be parsed, try e.g. ?chromosome=5B&cM=14.798.5-16.987", "searchMessages2");                            
+                        }
+                    } else {
+                        onSelect(chromosome);
+                    }
+                } else {
+                    growl(FacesMessage.SEVERITY_WARN, "Invalid GET request parameter", chromosome + " is not a valid wheat chromosome name, try e.g. ?chromosome=5B&cM=14.798.5-16.987", "searchMessages2");
+                }
             }
         }
 
@@ -881,9 +901,9 @@ public class MainPopsBean implements Serializable {
             try {
 //                ExternalContext extContext = FacesContext.getCurrentInstance().getExternalContext();
 //                String blastdbIWGSC = extContext.getRealPath(BLAST_DB);
-                String blastdbIWGSC = appData.getBLAST_DB();                  
+                String blastdbIWGSC = appData.getBLAST_DB();
                 new TempFilesCleaner(appData.getBLAST_DIR(), appData.getBLAST_CLEANUP_DAYS()).run(); //DELETE BLAST FILES OLDER THAN n DAYS (default==7)
-                perQueryResults = blastn.findHits(sequences, blastdbIWGSC);      
+                perQueryResults = blastn.findHits(sequences, blastdbIWGSC);
 
                 hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults.getResults());
 
@@ -929,7 +949,7 @@ public class MainPopsBean implements Serializable {
 
             } else {
                 growl(FacesMessage.SEVERITY_INFO, "Hit(s) found!", "Alignment successful", ":formSearch2:searchMessages2");
-                growl(FacesMessage.SEVERITY_INFO, "Results", "should remain availabe for up to "+appData.getBLAST_CLEANUP_DAYS()+" days at " + blastn.getResultsLink("peru"), ":formSearch2:searchMessages2");
+                growl(FacesMessage.SEVERITY_INFO, "Results", "should remain availabe for up to " + appData.getBLAST_CLEANUP_DAYS() + " days at " + blastn.getResultsLink("peru"), ":formSearch2:searchMessages2");
 
             }
         } else {
@@ -943,16 +963,16 @@ public class MainPopsBean implements Serializable {
             if (perQueryResults.hasInput()) {
                 if (perQueryResults.hasExitValue()) {
                     Integer exitValue = perQueryResults.getExitValue();
-                    if(exitValue==0) {
-                        growl(FacesMessage.SEVERITY_WARN, "Alignment completed", "No hits found", "searchMessages");                        
+                    if (exitValue == 0) {
+                        growl(FacesMessage.SEVERITY_WARN, "Alignment completed", "No hits found", "searchMessages");
                     } else {
-                        growl(FacesMessage.SEVERITY_ERROR, "Alignment failed", "BLAST exit code: "+exitValue, "searchMessages");                                                
+                        growl(FacesMessage.SEVERITY_ERROR, "Alignment failed", "BLAST exit code: " + exitValue, "searchMessages");
                     }
                 } else {
                     growl(FacesMessage.SEVERITY_INFO, "Results not available", "BLAST alignment may still be running...", "searchMessages");
                 }
             } else {
-                growl(FacesMessage.SEVERITY_WARN, "Not available: ", "Requested alignment results have not been found", "searchMessages");                
+                growl(FacesMessage.SEVERITY_WARN, "Not available: ", "Requested alignment results have not been found", "searchMessages");
             }
         } else {
             hitsForQueryDataModel = new HitsForQueryDataModel(perQueryResults.getResults());
@@ -1090,4 +1110,15 @@ public class MainPopsBean implements Serializable {
         return appData;
     }
 
+    private boolean isChromosomeLabel(String label) {
+        String genomes[] = {"A", "B", "D"};
+        for (int i = 1; i < 8; i++) {
+            for (String g : genomes) {
+                if (label.equals(i + g)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -415,15 +415,15 @@
                    showEffect="scale" hideEffect="fade"  draggable="true" closable="true"  resizable="false" closeOnEscape="true" width="850" height="550" visible="#{mainBean.perQueryResults.hasResults()}">
 
             <h:form id="formSearch2">
-<!--                <p:blockUI id="blockBLAST" block="tabView" widgetVar="blockBLAST">
-                                    <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />
-                                    <br/>
-                                    <h:outputText value="BLASTn search running..."  style="font-size: larger"/>
-                                    <br/>
-                                    <h:outputText value="once finished, results will be displayed and will also become available at " />
-                                    <br/>
-                                    <h:outputText id="linkBLAST" value=" #{mainBean.blastn.getResultsLink('peru')}" escape="false"/>
-                                </p:blockUI>        -->
+                <!--                <p:blockUI id="blockBLAST" block="tabView" widgetVar="blockBLAST">
+                                                    <p:graphicImage value="/images/ajax-loader#{randomBean.getRandom(13)}.gif" />
+                                                    <br/>
+                                                    <h:outputText value="BLASTn search running..."  style="font-size: larger"/>
+                                                    <br/>
+                                                    <h:outputText value="once finished, results will be displayed and will also become available at " />
+                                                    <br/>
+                                                    <h:outputText id="linkBLAST" value=" #{mainBean.blastn.getResultsLink('peru')}" escape="false"/>
+                                                </p:blockUI>        -->
                 <p:tabView id="tabView" activeIndex="#{mainBean.seqSearchTabActive}"    >
                     <p:tab title="Input"  >
                         <p:toolbar >
@@ -875,7 +875,7 @@
             <p:dataGrid var="gene" value="#{mainBean.selectedGenesForChartDisplay}" columns="3" rows="6" paginator="true" id="chartsGrid" widgetVar="chartsGrid"
                         emptyMessage="No genes selected for display." 
                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                        rowsPerPageTemplate="3,6,9,12,15,18,21" >
+                        rowsPerPageTemplate="3,6,9,12" >
                 <p:ajax event="page" onstart="PF('blockUI').show();" oncomplete="PF('blockUI').hide();" />   
 
                 <f:facet name="header" >
@@ -982,6 +982,14 @@
             PF('exportChart').show();
         }
     </script>
+    <script  type="text/javascript" target="body">
+        $j = jQuery;
+        $j(document).ready(function () {
+            PF('block2Table').show();
+            PF('dataTable').filter();
+            PF('block2Table').hide();
+        });
+    </script>  
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
