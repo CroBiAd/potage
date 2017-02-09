@@ -214,7 +214,7 @@ public final class AppDataBean implements Serializable {
                 ArrayList<Contig> contigs = popSeqChromosomeMap1.get(chromosome);
                 for (int i = 0; i < contigs.size(); i++) {
                     if (contigs.get(i).getContigId().equals(contig.getId())) {
-                        System.out.println("Found contig " + contigs.get(i).getId());
+//                        System.out.println("Found contig " + contigs.get(i).getId());
                         return new SearchResult(null, contig, chromosome, i);
                     }
                 }

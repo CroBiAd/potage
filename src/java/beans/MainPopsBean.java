@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -135,6 +137,16 @@ public class MainPopsBean implements Serializable {
         this.perLocationContigs.setAppData(appData);
     }
 
+    private boolean initFilterTable;
+
+    public boolean isInitFilterTable() {
+        return initFilterTable;
+    }
+
+    public void setInitFilterTable(boolean initFilterTable) {
+        this.initFilterTable = initFilterTable;
+    }
+
     @PostConstruct
     public void init() {
         blastn = new QesHits(appData.getBLAST_DIR());
@@ -165,12 +177,15 @@ public class MainPopsBean implements Serializable {
 
                 if (isChromosomeLabel(chromosome)) {
                     if (parameterMap.containsKey("cM")) {
+                        initFilterTable = true;
                         String cM = parameterMap.get("cM");
                         String range[] = cM.trim().split("-");
                         try {
-                        cMLoadExample(chromosome, Double.parseDouble(range[0]), Double.parseDouble(range[1]));
+                            cMLoadExample(chromosome, Double.parseDouble(range[0]), Double.parseDouble(range[1]));
+//                        RequestContext.getCurrentInstance().execute("filterTable();");
+//                        RequestContext.getCurrentInstance().execute("PF('block2Table').show();PF('dataTable').filter();PF('block2Table').hide();");
                         } catch (ArrayIndexOutOfBoundsException | NumberFormatException arr) {
-                            growl(FacesMessage.SEVERITY_WARN, "Invalid GET request parameter", cM+ " could not be parsed, try e.g. ?chromosome=5B&cM=14.798.5-16.987", "searchMessages2");                            
+                            growl(FacesMessage.SEVERITY_WARN, "Invalid GET request parameter", cM + " could not be parsed, try e.g. ?chromosome=5B&cM=14.798.5-16.987", "searchMessages2");
                         }
                     } else {
                         onSelect(chromosome);

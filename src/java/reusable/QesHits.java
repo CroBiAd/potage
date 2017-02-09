@@ -75,11 +75,11 @@ public class QesHits implements Serializable {
     }
 
     public ArrayList<Sequence> getRetrievedSequences() {
-        return retrievedSequences;
+        return retrievedSequences == null ? new ArrayList<Sequence>() : retrievedSequences;
     }
 
     public String getRetrievedSequencesString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();        
         for (Sequence s : getRetrievedSequences()) {
             sb.append(">").append(s.getIdentifierString()); 
             sb.append(System.lineSeparator()).append(s.getSequenceString()).append(System.lineSeparator());            
