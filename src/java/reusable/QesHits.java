@@ -171,7 +171,11 @@ public class QesHits implements Serializable {
      * @param querySequence
      * @return
      */
-    private ArrayList<Hit> getGoodHitsForQuery(Sequence querySequence, String databaseString) {
+    private ArrayList<Hit> getGoodHitsForQuery(Sequence querySequence, String databaseString) { // double minQueryCovered, double minFullLenId, double minAlignedId) {
+        //TODO expose settigns
+        double minQueryCovered = 0.05; 
+        double minFullLenId = 0.6;
+        double minAlignedId = 0.6;
 //        StringBuilder sb = new StringBuilder(); 
         boolean capidOnQueryNotSubjectB = true;
 //        int offset = 0;
@@ -190,13 +194,13 @@ public class QesHits implements Serializable {
             int overlapingQlen = hit.getOverlappingLength(capidOnQueryNotSubjectB);
             double caPidOverAlignedQueryLength = reusable.CommonMaths.round(caPid / overlapingQlen, 4);
             double percentOfQueryCovered = reusable.CommonMaths.round((double) overlapingQlen / (double) querySequence.getLength(), 4);
-            if (percentOfQueryCovered > 0.3) {
+            if (percentOfQueryCovered >= minQueryCovered) {
                 hit.setSummaryString(String.format("%10.3f%10.3f%10.3f%20s%10d", caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered, hit.getHitAccession(), hit.getHitLen()));
 //                sb.append(String.format("%10.3f%10.3f%10.3f%20s%10d", caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered, hit.getHitAccession(), hit.getHitLen()));
 //            System.out.print(caPidOverQueryLength + "(id/qlen), "+ caPidOverAlignedQueryLength+"(id/qaln), "+ percentOfQueryCovered+"(qaln/qlen), "+ hit.getHitAccession() + ", length=" + hit.getHitLen());
 //                if (caPidOverQueryLength >= 0.97 || (caPidOverAlignedQueryLength >= 0.98 && percentOfQueryCovered > 0.6)) { //1. "True" hit(s? - should be one!)
 //                if ((caPidOverQueryLength >= 0.97) || (caPidOverAlignedQueryLength >= 0.90 && percentOfQueryCovered > 0.3)) { //2. Homeologs
-                if ((caPidOverQueryLength >= 0.7) || caPidOverAlignedQueryLength >= 0.8) { //2. Homeologs
+                if ((caPidOverQueryLength >= minFullLenId) || caPidOverAlignedQueryLength >= minAlignedId) { //2. Homeologs
                     goodHits.add(new Hit(querySequence.getIdentifierString(), hit.getHitId(), hit, caPidOverQueryLength, caPidOverAlignedQueryLength, percentOfQueryCovered));
                 } else { //3. No decent hits                
 //                    sb.append(" <- Not a decent hit...\n");
