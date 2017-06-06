@@ -40,6 +40,18 @@
     <welcome-file-list>
         <welcome-file>faces/potage.xhtml</welcome-file>
     </welcome-file-list>
+    <!--    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>potage</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>potage</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>BASIC</auth-method>
+    </login-config>-->
     <error-page>
         <exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/expired.xhtml</location>
