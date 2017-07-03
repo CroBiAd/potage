@@ -89,7 +89,8 @@ public class MainPopsBean implements Serializable {
     private Location_cMFilter cM_filter;
 
     private String userQuery;
-    private String userQuerySeq;
+    private String userQueryInternal;
+//    private String userQuerySeq;
     private String globalFilter;
 
     //chart-dialog related
@@ -182,6 +183,8 @@ public class MainPopsBean implements Serializable {
                         String range[] = cM.trim().split("-");
                         try {
                             cMLoadExample(chromosome, Double.parseDouble(range[0]), Double.parseDouble(range[1]));
+                            growl(FacesMessage.SEVERITY_INFO, "Chromosome region loaded", "Chromosome "+chromosome+" "+cM+" cM", "searchMessages2");
+
 //                        RequestContext.getCurrentInstance().execute("filterTable();");
 //                        RequestContext.getCurrentInstance().execute("PF('block2Table').show();PF('dataTable').filter();PF('block2Table').hide();");
                         } catch (ArrayIndexOutOfBoundsException | NumberFormatException arr) {
@@ -357,6 +360,10 @@ public class MainPopsBean implements Serializable {
     public void searchAll(ActionEvent actionEvent) {
         searchAll(userQuery, ":formSearch:searchMessages");
     }
+    public void searchAllInternal(String userQuery) {
+        setUserQuery(userQuery);
+        searchAll(userQuery, "growl");
+    }
 
     private void searchAll(String userQuery, String messageComponent) {
         appendUnordered = true;
@@ -366,7 +373,7 @@ public class MainPopsBean implements Serializable {
             growl(FacesMessage.SEVERITY_FATAL, "Searching for nothing?!", "Consider inputting an identifier before clicking 'Search'", messageComponent);
         } else {
 //
-            String[] queries = userQuery.split(" |,|\n|\t|;");
+            String[] queries = userQuery.trim().split(" |,|\n|\t|;");
 //
             if (queries.length < 2) {
                 SearchResult result = appData.quickFind(userQuery.trim());
@@ -418,6 +425,8 @@ public class MainPopsBean implements Serializable {
         }
         this.userQuery = userQuery;
     }
+
+    
 
     public String getGlobalFilter() {
         if (globalFilter != null) {
