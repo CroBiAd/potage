@@ -175,7 +175,7 @@
                                 </font>
                             </p:tab>
                         </p:accordionPanel>
-                        <h4> POTAGE was last updated in December 2016 </h4>
+                        <h4> POTAGE was last updated in June 2017 </h4>
                     </p:tab>
                     <p:tab title="Words of caution">
                         <ul> 
@@ -358,7 +358,7 @@
                                 starting from the second sentence under "Gene identification and RNA-Seq data" subsection.</dd>
                             <dt>Can I run POTAGE locally on my own hardware?</dt>
                             <dd>Yes, we have developed POTAGE with this in mind. By far the easiest way to do
-                                this is to use our Docker image (<a href="https://hub.docker.com/r/crobia/potage" target="_blank">crobia/potage</a>).
+                                this is to use our Docker image (<a href="https://hub.docker.com/r/crobiad/potage" target="_blank">crobiad/potage</a>).
                                 To get started, you will first need to install the "<a href="https://docs.docker.com/engine/installation/" target="_blank">Docker Engine</a>". Once this is installed, simply follow the <a href="https://github.com/CroBiA/docker-potage/blob/master/README.md#quick-start" target="_blank">Quick Start</a> instructions.</dd>
                         </dl>
                     </p:tab>
@@ -366,7 +366,7 @@
                     <p:tab title="Contact Us">
                         You can contact us in a variety of ways:
                         <ul>
-                            <li>For bug reports and feature requests, submit a <a href="https://github.com/CroBiA/potage/issues/new" target="_blank">new issue</a> on GitHub</li>
+                            <li>For bug reports and feature requests, submit a <a href="https://github.com/CroBiAd/potage/issues/new" target="_blank">new issue</a> on GitHub</li>
                             <li>For other things, contact the main POTAGE developer: <a href="mailto:radoslaw.suchecki@adelaide.edu.au?Subject=POTAGE" target="_top">Rad Suchecki</a> </li>
                         </ul>
                     </p:tab>
@@ -709,7 +709,7 @@
                     </p:toolbar>
                     <p:toolbar>
                         <f:facet name="left" >
-                            <h:outputText value="Filter by cM position: " />
+                            <h:outputText value="Filter by POPSEQ bin (cM): " />
                             <p:autoComplete dropdown="true" value="#{mainBean.cM_filter.cM_min_user}"   disabled="#{!mainBean.dataLoaded}" 
                                             forceSelection="true" size="7" scrollHeight="400" title="Type in the desired cM position (from)"   
                                             completeMethod="#{mainBean.cM_filter.rangePrefix}" >
@@ -890,7 +890,14 @@
                         </f:facet>
                     </p:toolbar>
                 </f:facet>
-                <p:panel header="#{gene.geneId}  on  #{gene.contig.contigId}" style="text-align:center;"   >
+                <p:panel style="text-align:center;"   >
+                    <f:facet name="header">
+                        <p:commandLink actionListener="#{mainBean.searchAllInternal(gene.geneId)}" 
+                                       update=":formCentre:dataTable" style="text-align:center"
+                                          onstart="PF('blockUI').show()" oncomplete="PF('blockUI').hide();">                            
+                            <h:outputText value="#{gene.geneId}  on  #{gene.contig.contigId}" />
+                        </p:commandLink>
+                    </f:facet>
                     <p:tabView id="chartsTabView" value="#{gene.barChartModels}" var="chartModel"  >
                         <p:ajax event="tabChange" update="chartsTabView" listener="#{gene.onTabChange}"/>
                         <p:tab title="#{chartModel.getShortTitle()}">
@@ -983,33 +990,33 @@
             PF('exportChart').show();
         }
     </script>
-<script  type="text/javascript" >
-    $j = jQuery;
-    $j(document).ready(function () {
-        if (#{mainBean.initFilterTable}) {
-            PF('block2Table').show();
-            PF('dataTable').filter();
-            PF('block2Table').hide();
-        }
-    });
-</script>  
-<script>
-    (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r;
-        i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
-        a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-        a.async = 1;
-        a.src = g;
-        m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+    <script  type="text/javascript" >
+        $j = jQuery;
+        $j(document).ready(function () {
+            if (#{mainBean.initFilterTable}) {
+                PF('block2Table').show();
+                PF('dataTable').filter();
+                PF('block2Table').hide();
+            }
+        });
+    </script>  
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-    ga('create', 'UA-84940540-2', 'auto');
-    ga('send', 'pageview');
+        ga('create', 'UA-84940540-2', 'auto');
+        ga('send', 'pageview');
 
-</script>
+    </script>
 </f:view>
 </html>
 
