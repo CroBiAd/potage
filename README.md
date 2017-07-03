@@ -17,6 +17,6 @@ You may be interested in running your own POTAGE server if you:
 To facilitate this option we have packaged up POTAGE into a Docker image. In order to use this image you will need:
 
   1. [Install Docker Engine](https://docs.docker.com/engine/installation/) for your operating system.
-  2. Run the [crobia/potage](https://hub.docker.com/r/crobia/potage/) image.
+  2. Run the [crobiad/potage](https://hub.docker.com/r/crobiad/potage/) image.
 
 For full details about running the `crobia/potage` image, please see the [crobia/potage](https://hub.docker.com/r/crobia/potage/) repository on Docker Hub.
