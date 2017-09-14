@@ -7,6 +7,9 @@ POTAGE (pronounced "[pəʊˈtɑːʒ](http://img2.tfd.com/pron/mp3/en/UK/df/dfsks
 You can access the public POTAGE web server (http://crobiad.agwine.adelaide.edu.au/potage) which contains a limited number of published gene
 expression data sets.
 
+  1. [IWGSC RNA-Seq tissue series](https://urgi.versailles.inra.fr/files/RNASeqWheat/)
+  2. [Meiose](https://www.ncbi.nlm.nih.gov/bioproject/PRJEB5029)
+
 # Running POTAGE locally
 
 You may be interested in running your own POTAGE server if you:
