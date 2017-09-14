@@ -14,7 +14,7 @@ expression data sets.
 
 You may be interested in running your own POTAGE server if you:
 
-  1. Need to add additional unpublished data sets.
+  1. Need to [add additional unpublished data sets](https://github.com/CroBiAd/potage_data/blob/master/CONTRIBUTING.md#adding-expression-data-sets).
   2. Would prefer not to use our public server (http://crobiad.agwine.adelaide.edu.au/potage).
 
 To facilitate this option we have packaged up POTAGE into a Docker image. In order to use this image you will need to:
