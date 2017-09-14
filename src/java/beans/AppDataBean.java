@@ -103,7 +103,7 @@ public final class AppDataBean implements Serializable {
         readAnnotationData();
         Reporter.report("[INFO]", "Cross-referencing genes with contigs...", name);
         buildCssToTraesAndReverseMaps(getGENE_2_CONTIG_MAP());
-        Reporter.report("[INFO]", "Cross-reference all data...", name);
+        Reporter.report("[INFO]", "Cross-referencing remaining data...", name);
         integrateGeneWithPopSeqData();
         Reporter.report("[INFO]", "Finished populating Application-scoped datastore", name);
 //        SearchResult quickFind = quickFind("1BL_3811941");

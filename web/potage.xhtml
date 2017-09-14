@@ -95,7 +95,7 @@
                     <p:commandButton  onclick="PF('helpPanel').toggle();" icon="img-button-help" title="Help" label="Help" value="Help"/>
                 </f:facet>
                 <p:accordionPanel activeIndex="">
-                    <p:tab title="About POTAGE" >
+                    <p:tab title="About POTAGE and the underlying data" >
                         Popseq Ordered Triticum Aestivum Gene Expression (POTAGE, pronounced "<a href="http://img2.tfd.com/pron/mp3/en/UK/df/dfskskssdfd5drh7.mp3" target="_blank">pəʊˈtɑːʒ</a>")
                         is a web application which integrates map location information with gene expression 
                         and inferred functional annotation.
@@ -173,6 +173,26 @@
                                         <tr><td></td></tr>
                                     </table>
                                 </font>
+                                The computation of the expression values for the main Chinese Spring dataset available in POTAGE is described in
+                                <a href="http://jxb.oxfordjournals.org/content/67/9/2847.full" target="_blank">this paper</a>. The relevant paragraph is included below:<br/>                                
+                                To obtain gene expression information for genes located in the QTL region we used the PopSeq map for bread wheat 
+                                together with the high confidence (HC) gene predictions described in IWGSC (2014) and the publicly available 
+                                <a href="http://wheat-urgi.versailles.inra.fr/Seq-Repository/RNA-Seq" target="_blank">RNA-Seq data for cv. Chinese Spring</a>. 
+                                This dataset covers five different organs (root, leaf, stem, spike, grain) at three developmental stages, each in two replicates. 
+                                We used the HC gene predictions, <a href="ftp://ftpmips.helmholtz-muenchen.de/plants/wheat/IWGSC/genePrediction_v2.1/" target="_blank">version 2.1</a>  
+                                as reference for mapping the RNA-Seq reads. The reference was prepared by extracting the genomic sequence for each of the predicted genes 
+                                with up to 2kb upstream and downstream bases whenever available from the corresponding IWGSC-CSS contig. 
+                                The coordinates in the corresponding GTF/GFF transcript annotations file were adjusted accordingly. 
+                                RNA-Seq reads were quality-, adapter- and length-trimmed using Trimmomatic (Bolger et al., 2014), version 0.30, 
+                                with a custom list of adapter sequences and the following settings: ‘ILLUMINACLIP:adapters.fa:1:6:6 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:6 MINLEN:60’. 
+                                After indexing the reference using Bowtie2 (Langmead and Salzberg, 2012) version 2.2.1, 
+                                trimmed reads were aligned to the reference using TopHat (Kim et al., 2013) version 2.2.1, not allowing any mismatches or indels. 
+                                Paired reads were required to map concordantly (--no-discordant setting) to the same (--no-mixed setting) reference sequence. 
+                                BAM files for the biological replicates were merged, apart from a single tissue/stage sample (spike_Z39) where only one sample was available. 
+                                Expression was quantified by Cufflinks (Roberts et al., 2011) version 2.1.1 utilizing (through the --GTF option) 
+                                the adjusted version of the reference transcript annotations provided with the HC gene predictions. 
+                                The remaining settings were left at their defaults, except for: --max-multiread-fraction 1, --frag-len-std-dev 50 --max-intron-length 5 000. 
+                                FPKMs (fragments per kilobase of exon per million fragments mapped) per gene (rather than per isoform) were extracted and aggregated in tabular form. 
                             </p:tab>
                         </p:accordionPanel>
                         <h4> POTAGE was last updated in June 2017 </h4>
@@ -965,7 +985,7 @@
                 This server is running: POTAGE code commit ID (<a href="https://github.com/CroBiA/potage/tree/#{mainBean.appData.potageCommitId}">#{mainBean.appData.potageCommitId}</a>) with POTAGE data commit ID (<a href="https://github.com/CroBiA/potage_data/tree/#{mainBean.appData.potageDataCommitId}">#{mainBean.appData.potageDataCommitId}</a>)
                 <br />
             </h:panelGroup>
-            ©&nbsp;Copyright&nbsp;2014-2016&nbsp;<a href="http://www.acpfg.com.au/">Australian&nbsp;Centre&nbsp;for&nbsp;Plant&nbsp;Functional&nbsp;Genomics</a>
+            ©&nbsp;Copyright&nbsp;2014-2017&nbsp;University&nbsp;of&nbsp;Adelaide
         </div>
 
     </body>
