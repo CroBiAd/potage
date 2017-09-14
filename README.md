@@ -11,10 +11,10 @@ expression data sets.
 
 You may be interested in running your own POTAGE server if you:
 
-  1. Need to add additional private/proprietary data sets.
+  1. Need to add additional unpublished data sets.
   2. Would prefer not to use our public server (http://crobiad.agwine.adelaide.edu.au/potage).
 
-To facilitate this option we have packaged up POTAGE into a Docker image. In order to use this image you will need:
+To facilitate this option we have packaged up POTAGE into a Docker image. In order to use this image you will need to:
 
   1. [Install Docker Engine](https://docs.docker.com/engine/installation/) for your operating system.
   2. Run the [crobiad/potage](https://hub.docker.com/r/crobiad/potage/) image.
