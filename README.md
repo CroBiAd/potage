@@ -1,5 +1,6 @@
 [![Docker auto](https://img.shields.io/docker/automated/crobiad/potage.svg?logo=docker&style=for-the-badge)](https://hub.docker.com/r/crobiad/potage)
-[![Docker build](https://img.shields.io/docker/build/crobiad/potage.svg?logo=docker&style=for-the-badge)](https://hub.docker.com/r/crobiad/potage)
+[![Docker build](https://img.shields.io/docker/cloud/build/crobiad/potage.svg?logo=docker&style=for-the-badge)](https://hub.docker.com/r/crobiad/potage)
+
 
 [![Website](https://img.shields.io/website-up-down-green-red/http/crobiad.agwine.adelaide.edu.au/potage.svg?label=crobiad.agwine.adelaide.edu.au/potage/&style=for-the-badge)](http://crobiad.agwine.adelaide.edu.au/potage/)
 
